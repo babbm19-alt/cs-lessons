@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variables and Data Types — Interactive Lesson (Activity 1.1.2)</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#f7f6fa; --card:#ffffff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:26px 20px 20px; text-align:center;}
+  header h1{font-size:1.55rem; letter-spacing:.3px;}
+  header p{opacity:.85; font-size:.95rem; margin-top:4px;}
+  nav{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; background:var(--navy); padding:10px 8px; position:sticky; top:0; z-index:50;}
+  nav button{border:none; background:rgba(255,255,255,.12); color:#fff; padding:8px 14px; border-radius:999px; cursor:pointer; font-size:.85rem; font-weight:600; transition:.15s;}
+  nav button:hover{background:rgba(255,255,255,.28);}
+  nav button.active{background:#fff; color:var(--navy);}
+  nav button .check{color:#7be0a8; margin-left:4px; display:none;}
+  nav button.done .check{display:inline;}
+  main{max-width:880px; margin:0 auto; padding:24px 16px 80px;}
+  section{display:none; animation:fade .25s ease;}
+  section.visible{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .shake{animation:shake .3s ease;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 1px 3px rgba(27,42,74,.06);}
+  h2{color:var(--purple); font-size:1.35rem; margin-bottom:10px;}
+  h3{color:var(--navy); font-size:1.05rem; margin:14px 0 8px;}
+  p{margin-bottom:10px;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .codebox .k{color:#7fb4ff;} .codebox .s{color:#8fd6a8;} .codebox .n{color:#ffd479;}
+  .console{background:#101010; color:#c9f7c9; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; min-height:52px; white-space:pre; overflow-x:auto; margin:10px 0; border:1px solid #2c2c2c;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:10px 18px; border-radius:9px; font-size:.92rem; font-weight:600; cursor:pointer; transition:.15s;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .btn.small{padding:6px 12px; font-size:.82rem;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .feedback{border-radius:9px; padding:10px 14px; margin-top:10px; font-size:.92rem; display:none;}
+  .feedback.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .feedback.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .feedback.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  .pill-score{background:var(--purple-lt); color:var(--purple); font-weight:700; padding:4px 12px; border-radius:999px; font-size:.85rem;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .choices button{text-align:left; background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer;}
+  .choices button.mono{font-family:var(--mono);}
+  .choices button:hover{border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em;}
+  /* sorter */
+  .chipbar{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; min-height:44px; padding:10px; background:#faf9fc; border:2px dashed var(--line); border-radius:10px;}
+  .chip{font-family:var(--mono); font-size:.9rem; background:#fff; border:2px solid var(--purple); color:var(--navy); border-radius:999px; padding:6px 14px; cursor:pointer; transition:.15s;}
+  .chip.selected{background:var(--purple); color:#fff;}
+  .buckets{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  @media(max-width:640px){.buckets{grid-template-columns:1fr;}}
+  .bucket{border:2px solid var(--line); border-radius:12px; min-height:130px; padding:10px; cursor:pointer; transition:.15s;}
+  .bucket:hover{border-color:var(--purple);}
+  .bucket h4{font-family:var(--mono); text-align:center; color:var(--purple); margin-bottom:8px; font-size:1rem;}
+  .bucket .drop{display:flex; flex-wrap:wrap; gap:6px;}
+  .bucket .chip{cursor:default; border-color:var(--green); color:var(--green); background:#e6f6ed; font-size:.8rem; padding:4px 10px;}
+  /* judge */
+  .judge-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px;}
+  .judge-row .nm{font-family:var(--mono); font-weight:700; min-width:150px; color:var(--navy);}
+  .judge-row .verdict{margin-left:auto; display:flex; gap:6px;}
+  .judge-row button{border:2px solid var(--line); background:#fff; border-radius:8px; padding:6px 12px; cursor:pointer; font-size:.85rem;}
+  .judge-row button:hover{border-color:var(--purple);}
+  .judge-row button.ok{border-color:var(--green); background:#e6f6ed;}
+  .judge-row button.no{border-color:var(--red); background:#fdecea;}
+  .judge-row .why{width:100%; font-size:.82rem; color:var(--muted); display:none;}
+  /* compile or crash */
+  .cc-btns{display:flex; gap:10px; margin-top:10px;}
+  .cc-btns button{flex:1; border:2px solid var(--line); background:#fff; border-radius:10px; padding:12px; font-size:1rem; font-weight:700; cursor:pointer;}
+  .cc-btns button:hover{border-color:var(--purple);}
+  .cc-btns button.ok{border-color:var(--green); background:#e6f6ed;}
+  .cc-btns button.no{border-color:var(--red); background:#fdecea;}
+  .stepdots{display:flex; gap:6px; margin:8px 0 4px;}
+  .stepdots span{width:12px; height:12px; border-radius:50%; background:var(--line);}
+  .stepdots span.on{background:var(--purple);}
+  .stepdots span.done{background:var(--green);}
+  /* mission */
+  .m-grid{display:grid; grid-template-columns:auto 1fr; gap:8px 12px; align-items:center; margin:10px 0;}
+  .m-grid label{font-family:var(--mono); font-size:.88rem; color:var(--navy); text-align:right;}
+  .m-grid input,.m-grid select{padding:8px 10px; border:2px solid var(--line); border-radius:8px; font-size:.9rem; font-family:var(--mono); width:130px;}
+  /* quiz */
+  .qcard{border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; background:#fff;}
+  .qcard h4{font-size:.98rem; margin-bottom:10px; color:var(--navy);}
+  .qcard h4 code{font-family:var(--mono); background:var(--purple-lt); padding:1px 5px; border-radius:5px;}
+  .qopts label{display:block; border:2px solid var(--line); border-radius:9px; padding:9px 12px; margin-bottom:8px; cursor:pointer; font-size:.9rem;}
+  .qopts label:hover{border-color:var(--purple);}
+  .qopts label.sel{border-color:var(--purple); background:var(--purple-lt);}
+  .qopts label.right{border-color:var(--green); background:#e6f6ed;}
+  .qopts label.wrongpick{border-color:var(--red); background:#fdecea;}
+  .qopts input{margin-right:8px;}
+  .bigscore{font-size:2.2rem; font-weight:800; color:var(--purple); text-align:center; margin:8px 0;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#128230; Variables and Data Types</h1>
+  <p>AP Computer Science A &bull; Unit 1 &bull; Activity 1.1.2 &bull; Mr. Babb</p>
+</header>
+
+<nav id="nav">
+  <button data-sec="intro" class="active">1. Variables<span class="check">&#10003;</span></button>
+  <button data-sec="sorter">2. Type Sorter<span class="check">&#10003;</span></button>
+  <button data-sec="naming">3. Name Court<span class="check">&#10003;</span></button>
+  <button data-sec="crash">4. Compile or Crash<span class="check">&#10003;</span></button>
+  <button data-sec="mission">5. Allowance Mission<span class="check">&#10003;</span></button>
+  <button data-sec="quiz">6. Exit Ticket<span class="check">&#10003;</span></button>
+</nav>
+
+<main>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" class="visible">
+  <div class="card">
+    <span class="tag">Learn</span>
+    <h2>What is a variable?</h2>
+    <p>A <b>variable</b> is a container that holds information while your program runs. Creating one is a simple <b>algorithm</b> — a set of steps to accomplish a task. In Java, <b>three things</b> define a variable: its <b>data type</b>, its <b>name</b>, and its <b>value</b>.</p>
+    <div class="codebox"><span class="k">public class</span> FirstVariable
+{
+    <span class="k">public static void</span> main(String[] args)
+    {
+        <span class="k">int</span> age = <span class="n">12</span>;
+        <span class="k">double</span> allowance = <span class="n">5.25</span>;
+        <span class="k">boolean</span> isOldEnough = <span class="k">true</span>;
+        System.out.println(age);
+        System.out.println(allowance);
+        System.out.println(isOldEnough);
+    }
+}</div>
+    <p>Line 5 <b>declares</b> a variable named <code class="inline">age</code> of type <code class="inline">int</code> (a storage location) and <b>initializes</b> it with the value 12 — all in one line.</p>
+    <button class="btn" onclick="runFirst()">&#9654; Run this program</button>
+    <div class="console" id="firstOut">(click Run to see the output)</div>
+  </div>
+  <div class="card">
+    <h3>&#129504; Quick check</h3>
+    <p>Which part of <code class="inline">double allowance = 5.25;</code> is the <b>data type</b>?</p>
+    <div class="choices">
+      <button class="mono" onclick="introCheck(this,false)">allowance</button>
+      <button class="mono" onclick="introCheck(this,true)">double</button>
+      <button class="mono" onclick="introCheck(this,false)">5.25</button>
+      <button class="mono" onclick="introCheck(this,false)">=</button>
+    </div>
+    <div class="feedback" id="introFb"></div>
+    <p style="margin-top:10px">And remember the <b>assignment operator =</b> : the value of the expression on the <b>right</b> is stored in the variable on the <b>left</b>.</p>
+    <div style="margin-top:14px"><button class="btn secondary" onclick="completeAndGo('intro','sorter')">Next: Type Sorter &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= SORTER ================= -->
+<section id="sorter">
+  <div class="card">
+    <span class="tag">Sort it out</span>
+    <div class="topbar">
+      <h2>Data Type Sorter</h2>
+      <span class="pill-score" id="sortScore">0 / 12 sorted</span>
+    </div>
+    <p>Click a chip, then click the bucket where it belongs. <b>Values</b> go by what they are; <b>variable names</b> go by the type that best fits their meaning.</p>
+    <div class="chipbar" id="chipbar"></div>
+    <div class="buckets">
+      <div class="bucket" data-b="int" onclick="dropChip('int')"><h4>int</h4><div class="drop" id="b-int"></div></div>
+      <div class="bucket" data-b="double" onclick="dropChip('double')"><h4>double</h4><div class="drop" id="b-double"></div></div>
+      <div class="bucket" data-b="boolean" onclick="dropChip('boolean')"><h4>boolean</h4><div class="drop" id="b-boolean"></div></div>
+    </div>
+    <div class="feedback" id="sortFb"></div>
+    <div style="margin-top:14px">
+      <button class="btn small secondary" onclick="buildSorter()">&#8635; Restart</button>
+      <button class="btn" id="sortNext" disabled onclick="completeAndGo('sorter','naming')">Next: Name Court &rarr;</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>&#128273; Remember</h3>
+    <p><code class="inline">int</code> = integers (whole numbers) &bull; <code class="inline">double</code> = real numbers (decimals) &bull; <code class="inline">boolean</code> = only <code class="inline">true</code> or <code class="inline">false</code>. <b>College Board note:</b> Java has 8 primitive types, but only these 3 are used on the AP CS A exam.</p>
+  </div>
+</section>
+
+<!-- ================= NAMING ================= -->
+<section id="naming">
+  <div class="card">
+    <span class="tag">You be the judge</span>
+    <div class="topbar">
+      <h2>Variable Name Court</h2>
+      <span class="pill-score" id="judgeScore">0 / 8 judged</span>
+    </div>
+    <p>Java has strict rules: a name <b>cannot begin with a number</b>, <b>cannot contain special characters</b>, and <b>cannot be one of Java's 57 keywords</b>. Multi-word names should use <b>camelCase</b>. Rule on each name:</p>
+    <div id="judgeRows"></div>
+    <div class="feedback" id="judgeFb"></div>
+    <div style="margin-top:14px"><button class="btn" id="judgeNext" disabled onclick="completeAndGo('naming','crash')">Next: Compile or Crash &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= COMPILE OR CRASH ================= -->
+<section id="crash">
+  <div class="card">
+    <span class="tag">Expect an error?</span>
+    <div class="topbar">
+      <h2>Compile or Crash</h2>
+      <span class="pill-score" id="ccScore">Round 1 of 5</span>
+    </div>
+    <p>Each snippet either runs fine or makes the compiler complain. You decide! (Each variable can only store its own type of data.)</p>
+    <div class="stepdots" id="ccDots"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+    <div class="codebox" id="ccCode"></div>
+    <div class="cc-btns">
+      <button id="ccOkBtn" onclick="ccPick(true)">&#9989; Compiles &amp; runs</button>
+      <button id="ccNoBtn" onclick="ccPick(false)">&#128165; Error!</button>
+    </div>
+    <div class="console" id="ccConsole" style="display:none"></div>
+    <div class="feedback" id="ccFb"></div>
+    <div style="margin-top:14px">
+      <button class="btn" id="ccNextBtn" style="display:none" onclick="ccAdvance()">Next snippet &#9654;</button>
+      <button class="btn" id="ccDoneBtn" style="display:none" onclick="completeAndGo('crash','mission')">Next: Allowance Mission &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MISSION ================= -->
+<section id="mission">
+  <div class="card">
+    <span class="tag">It's your turn</span>
+    <h2>The Allowance Mission</h2>
+    <p>Gina's household has rules for who receives an allowance. Gina has two siblings, Carl and Jennifer:</p>
+    <ul style="padding-left:20px; margin-bottom:10px">
+      <li>Allowance is <b>always $8.75</b> — it never changes.</li>
+      <li>Children <b>under 8</b> do not receive an allowance.</li>
+      <li><b>Gina</b> is 16 years old.</li>
+      <li><b>Carl</b> is 3 years younger than Gina.</li>
+      <li><b>Jennifer</b> was born 10 years after Carl.</li>
+    </ul>
+    <p>Fill in the program so it stores everyone's information with the <b>right types and values</b>:</p>
+    <div class="codebox" id="missionCode"><span class="k">final double</span> ALLOWANCE = <span class="n" id="mcAllow">___</span>;
+<span class="k">int</span> age = <span class="n" id="mcGina">___</span>;          <span style="color:#8a93a6">// Gina</span>
+<span class="k">boolean</span> getsAllowance = <span id="mcGinaB" class="n">___</span>;
+age = <span class="n" id="mcCarl">___</span>;              <span style="color:#8a93a6">// Carl (reuse the variable!)</span>
+getsAllowance = <span id="mcCarlB" class="n">___</span>;
+age = <span class="n" id="mcJen">___</span>;              <span style="color:#8a93a6">// Jennifer</span>
+getsAllowance = <span id="mcJenB" class="n">___</span>;</div>
+    <div class="m-grid">
+      <label>ALLOWANCE =</label><input id="mAllow" placeholder="e.g. 9.99">
+      <label>Gina's age =</label><input id="mGina" placeholder="int">
+      <label>Gina getsAllowance =</label><select id="mGinaB"><option value="">choose…</option><option>true</option><option>false</option></select>
+      <label>Carl's age =</label><input id="mCarl" placeholder="int">
+      <label>Carl getsAllowance =</label><select id="mCarlB"><option value="">choose…</option><option>true</option><option>false</option></select>
+      <label>Jennifer's age =</label><input id="mJen" placeholder="int">
+      <label>Jennifer getsAllowance =</label><select id="mJenB"><option value="">choose…</option><option>true</option><option>false</option></select>
+    </div>
+    <button class="btn" onclick="checkMission()">&#9654; Run the program</button>
+    <div class="console" id="mOut" style="display:none"></div>
+    <div class="feedback" id="mFb"></div>
+  </div>
+  <div class="card">
+    <h3>&#129300; Why <code class="inline">final</code>?</h3>
+    <p>The allowance is set by the parents and never changes in the program — so we protect it: <code class="inline">final double ALLOWANCE = 8.75;</code>. Once initialized, a final variable <b>cannot be modified</b> (ALL CAPS is the naming convention). Other famous finals: <code class="inline">PI = 3.1415926</code>, <code class="inline">GRAVITY = 9.81</code>, <code class="inline">SPEED_OF_LIGHT = 299792458</code>.</p>
+    <div style="margin-top:8px"><button class="btn" id="mNext" disabled onclick="completeAndGo('mission','quiz')">Next: Exit Ticket &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+  <div class="card">
+    <span class="tag">Exit ticket</span>
+    <h2>Show what you know</h2>
+    <p>Answer all 8 questions, then click <b>Grade my exit ticket</b>. One retry allowed.</p>
+    <div id="quizWrap"></div>
+    <button class="btn" onclick="gradeQuiz()">&#10003; Grade my exit ticket</button>
+    <div class="bigscore" id="quizScore"></div>
+    <div class="feedback" id="quizFb"></div>
+  </div>
+  <div class="card">
+    <h3>&#128221; Computer Science Notebook</h3>
+    <p>Add these to your notebook before you leave:</p>
+    <ul style="padding-left:20px">
+      <li>A variable is a storage location that holds a value, which can change while the program runs. Every variable has a name and a data type.</li>
+      <li>The assignment operator (=) stores the value of the expression on the right into the variable on the left.</li>
+      <li>Primitive types in this course: <code class="inline">int</code> (integers), <code class="inline">double</code> (real numbers), <code class="inline">boolean</code> (true/false).</li>
+      <li>Every variable must be assigned a value from a compatible type before it is used; the first assignment is initialization.</li>
+      <li>A <code class="inline">final</code> variable cannot be modified — name it in ALL CAPS.</li>
+      <li>Start a "Java keywords" page and add keywords as you meet them: <code class="inline">int</code>, <code class="inline">double</code>, <code class="inline">boolean</code>, <code class="inline">final</code>, <code class="inline">public</code>, <code class="inline">class</code>, <code class="inline">static</code>, <code class="inline">void</code>…</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============ navigation ============ */
+const sections=['intro','sorter','naming','crash','mission','quiz'];
+function show(sec){
+  sections.forEach(s=>document.getElementById(s).classList.toggle('visible', s===sec));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.sec===sec));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
+function markDone(sec){ const btn=document.querySelector(`#nav button[data-sec="${sec}"]`); if(btn)btn.classList.add('done'); }
+function completeAndGo(from,to){ markDone(from); show(to); }
+
+/* ============ intro ============ */
+function runFirst(){ document.getElementById('firstOut').textContent="12\n5.25\ntrue"; }
+function introCheck(btn,right){
+  document.querySelectorAll('#intro .choices button').forEach(b=>b.classList.remove('ok','no'));
+  const fb=document.getElementById('introFb');
+  if(right){ btn.classList.add('ok'); fb.className='feedback ok';
+    fb.textContent="Correct! double is the data type, allowance is the name, and 5.25 is the value."; }
+  else { btn.classList.add('no'); fb.className='feedback no';
+    fb.textContent="Not quite — the data type comes FIRST in a declaration and tells Java what kind of data the variable can store."; }
+}
+
+/* ============ sorter ============ */
+const ITEMS=[
+ {t:'5', b:'int'},{t:'-15', b:'int'},{t:'4.60', b:'double'},
+ {t:'true', b:'boolean'},{t:'false', b:'boolean'},
+ {t:'age', b:'int'},{t:'dayOfTheMonth', b:'int'},
+ {t:'weight', b:'double'},{t:'cost', b:'double'},{t:'price', b:'double'},
+ {t:'isHappy', b:'boolean'},{t:'canSwim', b:'boolean'},
+];
+const ORDER=[3,7,0,10,2,5,8,1,11,4,6,9];
+let selChip=null, sorted=0;
+function buildSorter(){
+  selChip=null; sorted=0;
+  document.getElementById('sortScore').textContent="0 / 12 sorted";
+  document.getElementById('sortNext').disabled=true;
+  const fb=document.getElementById('sortFb'); fb.className='feedback'; fb.textContent='';
+  ['b-int','b-double','b-boolean'].forEach(id=>document.getElementById(id).innerHTML='');
+  const bar=document.getElementById('chipbar'); bar.innerHTML='';
+  ORDER.forEach(i=>{
+    const it=ITEMS[i];
+    const c=document.createElement('span'); c.className='chip'; c.textContent=it.t; c.dataset.b=it.b;
+    c.onclick=(e)=>{ e.stopPropagation();
+      document.querySelectorAll('#chipbar .chip').forEach(x=>x.classList.remove('selected'));
+      c.classList.add('selected'); selChip=c; };
+    bar.appendChild(c);
+  });
+}
+function dropChip(bucket){
+  if(!selChip)return;
+  const fb=document.getElementById('sortFb');
+  if(selChip.dataset.b===bucket){
+    const clone=document.createElement('span'); clone.className='chip'; clone.textContent=selChip.textContent;
+    document.getElementById('b-'+bucket).appendChild(clone);
+    selChip.remove(); selChip=null; sorted++;
+    document.getElementById('sortScore').textContent=sorted+" / 12 sorted";
+    if(sorted===12){ fb.className='feedback ok'; fb.textContent="🎉 All 12 sorted! You can spot an int, double, and boolean from a mile away.";
+      document.getElementById('sortNext').disabled=false; markDone('sorter'); }
+    else { fb.className='feedback ok'; fb.textContent="Sorted!"; }
+  } else {
+    fb.className='feedback no';
+    const t=selChip.textContent;
+    fb.textContent='"'+t+'" doesn\'t belong in '+bucket+'. Is it a whole number, a decimal, or a true/false idea?';
+    fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+  }
+}
+buildSorter();
+
+/* ============ naming judge ============ */
+const NAMES=[
+ {n:'playerScore', legal:true,  why:'Legal — and nice camelCase.'},
+ {n:'2players',    legal:false, why:'Illegal — a variable name cannot begin with a number.'},
+ {n:'day-of-month',legal:false, why:'Illegal — no special characters allowed (use camelCase: dayOfMonth).'},
+ {n:'int',         legal:false, why:'Illegal — int is one of Java\'s 57 reserved keywords.'},
+ {n:'isOldEnough', legal:true,  why:'Legal — a boolean-style camelCase name.'},
+ {n:'my score',    legal:false, why:'Illegal — spaces are special characters. Use myScore.'},
+ {n:'numItems',    legal:true,  why:'Legal — short and descriptive.'},
+ {n:'class',       legal:false, why:'Illegal — class is a Java keyword.'},
+];
+let judged=0;
+const jr=document.getElementById('judgeRows');
+NAMES.forEach((item,i)=>{
+  const row=document.createElement('div'); row.className='judge-row';
+  row.innerHTML='<span class="nm">'+item.n+'</span>';
+  const v=document.createElement('div'); v.className='verdict';
+  const why=document.createElement('div'); why.className='why';
+  const bL=document.createElement('button'); bL.textContent='✅ Legal';
+  const bI=document.createElement('button'); bI.textContent='🚫 Illegal';
+  function pick(guessLegal,btn,other){
+    if(row.dataset.done)return;
+    if(guessLegal===item.legal){
+      row.dataset.done='1'; btn.classList.add('ok'); other.disabled=true;
+      why.style.display='block'; why.textContent=item.why;
+      judged++; document.getElementById('judgeScore').textContent=judged+" / 8 judged";
+      if(judged===8){ const fb=document.getElementById('judgeFb'); fb.className='feedback ok';
+        fb.textContent="⚖️ Court adjourned — all 8 ruled correctly!"; document.getElementById('judgeNext').disabled=false; markDone('naming'); }
+    } else {
+      btn.classList.add('no'); setTimeout(()=>btn.classList.remove('no'),700);
+      const fb=document.getElementById('judgeFb'); fb.className='feedback no';
+      fb.textContent='Objection! Look again at "'+item.n+'" — check: starts with a number? special characters? Java keyword?';
+    }
+  }
+  bL.onclick=()=>pick(true,bL,bI); bI.onclick=()=>pick(false,bI,bL);
+  v.appendChild(bL); v.appendChild(bI);
+  row.appendChild(v); row.appendChild(why); jr.appendChild(row);
+});
+
+/* ============ compile or crash ============ */
+const CC=[
+ {code:'int age = 12.5;', ok:false,
+  out:'error: incompatible types: possible lossy\nconversion from double to int',
+  why:'age is declared as an int, so its value must be an integer — 12.5 is a double.'},
+ {code:'int age;\nage = 12;\nSystem.out.println(age);', ok:true,
+  out:'12',
+  why:'Declaring first and initializing later is fine — as long as the value comes before it\'s used.'},
+ {code:'age = 12;\nSystem.out.println(age);', ok:false,
+  out:'error: cannot find symbol\n  symbol: variable age',
+  why:'age was never declared — the program doesn\'t know what age is. Every variable needs a declared type.'},
+ {code:'final double ALLOWANCE = 8.75;\nALLOWANCE = 9.00;', ok:false,
+  out:'error: cannot assign a value to\nfinal variable ALLOWANCE',
+  why:'ALLOWANCE was declared final — once initialized, its value cannot be modified.'},
+ {code:'int age = 12;\nage = 13;\nSystem.out.println(age);', ok:true,
+  out:'13',
+  why:'Reassigning is allowed (same type!). The = stores the right side into the left side, so age ends up 13.'},
+];
+let ccIdx=0, ccDone=false;
+function ccRender(){
+  ccDone=false;
+  const st=CC[ccIdx];
+  document.getElementById('ccScore').textContent="Round "+(ccIdx+1)+" of 5";
+  const dots=document.getElementById('ccDots').children;
+  for(let i=0;i<5;i++) dots[i].className=i<ccIdx?'done':(i===ccIdx?'on':'');
+  document.getElementById('ccCode').textContent=st.code;
+  document.getElementById('ccConsole').style.display='none';
+  document.getElementById('ccOkBtn').classList.remove('ok','no');
+  document.getElementById('ccNoBtn').classList.remove('ok','no');
+  const fb=document.getElementById('ccFb'); fb.className='feedback'; fb.textContent='';
+  document.getElementById('ccNextBtn').style.display='none';
+}
+function ccPick(saidOk){
+  if(ccDone)return;
+  const st=CC[ccIdx]; const fb=document.getElementById('ccFb');
+  const con=document.getElementById('ccConsole');
+  const btn=document.getElementById(saidOk?'ccOkBtn':'ccNoBtn');
+  con.style.display='block'; con.textContent=st.out;
+  if(saidOk===st.ok){
+    ccDone=true; btn.classList.add('ok');
+    fb.className='feedback ok'; fb.textContent="✅ Correct! "+st.why;
+    if(ccIdx<4) document.getElementById('ccNextBtn').style.display='inline-block';
+    else { document.getElementById('ccDoneBtn').style.display='inline-block'; markDone('crash');
+      fb.textContent="✅ Correct! "+st.why+"  🏆 5 for 5 — you think like a compiler!"; }
+  } else {
+    btn.classList.add('no');
+    fb.className='feedback no'; fb.textContent="Look at the real result in the console → "+st.why;
+    fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+    ccDone=true;
+    if(ccIdx<4) document.getElementById('ccNextBtn').style.display='inline-block';
+    else { document.getElementById('ccDoneBtn').style.display='inline-block'; markDone('crash'); }
+  }
+}
+function ccAdvance(){ ccIdx++; ccRender(); }
+ccRender();
+
+/* ============ mission ============ */
+function checkMission(){
+  const fb=document.getElementById('mFb'); const out=document.getElementById('mOut');
+  const vals={
+    allow: document.getElementById('mAllow').value.trim(),
+    gina: document.getElementById('mGina').value.trim(),
+    ginaB: document.getElementById('mGinaB').value,
+    carl: document.getElementById('mCarl').value.trim(),
+    carlB: document.getElementById('mCarlB').value,
+    jen: document.getElementById('mJen').value.trim(),
+    jenB: document.getElementById('mJenB').value,
+  };
+  // reflect into code display
+  document.getElementById('mcAllow').textContent=vals.allow||'___';
+  document.getElementById('mcGina').textContent=vals.gina||'___';
+  document.getElementById('mcGinaB').textContent=vals.ginaB||'___';
+  document.getElementById('mcCarl').textContent=vals.carl||'___';
+  document.getElementById('mcCarlB').textContent=vals.carlB||'___';
+  document.getElementById('mcJen').textContent=vals.jen||'___';
+  document.getElementById('mcJenB').textContent=vals.jenB||'___';
+
+  if(Object.values(vals).some(v=>!v)){ fb.className='feedback hint'; fb.textContent="Fill in every box first!"; out.style.display='none'; return; }
+  // type checks
+  if(!/^\d+\.\d+$/.test(vals.allow)){ fb.className='feedback no'; out.style.display='block';
+    out.textContent="error: incompatible types: ALLOWANCE is a double\n(money needs a decimal, like 4.60)";
+    fb.textContent="Compiler error! ALLOWANCE is declared double — give it a decimal value."; return; }
+  for(const[k,label] of [['gina',"Gina's age"],['carl',"Carl's age"],['jen',"Jennifer's age"]]){
+    if(!/^-?\d+$/.test(vals[k])){ fb.className='feedback no'; out.style.display='block';
+      out.textContent="error: incompatible types: possible lossy\nconversion from double to int";
+      fb.textContent="Compiler error! "+label+" is stored in an int — it must be a whole number."; return; }
+  }
+  const allow=parseFloat(vals.allow), g=+vals.gina, c=+vals.carl, j=+vals.jen;
+  const errs=[];
+  if(allow!==8.75) errs.push("ALLOWANCE should be exactly 8.75 (it's always $8.75)");
+  if(g!==16) errs.push("Gina is 16");
+  if(c!==13) errs.push("Carl is 3 years younger than Gina → 16 − 3");
+  if(j!==3) errs.push("Jennifer was born 10 years after Carl → Carl's age − 10");
+  if(vals.ginaB!=='true') errs.push("Gina is 16 — that's not under 8, so she DOES get an allowance");
+  if(vals.carlB!=='true') errs.push("Carl is 13 — he gets an allowance too");
+  if(vals.jenB!=='false') errs.push("Jennifer is under 8 — no allowance for her");
+  out.style.display='block';
+  if(errs.length){
+    out.textContent="(program compiles, but the data is wrong…)";
+    fb.className='feedback hint'; fb.textContent="Logic check: "+errs[0]+".";
+  } else {
+    out.textContent="Gina, age 16, allowance $8.75: true\nCarl, age 13, allowance $8.75: true\nJennifer, age 3, allowance $8.75: false";
+    fb.className='feedback ok';
+    fb.textContent="🏆 Mission complete! You reused int age and boolean getsAllowance for all three siblings, and ALLOWANCE stayed final. Screenshot this for your notebook!";
+    document.getElementById('mNext').disabled=false; markDone('mission');
+  }
+}
+
+/* ============ quiz ============ */
+const QUIZ=[
+ {q:'Which primitive data type stores only the values <code>true</code> or <code>false</code>?',
+  o:["int","double","boolean"], a:2},
+ {q:'What happens when this compiles? <code>int age = 12.5;</code>',
+  o:["age becomes 12","age becomes 12.5","Compiler error — an int can only store an integer"], a:2},
+ {q:'In <code>score = 10;</code> what does the assignment operator = do?',
+  o:["Checks whether score equals 10","Stores the value on the right into the variable on the left","Stores the variable on the left into the value on the right"], a:1},
+ {q:'Which variable name is legal in Java?',
+  o:["2ndPlace","miles-per-hour","milesPerHour"], a:2},
+ {q:'What does declaring a variable <code>final</code> mean?',
+  o:["Its value cannot be modified once initialized","It must be the last variable in the program","It can only be used one time"], a:0},
+ {q:'A variable is <b>initialized</b> when…',
+  o:["it is given a data type","it is assigned a value for the first time","the program ends"], a:1},
+ {q:'Which is the correct way to store a price of 4.60?',
+  o:["int price = 4.60;","double price = 4.60;","boolean price = 4.60;"], a:1},
+ {q:'What is stored in x after this runs? <code>int x = 5;</code> then <code>x = 9;</code>',
+  o:["5","9","14"], a:1}
+];
+let quizAttempts=0;
+function buildQuiz(){
+  const wrap=document.getElementById('quizWrap'); wrap.innerHTML='';
+  QUIZ.forEach((item,qi)=>{
+    const card=document.createElement('div'); card.className='qcard';
+    card.innerHTML='<h4>'+(qi+1)+'. '+item.q+'</h4>';
+    const opts=document.createElement('div'); opts.className='qopts';
+    item.o.forEach((opt,oi)=>{
+      const lab=document.createElement('label');
+      const inp=document.createElement('input'); inp.type='radio'; inp.name='q'+qi; inp.value=oi;
+      inp.onchange=()=>{ opts.querySelectorAll('label').forEach(l=>l.classList.remove('sel')); lab.classList.add('sel'); };
+      lab.appendChild(inp);
+      const span=document.createElement('span'); span.textContent=opt; lab.appendChild(span);
+      opts.appendChild(lab);
+    });
+    card.appendChild(opts); wrap.appendChild(card);
+  });
+}
+function gradeQuiz(){
+  let right=0, answered=0;
+  QUIZ.forEach((item,qi)=>{
+    const sel=document.querySelector('input[name="q'+qi+'"]:checked');
+    const labs=document.querySelectorAll('input[name="q'+qi+'"]');
+    labs.forEach((inp,oi)=>{
+      const lab=inp.parentElement; lab.classList.remove('right','wrongpick');
+      if(oi===item.a) lab.classList.add('right');
+    });
+    if(sel){ answered++;
+      if(+sel.value===item.a) right++;
+      else sel.parentElement.classList.add('wrongpick');
+    }
+  });
+  const fb=document.getElementById('quizFb'); const sc=document.getElementById('quizScore');
+  if(answered<QUIZ.length){ fb.className='feedback hint';
+    fb.textContent="You've answered "+answered+" of "+QUIZ.length+" — finish the rest, then grade again."; return; }
+  quizAttempts++;
+  sc.textContent=right+" / "+QUIZ.length;
+  if(right===QUIZ.length){ fb.className='feedback ok';
+    fb.textContent="🏆 Perfect score! Variables and data types: mastered."; markDone('quiz'); }
+  else if(right>=6){ fb.className='feedback ok';
+    fb.textContent="Strong work! Review the green highlights"+(quizAttempts<2?", then you may retry once.":"."); markDone('quiz'); }
+  else { fb.className='feedback no';
+    fb.textContent="Keep going — revisit the Type Sorter and Compile or Crash, review the green answers"+(quizAttempts<2?", and retry once.":"."); }
+}
+buildQuiz();
+</script>
+</body>
+</html>

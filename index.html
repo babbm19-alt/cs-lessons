@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Babb — Computer Science</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --ink:#22262b; --muted:#5f6672; --bg:#f7f6fa; --card:#fff; --line:#e3e0ea;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:44px 20px 36px; text-align:center;}
+  header h1{font-size:2rem; letter-spacing:.3px;}
+  header p{opacity:.85; margin-top:6px;}
+  main{max-width:960px; margin:0 auto; padding:30px 16px 80px;}
+  h2{color:var(--purple); font-size:1.25rem; margin:26px 0 4px; display:flex; align-items:center; gap:10px;}
+  h2 .badge{background:var(--purple-lt); color:var(--purple); font-size:.7rem; font-weight:800; letter-spacing:.8px;
+    text-transform:uppercase; padding:4px 10px; border-radius:999px;}
+  .sub{color:var(--muted); font-size:.92rem; margin-bottom:14px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px;}
+  a.tile{display:block; text-decoration:none; color:inherit; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:18px; box-shadow:0 1px 3px rgba(27,42,74,.06); transition:.15s;}
+  a.tile:hover{border-color:var(--purple); transform:translateY(-2px); box-shadow:0 6px 18px rgba(27,42,74,.10);}
+  a.tile .ic{font-size:1.7rem; display:block; margin-bottom:8px;}
+  a.tile h3{font-size:1.05rem; color:var(--navy); margin-bottom:4px;}
+  a.tile .act{font-size:.76rem; font-weight:800; color:var(--purple); letter-spacing:.6px; text-transform:uppercase;}
+  a.tile p{font-size:.88rem; color:var(--muted); margin-top:6px;}
+  a.tile .go{font-size:.84rem; font-weight:700; color:var(--purple); margin-top:10px; display:inline-block;}
+  .note{background:#fff; border:1px solid var(--line); border-left:4px solid var(--purple); border-radius:0 12px 12px 0;
+    padding:14px 18px; margin-top:30px; font-size:.9rem; color:var(--muted);}
+  footer{text-align:center; color:var(--muted); font-size:.82rem; padding:20px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#128187; Mr. Babb &mdash; Computer Science</h1>
+  <p>Interactive lessons and review games. Nothing to install, nothing to log into.</p>
+</header>
+
+<main>
+
+  <h2>Computer Science Principles <span class="badge">CSP</span></h2>
+  <p class="sub">Unit 1 &mdash; Algorithms, Programming, and the Internet</p>
+  <div class="grid">
+    <a class="tile" href="csp-111-algorithmic-thinking.html">
+      <span class="ic">&#129302;</span>
+      <div class="act">Activity 1.1.1 &bull; Lesson</div>
+      <h3>Algorithmic Thinking</h3>
+      <p>Robot Chef sequencing, the four ways to represent an algorithm, a working Python turtle simulator, and five auto-checked shape missions.</p>
+      <span class="go">Open lesson &rarr;</span>
+    </a>
+    <a class="tile" href="csp-111-escape-the-algorithm-lab.html">
+      <span class="ic">&#128274;</span>
+      <div class="act">Activity 1.1.1 &bull; Review game</div>
+      <h3>Escape the Algorithm Lab</h3>
+      <p>Five locks, one timer, one vault code. Predict the turtle drawing, hunt the bug, and sequence algorithmic thinking.</p>
+      <span class="go">Play &rarr;</span>
+    </a>
+    <a class="tile" href="csp-internet-and-the-web.html">
+      <span class="ic">&#127760;</span>
+      <div class="act">Explore Task 1 &bull; Lesson</div>
+      <h3>The Internet and the Web</h3>
+      <p>Send a real message through a packet-routing simulator, cut the cables and watch it reroute, trace a DNS lookup, and draft the Explore Task.</p>
+      <span class="go">Open lesson &rarr;</span>
+    </a>
+  </div>
+
+  <h2>Computer Science A <span class="badge">CSA</span></h2>
+  <p class="sub">Unit 1 &mdash; Java Coding Fundamentals</p>
+  <div class="grid">
+    <a class="tile" href="csa-111-getting-started-with-java.html">
+      <span class="ic">&#9749;</span>
+      <div class="act">Activity 1.1.1 &bull; Lesson</div>
+      <h3>Getting Started with Java</h3>
+      <p>Vocabulary flashcards, the anatomy of a Java program, four bugs to debug, and the Print Lab smiley challenge.</p>
+      <span class="go">Open lesson &rarr;</span>
+    </a>
+    <a class="tile" href="csa-111-escape-the-syntax-vault.html">
+      <span class="ic">&#128274;</span>
+      <div class="act">Activity 1.1.1 &bull; Review game</div>
+      <h3>Escape the Syntax Vault</h3>
+      <p>Five locks: predict the output, find the missing semicolon, decode the vocabulary, and master escape sequences.</p>
+      <span class="go">Play &rarr;</span>
+    </a>
+    <a class="tile" href="csa-112-variables-and-data-types.html">
+      <span class="ic">&#128230;</span>
+      <div class="act">Activity 1.1.2 &bull; Lesson</div>
+      <h3>Variables and Data Types</h3>
+      <p>Sort the data types, rule on legal variable names in Name Court, play Compile or Crash, and finish the Allowance Mission.</p>
+      <span class="go">Open lesson &rarr;</span>
+    </a>
+  </div>
+
+  <div class="note">
+    <b>A note for students:</b> these pages do not save your work. When you finish a section, screenshot it or copy your
+    answers into your notebook or the assignment document before you close the tab.
+  </div>
+
+</main>
+<footer>Built for Mr. Babb's classes</footer>
+</body>
+</html>

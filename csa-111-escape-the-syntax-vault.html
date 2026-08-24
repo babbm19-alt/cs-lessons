@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escape the Syntax Vault — AP CS A Review Game</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#12101c; --card:#ffffff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:radial-gradient(circle at 50% -10%, #2c2350 0%, var(--bg) 60%); color:#eee; line-height:1.55; min-height:100vh;}
+  header{text-align:center; padding:30px 16px 10px;}
+  header h1{font-size:1.7rem; letter-spacing:1px; color:#fff;}
+  header h1 .glow{color:#c9a7ff; text-shadow:0 0 18px rgba(160,110,255,.8);}
+  header p{color:#b9b3cc; font-size:.95rem; margin-top:6px;}
+  .hud{display:flex; justify-content:center; align-items:center; gap:14px; flex-wrap:wrap; margin:16px auto 6px; max-width:860px;}
+  .lockchip{width:64px; height:64px; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#241f38; border:2px solid #3a3357; font-size:1.3rem; cursor:pointer; transition:.2s; color:#8f87ad;}
+  .lockchip:hover{border-color:#c9a7ff;}
+  .lockchip.active{border-color:#c9a7ff; box-shadow:0 0 14px rgba(160,110,255,.5); color:#fff;}
+  .lockchip.solved{background:#173626; border-color:#2f8f5b; color:#7be0a8;}
+  .lockchip small{font-size:.6rem; letter-spacing:.5px; text-transform:uppercase; margin-top:2px;}
+  .lockchip .digit{font-size:1.25rem; font-weight:800;}
+  #timer{font-family:var(--mono); background:#241f38; border:2px solid #3a3357; border-radius:12px; padding:8px 14px; color:#c9a7ff; font-size:1.05rem; min-width:96px; text-align:center;}
+  main{max-width:860px; margin:0 auto; padding:14px 16px 90px;}
+  .panel{background:var(--card); color:var(--ink); border-radius:16px; padding:24px; display:none; animation:pop .25s ease; box-shadow:0 14px 40px rgba(0,0,0,.45);}
+  .panel.visible{display:block;}
+  @keyframes pop{from{opacity:0; transform:scale(.97);} to{opacity:1; transform:none;}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .shake{animation:shake .3s ease;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  h2{color:var(--purple); font-size:1.3rem; margin-bottom:8px;}
+  p{margin-bottom:10px;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .codebox .s{color:#8fd6a8;} .codebox .k{color:#7fb4ff;}
+  .console{background:#101010; color:#c9f7c9; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:12px 14px; white-space:pre; margin:10px 0; border:1px solid #2c2c2c;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:10px 18px; border-radius:9px; font-size:.92rem; font-weight:600; cursor:pointer;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .choices button{text-align:left; background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer;}
+  .choices button.mono{font-family:var(--mono); white-space:pre; overflow-x:auto;}
+  .choices button:hover{border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea;}
+  .feedback{border-radius:9px; padding:10px 14px; margin-top:12px; font-size:.92rem; display:none;}
+  .feedback.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .feedback.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .feedback.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  .dbg-line{display:block; cursor:pointer; border-radius:6px; padding:1px 6px;}
+  .dbg-line:hover{background:rgba(255,255,255,.10); outline:1px dashed #556;}
+  .dbg-line.picked-ok{background:rgba(143,214,168,.25);}
+  .dbg-line.picked-no{background:rgba(255,120,110,.25);}
+  select{padding:8px 10px; border:2px solid var(--line); border-radius:8px; font-size:.9rem; background:#fff; max-width:100%;}
+  .vocab-row{display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; flex-wrap:wrap;}
+  .vocab-row .def{flex:1; min-width:240px; font-size:.92rem; background:#faf9fc; border:1px solid var(--line); border-radius:9px; padding:9px 12px;}
+  .seq-card{border:2px solid var(--line); background:#fff; border-radius:10px; padding:10px 14px; margin-bottom:8px; cursor:pointer; font-size:.92rem; display:flex; align-items:center; gap:10px;}
+  .seq-card:hover{border-color:var(--purple);}
+  .seq-card.placed{border-color:var(--green); background:#e6f6ed; cursor:default;}
+  .seq-card .num{width:26px; height:26px; border-radius:50%; background:var(--purple-lt); color:var(--purple); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0;}
+  .seq-card.placed .num{background:#bfe6d0; color:var(--green);}
+  /* vault */
+  .vault{display:flex; gap:10px; justify-content:center; margin:16px 0;}
+  .vault input{width:56px; height:64px; font-size:1.8rem; text-align:center; font-family:var(--mono); border:3px solid var(--purple); border-radius:12px; background:var(--purple-lt); color:var(--navy); font-weight:800;}
+  .vault input:focus{outline:3px solid #c9a7ff;}
+  .winbox{text-align:center; padding:10px 0;}
+  .winbox .big{font-size:3rem;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em; color:var(--navy);}
+  .intro-panel{text-align:center;}
+  .locknote{color:var(--muted); font-size:.85rem; margin-top:10px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#128274; ESCAPE THE <span class="glow">SYNTAX VAULT</span></h1>
+  <p>AP Computer Science A &bull; Review of Activity 1.1.1 &bull; Mr. Babb</p>
+</header>
+
+<div class="hud">
+  <div class="lockchip" data-lock="0" onclick="goLock(0)"><span class="icon">&#128421;</span><small>Printer</small></div>
+  <div class="lockchip" data-lock="1" onclick="goLock(1)"><span class="icon">&#128027;</span><small>Bug Hunt</small></div>
+  <div class="lockchip" data-lock="2" onclick="goLock(2)"><span class="icon">&#128218;</span><small>Vocab</small></div>
+  <div class="lockchip" data-lock="3" onclick="goLock(3)"><span class="icon">&#127915;</span><small>Escapes</small></div>
+  <div class="lockchip" data-lock="4" onclick="goLock(4)"><span class="icon">&#128260;</span><small>Sequence</small></div>
+  <div class="lockchip" data-lock="5" onclick="goLock(5)"><span class="icon">&#128273;</span><small>Vault</small></div>
+  <div id="timer">00:00</div>
+</div>
+
+<main>
+
+<!-- INTRO -->
+<section class="panel visible" id="p-intro">
+  <div class="intro-panel">
+    <span class="tag">Mission briefing</span>
+    <h2>You're locked in the Syntax Vault!</h2>
+    <p>Five locks stand between you and freedom. Each lock is a challenge from yesterday's lesson — solve it and it reveals <b>one digit of the vault code</b>.</p>
+    <p><b>Work with your partner. Every teammate must be able to explain every answer</b> — the vault keeper (Mr. Babb) may quiz you before you're truly free!</p>
+    <button class="btn" onclick="startGame()">&#9654; Start the clock</button>
+    <p class="locknote">Beat 8:00 for bragging rights. Wrong answers cost time, not points.</p>
+  </div>
+</section>
+
+<!-- LOCK 1: PRINTER -->
+<section class="panel" id="p-0">
+  <span class="tag">Lock 1 of 5 — The Printer</span>
+  <h2>Predict the exact output</h2>
+  <p>The vault's printer runs this program. What comes out?</p>
+  <div class="codebox">System.out.print(<span class="s">"CS"</span>);
+System.out.println(<span class="s">"A"</span>);
+System.out.println(<span class="s">"rocks!"</span>);</div>
+  <div class="choices" id="c0">
+    <button class="mono" data-ok="0">CS A rocks!</button>
+    <button class="mono" data-ok="1">CSA
+rocks!</button>
+    <button class="mono" data-ok="0">CS
+A
+rocks!</button>
+    <button class="mono" data-ok="0">error: ';' expected</button>
+  </div>
+  <div class="feedback" id="f0"></div>
+</section>
+
+<!-- LOCK 2: BUG HUNT -->
+<section class="panel" id="p-1">
+  <span class="tag">Lock 2 of 5 — Bug Hunt</span>
+  <h2>Click the line with the bug</h2>
+  <p>The compiler refuses to open the lock. Read its complaint, then click the guilty line:</p>
+  <div class="console">GameDay.java:5: error: ';' expected</div>
+  <div class="codebox" id="dbgCode"></div>
+  <div class="feedback" id="f1"></div>
+</section>
+
+<!-- LOCK 3: VOCAB -->
+<section class="panel" id="p-2">
+  <span class="tag">Lock 3 of 5 — Vocabulary Cipher</span>
+  <h2>Decode the definitions</h2>
+  <p>Match every definition to its term. All four must be right at once!</p>
+  <div id="vocabRows"></div>
+  <button class="btn" onclick="checkVocab()">&#128275; Try the lock</button>
+  <div class="feedback" id="f2"></div>
+</section>
+
+<!-- LOCK 4: ESCAPES -->
+<section class="panel" id="p-3">
+  <span class="tag">Lock 4 of 5 — Escape Artist</span>
+  <h2>Which statement prints this?</h2>
+  <p>The lock wants <b>exactly</b> this output:</p>
+  <div class="console">He said "Go!"
+C:\Java</div>
+  <div class="choices" id="c3">
+    <button class="mono" data-ok="0">System.out.println("He said "Go!"\nC:\Java");</button>
+    <button class="mono" data-ok="1">System.out.println("He said \"Go!\"\nC:\\Java");</button>
+    <button class="mono" data-ok="0">System.out.println("He said \"Go!\" C:\\Java");</button>
+    <button class="mono" data-ok="0">System.out.print("He said \\Go!\\ \n C:\Java");</button>
+  </div>
+  <div class="feedback" id="f3"></div>
+</section>
+
+<!-- LOCK 5: SEQUENCE -->
+<section class="panel" id="p-4">
+  <span class="tag">Lock 5 of 5 — Sequence Scrambler</span>
+  <h2>Put the journey of a Java program in order</h2>
+  <p>Click the cards <b>in the order they happen</b>, from first to last. One wrong click resets the lock!</p>
+  <div id="seqCards"></div>
+  <div class="feedback" id="f4"></div>
+</section>
+
+<!-- VAULT -->
+<section class="panel" id="p-5">
+  <span class="tag">Final door</span>
+  <h2>Enter the 5-digit vault code</h2>
+  <p>Type the digits you earned, in lock order (1 → 5):</p>
+  <div class="vault">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+  </div>
+  <div style="text-align:center"><button class="btn" onclick="tryVault()">&#128273; Open the vault</button></div>
+  <div class="feedback" id="f5"></div>
+  <div class="winbox" id="winbox" style="display:none">
+    <div class="big">&#127881;&#128275;&#127881;</div>
+    <h2>VAULT OPENED!</h2>
+    <p id="winTime"></p>
+    <p>Fun fact: the code <b>3-1-4-1-5</b> is the start of &pi; — computers, like math, love precision.</p>
+    <p><b>Show this screen to Mr. Babb.</b> Be ready to explain: why did lock 1 print on two lines? What was the bug in lock 2?</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+const DIGITS = ['3','1','4','1','5'];
+const solved = [false,false,false,false,false];
+let started=false, startMs=0, timerInt=null, finished=false;
+
+function fmt(ms){
+  const s=Math.floor(ms/1000);
+  return String(Math.floor(s/60)).padStart(2,'0')+":"+String(s%60).padStart(2,'0');
+}
+function startGame(){
+  if(!started){ started=true; startMs=Date.now();
+    timerInt=setInterval(()=>{ if(!finished) document.getElementById('timer').textContent=fmt(Date.now()-startMs); },500);
+  }
+  goLock(0);
+}
+function panels(){ return ['p-intro','p-0','p-1','p-2','p-3','p-4','p-5']; }
+function goLock(i){
+  if(!started && i<=4){ startGame(); }
+  panels().forEach(id=>document.getElementById(id).classList.remove('visible'));
+  document.getElementById(i===undefined?'p-intro':'p-'+i).classList.add('visible');
+  document.querySelectorAll('.lockchip').forEach(c=>c.classList.toggle('active', +c.dataset.lock===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function solve(i, fbEl, msg){
+  solved[i]=true;
+  const chip=document.querySelector(`.lockchip[data-lock="${i}"]`);
+  chip.classList.add('solved');
+  chip.querySelector('.icon').outerHTML='<span class="digit">'+DIGITS[i]+'</span>';
+  fbEl.className='feedback ok';
+  fbEl.innerHTML="&#128275; <b>CLICK!</b> "+msg+" Your digit: <b style='font-size:1.2em'>"+DIGITS[i]+"</b> &nbsp;"+
+    (i<4?'<button class="btn" style="margin-left:8px" onclick="goLock('+(i+1)+')">Next lock &rarr;</button>'
+        :'<button class="btn" style="margin-left:8px" onclick="goLock(5)">To the vault! &rarr;</button>');
+}
+function miss(fbEl, msg){ fbEl.className='feedback no'; fbEl.textContent=msg;
+  fbEl.classList.remove('shake'); void fbEl.offsetWidth; fbEl.classList.add('shake'); }
+
+/* Lock 1 & 4: choice locks */
+function wireChoices(cid, fid, lockIdx, okMsg, noMsg){
+  document.querySelectorAll('#'+cid+' button').forEach(b=>{
+    b.onclick=()=>{
+      if(solved[lockIdx])return;
+      document.querySelectorAll('#'+cid+' button').forEach(x=>x.classList.remove('ok','no'));
+      if(b.dataset.ok==='1'){ b.classList.add('ok'); solve(lockIdx, document.getElementById(fid), okMsg); }
+      else { b.classList.add('no'); miss(document.getElementById(fid), noMsg); }
+    };
+  });
+}
+wireChoices('c0','f0',0,
+  'print("CS") stays on the same line so "A" lands beside it; each println ends its line.',
+  'Not quite. Trace it line by line: does print move to a new line? Does println?');
+wireChoices('c3','f3',3,
+  'Escape sequences: \\" prints a quote, \\n makes the new line, \\\\ prints one backslash.',
+  'Check every escape: quotes need \\" , the new line needs \\n , and a backslash needs \\\\ .');
+
+/* Lock 2: bug hunt */
+const DBG_LINES=[
+ 'public class GameDay',
+ '{',
+ '    public static void main(String[] args)',
+ '    {',
+ '        System.out.println("Level up")',
+ '    }',
+ '}'
+];
+const BUG=4;
+const dbgBox=document.getElementById('dbgCode');
+DBG_LINES.forEach((ln,i)=>{
+  const el=document.createElement('span');
+  el.className='dbg-line'; el.textContent=(i+1)+"  "+ln;
+  el.onclick=()=>{
+    if(solved[1])return;
+    document.querySelectorAll('.dbg-line').forEach(x=>x.classList.remove('picked-ok','picked-no'));
+    if(i===BUG){ el.classList.add('picked-ok');
+      solve(1, document.getElementById('f1'), 'Missing semicolon — every Java statement must end with ; (a syntax error, caught by the compiler).'); }
+    else { el.classList.add('picked-no');
+      miss(document.getElementById('f1'), 'Not that line — the compiler said line 5. What is missing at the END of a statement?'); }
+  };
+  dbgBox.appendChild(el);
+});
+
+/* Lock 3: vocab */
+const TERMS=['— choose —','compiler','syntax error','runtime error','method','debugging','string literal'];
+const VQ=[
+ {def:'Translates Java code into machine code and checks it for some errors before the program can run.', a:'compiler'},
+ {def:'A mistake where the rules of the language are not followed — caught by the compiler.', a:'syntax error'},
+ {def:'The program crashes while it is running because it tried to do something unexpected.', a:'runtime error'},
+ {def:'A named block of code that only runs when it is called.', a:'method'},
+];
+const vr=document.getElementById('vocabRows');
+VQ.forEach((q,i)=>{
+  const row=document.createElement('div'); row.className='vocab-row';
+  const def=document.createElement('div'); def.className='def'; def.textContent=(i+1)+". "+q.def;
+  const sel=document.createElement('select'); sel.id='v'+i;
+  TERMS.forEach(t=>{ const o=document.createElement('option'); o.textContent=t; o.value=t; sel.appendChild(o); });
+  row.appendChild(def); row.appendChild(sel); vr.appendChild(row);
+});
+function checkVocab(){
+  if(solved[2])return;
+  let right=0;
+  VQ.forEach((q,i)=>{
+    const sel=document.getElementById('v'+i);
+    const ok=sel.value===q.a;
+    sel.style.borderColor= ok?'#1a7f4e':'#c0392b';
+    if(ok)right++;
+  });
+  if(right===4) solve(2, document.getElementById('f2'), 'All four decoded — that is the exact PLTW vocabulary.');
+  else miss(document.getElementById('f2'), right+" of 4 correct. Red boxes are wrong — think about WHEN each error happens and WHO catches it.");
+}
+
+/* Lock 5 (index 4): sequence */
+const SEQ=[
+ {t:'You write Java instructions in a .java file', o:1},
+ {t:'The compiler translates the code and checks for syntax errors', o:2},
+ {t:'You fix any errors the compiler reports', o:3},
+ {t:'The JVM finds the main method and the program runs', o:4},
+ {t:'A runtime error could still crash the running program', o:5},
+];
+const SHOW_ORDER=[2,4,0,3,1]; // scrambled display
+let seqNext=1;
+function buildSeq(){
+  seqNext=1;
+  const box=document.getElementById('seqCards'); box.innerHTML='';
+  SHOW_ORDER.forEach(idx=>{
+    const item=SEQ[idx];
+    const card=document.createElement('div'); card.className='seq-card';
+    card.innerHTML='<span class="num">?</span><span>'+item.t+'</span>';
+    card.onclick=()=>{
+      if(solved[4]||card.classList.contains('placed'))return;
+      if(item.o===seqNext){
+        card.classList.add('placed');
+        card.querySelector('.num').textContent=item.o;
+        seqNext++;
+        if(seqNext===6) solve(4, document.getElementById('f4'), 'Write → compile → fix → run → watch for runtime errors. Sequencing: one step at a time, in order.');
+      } else {
+        miss(document.getElementById('f4'), 'Out of order! The lock resets — start again from step 1. (What must happen FIRST, before anything can be checked or run?)');
+        buildSeq();
+      }
+    };
+    box.appendChild(card);
+  });
+}
+buildSeq();
+
+/* Vault */
+const vaultInputs=document.querySelectorAll('.vault input');
+vaultInputs.forEach((inp,i)=>{
+  inp.addEventListener('input',()=>{ if(inp.value && i<4) vaultInputs[i+1].focus(); });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Backspace' && !inp.value && i>0) vaultInputs[i-1].focus(); });
+});
+function tryVault(){
+  const fb=document.getElementById('f5');
+  const guess=[...vaultInputs].map(x=>x.value.trim()).join('');
+  if(guess.length<5){ fb.className='feedback hint'; fb.textContent='Enter all five digits — one from each lock, in order.'; return; }
+  const unsolved=solved.map((s,i)=>s?null:i+1).filter(Boolean);
+  if(guess===DIGITS.join('')){
+    if(unsolved.length){ fb.className='feedback hint';
+      fb.textContent='The code fits… but locks '+unsolved.join(', ')+' are still unsolved. No shortcuts — every teammate explains every lock!'; return; }
+    finished=true;
+    document.getElementById('winbox').style.display='block';
+    fb.className='feedback'; fb.textContent='';
+    const t=fmt(Date.now()-startMs);
+    document.getElementById('winTime').innerHTML='Escape time: <b>'+t+'</b>'+(Date.now()-startMs<480000?' — under 8:00, legendary! 🏆':' — escaped!');
+  } else {
+    miss(fb,'CLUNK. That is not the code. Re-check your digits — did every lock really click open?');
+  }
+}
+</script>
+</body>
+</html>

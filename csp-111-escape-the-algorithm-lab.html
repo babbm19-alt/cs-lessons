@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escape the Algorithm Lab — AP CSP Review Game</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#12101c; --card:#ffffff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:radial-gradient(circle at 50% -10%, #2c2350 0%, var(--bg) 60%); color:#eee; line-height:1.55; min-height:100vh;}
+  header{text-align:center; padding:30px 16px 10px;}
+  header h1{font-size:1.7rem; letter-spacing:1px; color:#fff;}
+  header h1 .glow{color:#c9a7ff; text-shadow:0 0 18px rgba(160,110,255,.8);}
+  header p{color:#b9b3cc; font-size:.95rem; margin-top:6px;}
+  .hud{display:flex; justify-content:center; align-items:center; gap:14px; flex-wrap:wrap; margin:16px auto 6px; max-width:860px;}
+  .lockchip{width:64px; height:64px; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#241f38; border:2px solid #3a3357; font-size:1.3rem; cursor:pointer; transition:.2s; color:#8f87ad;}
+  .lockchip:hover{border-color:#c9a7ff;}
+  .lockchip.active{border-color:#c9a7ff; box-shadow:0 0 14px rgba(160,110,255,.5); color:#fff;}
+  .lockchip.solved{background:#173626; border-color:#2f8f5b; color:#7be0a8;}
+  .lockchip small{font-size:.6rem; letter-spacing:.5px; text-transform:uppercase; margin-top:2px;}
+  .lockchip .digit{font-size:1.25rem; font-weight:800;}
+  #timer{font-family:var(--mono); background:#241f38; border:2px solid #3a3357; border-radius:12px; padding:8px 14px; color:#c9a7ff; font-size:1.05rem; min-width:96px; text-align:center;}
+  main{max-width:860px; margin:0 auto; padding:14px 16px 90px;}
+  .panel{background:var(--card); color:var(--ink); border-radius:16px; padding:24px; display:none; animation:pop .25s ease; box-shadow:0 14px 40px rgba(0,0,0,.45);}
+  .panel.visible{display:block;}
+  @keyframes pop{from{opacity:0; transform:scale(.97);} to{opacity:1; transform:none;}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .shake{animation:shake .3s ease;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  h2{color:var(--purple); font-size:1.3rem; margin-bottom:8px;}
+  p{margin-bottom:10px;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .codebox .s{color:#8fd6a8;} .codebox .k{color:#7fb4ff;} .codebox .n{color:#ffd479;} .codebox .c{color:#8a93a6;}
+  .console{background:#101010; color:#c9f7c9; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:12px 14px; white-space:pre; margin:10px 0; border:1px solid #2c2c2c;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:10px 18px; border-radius:9px; font-size:.92rem; font-weight:600; cursor:pointer;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .choices button{text-align:left; background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer;}
+  .choices button.mono{font-family:var(--mono); white-space:pre; overflow-x:auto;}
+  .choices button:hover{border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea;}
+  .feedback{border-radius:9px; padding:10px 14px; margin-top:12px; font-size:.92rem; display:none;}
+  .feedback.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .feedback.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .feedback.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  .dbg-line{display:block; cursor:pointer; border-radius:6px; padding:1px 6px;}
+  .dbg-line:hover{background:rgba(255,255,255,.10); outline:1px dashed #556;}
+  .dbg-line.picked-ok{background:rgba(143,214,168,.25);}
+  .dbg-line.picked-no{background:rgba(255,120,110,.25);}
+  select{padding:8px 10px; border:2px solid var(--line); border-radius:8px; font-size:.9rem; background:#fff; max-width:100%;}
+  .vocab-row{display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; flex-wrap:wrap;}
+  .vocab-row .def{flex:1; min-width:240px; font-size:.92rem; background:#faf9fc; border:1px solid var(--line); border-radius:9px; padding:9px 12px;}
+  .seq-card{border:2px solid var(--line); background:#fff; border-radius:10px; padding:10px 14px; margin-bottom:8px; cursor:pointer; font-size:.92rem; display:flex; align-items:center; gap:10px;}
+  .seq-card:hover{border-color:var(--purple);}
+  .seq-card.placed{border-color:var(--green); background:#e6f6ed; cursor:default;}
+  .seq-card .num{width:26px; height:26px; border-radius:50%; background:var(--purple-lt); color:var(--purple); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0;}
+  .seq-card.placed .num{background:#bfe6d0; color:var(--green);}
+  /* picture choices */
+  .picgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px;}
+  @media(max-width:640px){.picgrid{grid-template-columns:repeat(2,1fr);}}
+  .picgrid button{background:#fff; border:2px solid var(--line); border-radius:12px; padding:8px 6px 6px; cursor:pointer; text-align:center;}
+  .picgrid button:hover{border-color:var(--purple);}
+  .picgrid button.ok{border-color:var(--green); background:#e6f6ed;}
+  .picgrid button.no{border-color:var(--red); background:#fdecea;}
+  .picgrid .lbl{font-weight:800; color:var(--purple); font-size:.8rem; letter-spacing:.5px;}
+  .picgrid svg{width:100%; height:auto; display:block;}
+  .target{background:#faf9fc; border:1px solid var(--line); border-radius:12px; padding:10px; width:170px; margin:6px 0;}
+  /* vault */
+  .vault{display:flex; gap:10px; justify-content:center; margin:16px 0;}
+  .vault input{width:56px; height:64px; font-size:1.8rem; text-align:center; font-family:var(--mono); border:3px solid var(--purple); border-radius:12px; background:var(--purple-lt); color:var(--navy); font-weight:800;}
+  .vault input:focus{outline:3px solid #c9a7ff;}
+  .winbox{text-align:center; padding:10px 0;}
+  .winbox .big{font-size:3rem;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em; color:var(--navy);}
+  .intro-panel{text-align:center;}
+  .locknote{color:var(--muted); font-size:.85rem; margin-top:10px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#128274; ESCAPE THE <span class="glow">ALGORITHM LAB</span></h1>
+  <p>PLTW Computer Science Principles &bull; Review of Activity 1.1.1 &bull; Mr. Babb</p>
+</header>
+
+<div class="hud">
+  <div class="lockchip" data-lock="0" onclick="goLock(0)"><span class="icon">&#128034;</span><small>Turtle</small></div>
+  <div class="lockchip" data-lock="1" onclick="goLock(1)"><span class="icon">&#128027;</span><small>Bug Hunt</small></div>
+  <div class="lockchip" data-lock="2" onclick="goLock(2)"><span class="icon">&#128218;</span><small>Vocab</small></div>
+  <div class="lockchip" data-lock="3" onclick="goLock(3)"><span class="icon">&#127919;</span><small>Blueprint</small></div>
+  <div class="lockchip" data-lock="4" onclick="goLock(4)"><span class="icon">&#128260;</span><small>Sequence</small></div>
+  <div class="lockchip" data-lock="5" onclick="goLock(5)"><span class="icon">&#128273;</span><small>Vault</small></div>
+  <div id="timer">00:00</div>
+</div>
+
+<main>
+
+<!-- INTRO -->
+<section class="panel visible" id="p-intro">
+  <div class="intro-panel">
+    <span class="tag">Mission briefing</span>
+    <h2>The lab door locked behind you!</h2>
+    <p>A turtle has scrambled the exit code. Five locks stand between you and freedom — each one is a challenge from yesterday's lesson on <b>algorithmic thinking</b>. Solve a lock and it reveals <b>one digit of the vault code</b>.</p>
+    <p><b>Work with your partner. Every teammate must be able to explain every answer</b> — the lab keeper (Mr. Babb) may quiz you before you're truly free!</p>
+    <button class="btn" onclick="startGame()">&#9654; Start the clock</button>
+    <p class="locknote">Beat 8:00 for bragging rights. Wrong answers cost time, not points.</p>
+  </div>
+</section>
+
+<!-- LOCK 1: TURTLE VISION -->
+<section class="panel" id="p-0">
+  <span class="tag">Lock 1 of 5 — Turtle Vision</span>
+  <h2>Predict the exact drawing</h2>
+  <p>The lab turtle starts at the green dot, facing <b>east</b>, pen down. It runs this program. Which drawing comes out?</p>
+  <div class="codebox">painter.forward(<span class="n">80</span>)
+painter.right(<span class="n">90</span>)
+painter.forward(<span class="n">80</span>)
+painter.right(<span class="n">90</span>)
+painter.forward(<span class="n">80</span>)</div>
+  <div class="picgrid" id="c0"></div>
+  <div class="feedback" id="f0"></div>
+</section>
+
+<!-- LOCK 2: BUG HUNT -->
+<section class="panel" id="p-1">
+  <span class="tag">Lock 2 of 5 — Bug Hunt</span>
+  <h2>Click the line with the bug</h2>
+  <p>Python refuses to open the lock. Read the error, then click the guilty line:</p>
+  <div class="console">Traceback (most recent call last):
+  File "lab.py", line 5, in &lt;module&gt;
+AttributeError: 'Turtle' object has no attribute 'rite'</div>
+  <div class="codebox" id="dbgCode"></div>
+  <div class="feedback" id="f1"></div>
+</section>
+
+<!-- LOCK 3: VOCAB -->
+<section class="panel" id="p-2">
+  <span class="tag">Lock 3 of 5 — Vocabulary Cipher</span>
+  <h2>Decode the definitions</h2>
+  <p>Match every definition to its term. All four must be right at once!</p>
+  <div id="vocabRows"></div>
+  <button class="btn" onclick="checkVocab()">&#128275; Try the lock</button>
+  <div class="feedback" id="f2"></div>
+</section>
+
+<!-- LOCK 4: BLUEPRINT -->
+<section class="panel" id="p-3">
+  <span class="tag">Lock 4 of 5 — Blueprint</span>
+  <h2>Which algorithm draws this shape?</h2>
+  <p>The lock wants <b>exactly</b> this shape — an equilateral triangle with sides of 100 pixels:</p>
+  <div class="target" id="tgt3"></div>
+  <div class="choices" id="c3">
+    <button class="mono" data-ok="0">painter.forward(100)
+painter.right(60)     <span style="color:#888">— repeated 3 times</span></button>
+    <button class="mono" data-ok="1">painter.forward(100)
+painter.left(120)     <span style="color:#888">— repeated 3 times</span></button>
+    <button class="mono" data-ok="0">painter.forward(100)
+painter.right(90)     <span style="color:#888">— repeated 3 times</span></button>
+    <button class="mono" data-ok="0">painter.forward(100)
+painter.left(120)     <span style="color:#888">— repeated 2 times</span></button>
+  </div>
+  <div class="feedback" id="f3"></div>
+</section>
+
+<!-- LOCK 5: SEQUENCE -->
+<section class="panel" id="p-4">
+  <span class="tag">Lock 5 of 5 — Sequence Scrambler</span>
+  <h2>Put algorithmic thinking in order</h2>
+  <p>Click the cards <b>in the order they happen</b>, from first to last. One wrong click resets the lock!</p>
+  <div id="seqCards"></div>
+  <div class="feedback" id="f4"></div>
+</section>
+
+<!-- VAULT -->
+<section class="panel" id="p-5">
+  <span class="tag">Final door</span>
+  <h2>Enter the 5-digit vault code</h2>
+  <p>Type the digits you earned, in lock order (1 → 5):</p>
+  <div class="vault">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+    <input maxlength="1" inputmode="numeric">
+  </div>
+  <div style="text-align:center"><button class="btn" onclick="tryVault()">&#128273; Open the vault</button></div>
+  <div class="feedback" id="f5"></div>
+  <div class="winbox" id="winbox" style="display:none">
+    <div class="big">&#127881;&#128275;&#127881;</div>
+    <h2>LAB UNLOCKED!</h2>
+    <p id="winTime"></p>
+    <p>Fun fact: your code is <b>3-6-0-9-0</b> — <b>360</b> is every degree a turtle can turn, and <b>90</b> is the turn that builds a square. Turn all the way around any closed shape and your turns always add up to 360.</p>
+    <p><b>Show this screen to Mr. Babb.</b> Be ready to explain: why did lock 1 draw three sides instead of four? What exactly was wrong on line 5 in lock 2?</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+const DIGITS = ['3','6','0','9','0'];
+const solved = [false,false,false,false,false];
+let started=false, startMs=0, timerInt=null, finished=false;
+
+function fmt(ms){
+  const s=Math.floor(ms/1000);
+  return String(Math.floor(s/60)).padStart(2,'0')+":"+String(s%60).padStart(2,'0');
+}
+function startGame(){
+  if(!started){ started=true; startMs=Date.now();
+    timerInt=setInterval(()=>{ if(!finished) document.getElementById('timer').textContent=fmt(Date.now()-startMs); },500);
+  }
+  goLock(0);
+}
+function panels(){ return ['p-intro','p-0','p-1','p-2','p-3','p-4','p-5']; }
+function goLock(i){
+  if(!started && i<=4){ startGame(); }
+  panels().forEach(id=>document.getElementById(id).classList.remove('visible'));
+  document.getElementById(i===undefined?'p-intro':'p-'+i).classList.add('visible');
+  document.querySelectorAll('.lockchip').forEach(c=>c.classList.toggle('active', +c.dataset.lock===i));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function solve(i, fbEl, msg){
+  solved[i]=true;
+  const chip=document.querySelector('.lockchip[data-lock="'+i+'"]');
+  chip.classList.add('solved');
+  const ic=chip.querySelector('.icon'); if(ic) ic.outerHTML='<span class="digit">'+DIGITS[i]+'</span>';
+  fbEl.className='feedback ok';
+  fbEl.innerHTML="&#128275; <b>CLICK!</b> "+msg+" Your digit: <b style='font-size:1.2em'>"+DIGITS[i]+"</b> &nbsp;"+
+    (i<4?'<button class="btn" style="margin-left:8px" onclick="goLock('+(i+1)+')">Next lock &rarr;</button>'
+        :'<button class="btn" style="margin-left:8px" onclick="goLock(5)">To the vault! &rarr;</button>');
+}
+function miss(fbEl, msg){ fbEl.className='feedback no'; fbEl.textContent=msg;
+  fbEl.classList.remove('shake'); void fbEl.offsetWidth; fbEl.classList.add('shake'); }
+
+/* ---------- Lock 1: picture choices ---------- */
+function svg(path, extra){
+  return '<svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">'+
+    '<rect x="0" y="0" width="130" height="130" fill="#fbfaff"/>'+
+    '<path d="'+path+'" fill="none" stroke="#6b3fa0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'+
+    (extra||'')+'</svg>';
+}
+const PICS=[
+ {lbl:'A', ok:0, path:'M25,25 L105,25 L105,105 L25,105 Z', dot:'25,25'},      // closed square (one forward too many)
+ {lbl:'B', ok:1, path:'M25,25 L105,25 L105,105 L25,105', dot:'25,25'},        // correct: east, south, west — three sides
+ {lbl:'C', ok:0, path:'M20,105 L60,105 L60,65 L100,65 L100,25', dot:'20,105'},// staircase (turns alternate)
+ {lbl:'D', ok:0, path:'M25,25 L105,25 L105,105', dot:'25,25'}                 // only two sides
+];
+const c0=document.getElementById('c0');
+PICS.forEach((pic,idx)=>{
+  const b=document.createElement('button'); b.dataset.ok=pic.ok;
+  const [dx,dy]=pic.dot.split(',');
+  b.innerHTML='<div class="lbl">'+pic.lbl+'</div>'+
+    svg(pic.path,'<circle cx="'+dx+'" cy="'+dy+'" r="7" fill="#1a7f4e"/>');
+  b.onclick=()=>{
+    if(solved[0])return;
+    document.querySelectorAll('#c0 button').forEach(x=>x.classList.remove('ok','no'));
+    if(pic.ok){ b.classList.add('ok');
+      solve(0, document.getElementById('f0'),
+        'East 80, turn right (clockwise) to face south, 80 down, turn right again to face west, 80 back. Three sides — the fourth was never drawn.'); }
+    else { b.classList.add('no');
+      miss(document.getElementById('f0'),
+        'Not that one. Trace it with your finger: the turtle starts facing EAST and right() turns clockwise. How many forward() commands are there?'); }
+  };
+  c0.appendChild(b);
+});
+
+/* ---------- Lock 2: bug hunt ---------- */
+const DBG_LINES=[
+ 'import turtle as trtl',
+ 'painter = trtl.Turtle()',
+ 'painter.pensize(5)',
+ 'painter.forward(100)',
+ 'painter.rite(90)',
+ 'wn = trtl.Screen()',
+ 'wn.mainloop()'
+];
+const BUG=4;
+const dbgBox=document.getElementById('dbgCode');
+DBG_LINES.forEach((ln,i)=>{
+  const el=document.createElement('span');
+  el.className='dbg-line'; el.textContent=(i+1)+"  "+ln;
+  el.onclick=()=>{
+    if(solved[1])return;
+    document.querySelectorAll('.dbg-line').forEach(x=>x.classList.remove('picked-ok','picked-no'));
+    if(i===BUG){ el.classList.add('picked-ok');
+      solve(1, document.getElementById('f1'), 'The method is <code class="inline">right</code>, not <code class="inline">rite</code>. A turtle object only has the methods that were defined for it — spelling counts, and so does capitalization.'); }
+    else { el.classList.add('picked-no');
+      miss(document.getElementById('f1'), 'Not that line — Python told you it was line 5. Which method name on that line does not exist?'); }
+  };
+  dbgBox.appendChild(el);
+});
+
+/* ---------- Lock 3: vocab ---------- */
+const TERMS=['— choose —','algorithm','algorithmic thinking','pseudocode','flowchart','natural language','program','parameter','method'];
+const VQ=[
+ {def:'A finite set of instructions that accomplish a specific task.', a:'algorithm'},
+ {def:'A written set of instructions that follows a certain structure and looks like code, but cannot be executed by a computer.', a:'pseudocode'},
+ {def:'A collection of program statements that performs a specific task when run by a computer.', a:'program'},
+ {def:'The value you give a method to tell it exactly how to behave — how far to move, or how many degrees to turn.', a:'parameter'},
+];
+const vr=document.getElementById('vocabRows');
+VQ.forEach((q,i)=>{
+  const row=document.createElement('div'); row.className='vocab-row';
+  const def=document.createElement('div'); def.className='def'; def.textContent=(i+1)+". "+q.def;
+  const sel=document.createElement('select'); sel.id='v'+i;
+  TERMS.forEach(t=>{ const o=document.createElement('option'); o.textContent=t; o.value=t; sel.appendChild(o); });
+  row.appendChild(def); row.appendChild(sel); vr.appendChild(row);
+});
+function checkVocab(){
+  if(solved[2])return;
+  let right=0;
+  VQ.forEach((q,i)=>{
+    const sel=document.getElementById('v'+i);
+    const ok=sel.value===q.a;
+    sel.style.borderColor= ok?'#1a7f4e':'#c0392b';
+    if(ok)right++;
+  });
+  if(right===4) solve(2, document.getElementById('f2'), 'All four decoded — that is the exact PLTW vocabulary.');
+  else miss(document.getElementById('f2'), right+" of 4 correct. Red boxes are wrong — ask yourself: can a COMPUTER run this one, or only a person read it?");
+}
+
+/* ---------- Lock 4: target shape ---------- */
+document.getElementById('tgt3').innerHTML =
+  '<svg viewBox="0 0 130 120" xmlns="http://www.w3.org/2000/svg">'+
+  '<rect x="0" y="0" width="130" height="120" fill="#fbfaff"/>'+
+  '<path d="M20,95 L110,95 L65,17 Z" fill="none" stroke="#6b3fa0" stroke-width="6" stroke-linejoin="round"/>'+
+  '<circle cx="20" cy="95" r="7" fill="#1a7f4e"/></svg>';
+function wireChoices(cid, fid, lockIdx, okMsg, noMsg){
+  document.querySelectorAll('#'+cid+' button').forEach(b=>{
+    b.onclick=()=>{
+      if(solved[lockIdx])return;
+      document.querySelectorAll('#'+cid+' button').forEach(x=>x.classList.remove('ok','no'));
+      if(b.dataset.ok==='1'){ b.classList.add('ok'); solve(lockIdx, document.getElementById(fid), okMsg); }
+      else { b.classList.add('no'); miss(document.getElementById(fid), noMsg); }
+    };
+  });
+}
+wireChoices('c3','f3',3,
+  'The turtle turns through the OUTSIDE angle, and the turns of any closed shape add up to 360°. 360 / 3 = 120° per turn, three times.',
+  'Check two things: how many sides does the shape need, and what do all the turns have to add up to for the shape to close?');
+
+/* ---------- Lock 5 (index 4): sequence ---------- */
+const SEQ=[
+ {t:'Identify the task the program must accomplish', o:1},
+ {t:'Write out the steps as an algorithm — in natural language, a flowchart, or pseudocode', o:2},
+ {t:'Translate the algorithm into a programming language to make a program', o:3},
+ {t:'Run the program and compare the result to what you wanted', o:4},
+ {t:'Revise the algorithm and run it again if the result is not right', o:5},
+];
+const SHOW_ORDER=[3,1,4,0,2]; // scrambled display
+let seqNext=1;
+function buildSeq(){
+  seqNext=1;
+  const box=document.getElementById('seqCards'); box.innerHTML='';
+  SHOW_ORDER.forEach(idx=>{
+    const item=SEQ[idx];
+    const card=document.createElement('div'); card.className='seq-card';
+    card.innerHTML='<span class="num">?</span><span>'+item.t+'</span>';
+    card.onclick=()=>{
+      if(solved[4]||card.classList.contains('placed'))return;
+      if(item.o===seqNext){
+        card.classList.add('placed');
+        card.querySelector('.num').textContent=item.o;
+        seqNext++;
+        if(seqNext===6) solve(4, document.getElementById('f4'), 'Identify → write the algorithm → translate to code → run → revise. That loop is algorithmic thinking, and it is why programmers plan before they type.');
+      } else {
+        miss(document.getElementById('f4'), 'Out of order! The lock resets — start again from step 1. (What has to happen FIRST, before you can write a single step?)');
+        buildSeq();
+      }
+    };
+    box.appendChild(card);
+  });
+}
+buildSeq();
+
+/* ---------- Vault ---------- */
+const vaultInputs=document.querySelectorAll('.vault input');
+vaultInputs.forEach((inp,i)=>{
+  inp.addEventListener('input',()=>{ if(inp.value && i<4) vaultInputs[i+1].focus(); });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Backspace' && !inp.value && i>0) vaultInputs[i-1].focus(); });
+});
+function tryVault(){
+  const fb=document.getElementById('f5');
+  const guess=[...vaultInputs].map(x=>x.value.trim()).join('');
+  if(guess.length<5){ fb.className='feedback hint'; fb.textContent='Enter all five digits — one from each lock, in order.'; return; }
+  const unsolved=solved.map((s,i)=>s?null:i+1).filter(Boolean);
+  if(guess===DIGITS.join('')){
+    if(unsolved.length){ fb.className='feedback hint';
+      fb.textContent='The code fits… but locks '+unsolved.join(', ')+' are still unsolved. No shortcuts — every teammate explains every lock!'; return; }
+    finished=true;
+    document.getElementById('winbox').style.display='block';
+    fb.className='feedback'; fb.textContent='';
+    const t=fmt(Date.now()-startMs);
+    document.getElementById('winTime').innerHTML='Escape time: <b>'+t+'</b>'+(Date.now()-startMs<480000?' — under 8:00, legendary! 🏆':' — escaped!');
+  } else {
+    miss(fb,'CLUNK. That is not the code. Re-check your digits — did every lock really click open?');
+  }
+}
+</script>
+</body>
+</html>
