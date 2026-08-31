@@ -1,0 +1,2208 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+</head><body>
+<title>Digital Doodle Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  color-scheme: light;
+  --navy:#0d1b34; --navy-2:#152a4d; --ink:#1a2233; --body:#33405a;
+  --muted:#6b7894; --line:#dfe4ee; --line-2:#eef1f7;
+  --paper:#ffffff; --wash:#f6f8fc; --wash-2:#eef2f9;
+  --plum:#6b2f7a; --plum-soft:#f7edfa;
+  --teal:#0f7b6c; --teal-soft:#e6f4f1;
+  --amber:#9a6712; --amber-soft:#fdf3e0;
+  --rose:#a8213f; --rose-soft:#fceceF;
+  /* App Inventor block palette */
+  --b-event:#b18e35; --b-event-d:#8e7029;
+  --b-method:#7d5ba6; --b-method-d:#634784;
+  --b-prop:#3f9e78; --b-prop-d:#2f7a5c;
+  --b-var:#d2801e; --b-var-d:#a86317;
+  --b-color:#6a7080; --b-color-d:#525765;
+  --shadow:0 1px 2px rgba(13,27,52,.06), 0 8px 24px rgba(13,27,52,.06);
+  --shadow-lg:0 2px 6px rgba(13,27,52,.08), 0 18px 48px rgba(13,27,52,.12);
+  --radius:14px;
+  --sans:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --display:'Sora','Public Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --mono:'JetBrains Mono','SFMono-Regular',ui-monospace,Menlo,Consolas,'Liberation Mono',monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--wash); color:var(--body);
+  font-family:var(--sans); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--display); color:var(--ink); line-height:1.2; margin:0 0 .5em; font-weight:700; letter-spacing:-.014em; text-wrap:balance}
+h1{font-size:clamp(1.75rem,4.4vw,2.6rem); letter-spacing:-.025em}
+h2{font-size:clamp(1.35rem,3vw,1.85rem); letter-spacing:-.02em}
+h3{font-size:1.14rem}
+h4{font-size:1rem}
+p{margin:0 0 1em}
+a{color:var(--plum)}
+ul,ol{margin:0 0 1em; padding-left:1.25em}
+li{margin:.34em 0}
+code,kbd{font-family:var(--mono); font-size:.86em; background:var(--wash-2); border:1px solid var(--line); border-radius:5px; padding:.1em .38em; color:var(--ink)}
+.wrap{max-width:1060px; margin:0 auto; padding:0 22px}
+
+/* ---------- header ---------- */
+.hero{
+  background:
+    radial-gradient(900px 420px at 88% -10%, rgba(107,47,122,.55), transparent 60%),
+    radial-gradient(700px 380px at 5% 110%, rgba(15,123,108,.42), transparent 62%),
+    linear-gradient(160deg,#101f3c,#0b1628 70%);
+  color:#fff; padding:44px 0 38px; position:relative; overflow:hidden;
+}
+.hero::after{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.32;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:34px 34px; mask-image:linear-gradient(180deg,#000,transparent 88%);
+}
+.hero .wrap{position:relative; z-index:1}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:9px; font-size:.7rem; font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:#cbb6e0;
+  border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.07);
+  padding:6px 13px; border-radius:999px; margin-bottom:16px;
+}
+.hero h1{color:#fff; margin-bottom:.35em; max-width:26ch}
+.hero p.lede{color:#c3cee2; font-size:1.06rem; max-width:60ch; margin:0}
+.hero-meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px}
+.chip{
+  font-size:.78rem; font-weight:600; color:#dbe4f2; background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.17); border-radius:999px; padding:5px 12px;
+}
+
+/* ---------- nav ---------- */
+nav.steps{position:sticky; top:0; z-index:60; background:rgba(255,255,255,.93); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+.steps-inner{display:flex; gap:4px; overflow-x:auto; padding:9px 22px; max-width:1060px; margin:0 auto; scrollbar-width:thin}
+.steps-inner::-webkit-scrollbar{height:5px}
+.steps-inner::-webkit-scrollbar-thumb{background:var(--line); border-radius:9px}
+.stepbtn{
+  flex:0 0 auto; display:flex; align-items:center; gap:8px; border:1px solid transparent; background:none;
+  font:inherit; font-size:.83rem; font-weight:600; color:var(--muted); padding:7px 12px; border-radius:9px; cursor:pointer;
+  white-space:nowrap; transition:background .15s,color .15s;
+}
+.stepbtn:hover{background:var(--wash-2); color:var(--ink)}
+.stepbtn[aria-current="true"]{background:var(--navy); color:#fff}
+.stepbtn .num{
+  width:19px; height:19px; border-radius:50%; display:grid; place-items:center;
+  font-size:.66rem; font-weight:800; background:var(--wash-2); color:var(--muted); flex:0 0 auto;
+}
+.stepbtn[aria-current="true"] .num{background:rgba(255,255,255,.2); color:#fff}
+.stepbtn.done .num{background:var(--teal); color:#fff}
+.stepbtn.done .num::before{content:"\2713"}
+.stepbtn.done .num i{display:none}
+.progressbar{height:3px; background:var(--line-2)}
+.progressbar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--plum),var(--teal)); transition:width .45s cubic-bezier(.2,.7,.3,1)}
+
+/* ---------- sections ---------- */
+main{padding:38px 0 90px}
+section.step{display:none; animation:fade .3s ease}
+section.step.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(7px)} to{opacity:1; transform:none}}
+.sec-head{margin-bottom:26px}
+.sec-head .kicker{font-size:.72rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase; color:var(--plum); margin-bottom:8px}
+.sec-head p{color:var(--muted); max-width:70ch; margin:0}
+
+.card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:24px 26px; box-shadow:var(--shadow); margin:0 0 20px}
+.card > :last-child{margin-bottom:0}
+.card > p, .card > ul, .card > ol{max-width:74ch}
+.card h3:first-child,.card h2:first-child{margin-top:0}
+
+.callout{border-radius:12px; padding:16px 18px 16px 18px; margin:0 0 20px; border:1px solid; font-size:.95rem}
+.callout .ct{font-weight:800; font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:7px}
+.callout > :last-child{margin-bottom:0}
+.callout.note{background:var(--wash); border-color:var(--line); }
+.callout.note .ct{color:var(--muted)}
+.callout.tip{background:var(--teal-soft); border-color:#bfe3db}
+.callout.tip .ct{color:var(--teal)}
+.callout.notebook{background:var(--plum-soft); border-color:#e6cdee}
+.callout.notebook .ct{color:var(--plum)}
+.callout.warn{background:var(--amber-soft); border-color:#f0dcb4}
+.callout.warn .ct{color:var(--amber)}
+
+.grid{display:grid; gap:18px}
+@media(min-width:760px){ .grid.two{grid-template-columns:1fr 1fr} .grid.side{grid-template-columns:1.15fr .85fr} }
+
+.numlist{counter-reset:s; list-style:none; padding:0; margin:0}
+.numlist li{counter-increment:s; position:relative; padding-left:44px; margin:0 0 14px}
+.numlist li::before{
+  content:counter(s); position:absolute; left:0; top:-1px; width:29px; height:29px; border-radius:9px;
+  background:var(--navy); color:#fff; font-size:.82rem; font-weight:800; display:grid; place-items:center;
+}
+.numlist li strong{color:var(--ink)}
+
+table.data{width:100%; border-collapse:collapse; font-size:.93rem; margin:0 0 1em}
+table.data th{background:var(--navy); color:#fff; text-align:left; padding:10px 13px; font-size:.76rem; letter-spacing:.07em; text-transform:uppercase}
+table.data td{border-bottom:1px solid var(--line); padding:11px 13px; vertical-align:top}
+table.data tr:nth-child(even) td{background:var(--wash)}
+.tscroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+
+/* ---------- buttons ---------- */
+.btn{
+  font:inherit; font-weight:650; font-size:.92rem; border-radius:10px; padding:10px 18px; cursor:pointer;
+  border:1px solid var(--navy); background:var(--navy); color:#fff; transition:transform .1s, box-shadow .15s, background .15s;
+}
+.btn:hover{background:var(--navy-2); box-shadow:0 6px 16px rgba(13,27,52,.18)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:#fff; color:var(--ink); border-color:var(--line)}
+.btn.ghost:hover{background:var(--wash); box-shadow:none}
+.btn.plum{background:var(--plum); border-color:var(--plum)}
+.btn.plum:hover{background:#57256a}
+.btn.sm{padding:7px 13px; font-size:.84rem; border-radius:8px}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
+.btnrow{display:flex; flex-wrap:wrap; gap:9px; align-items:center}
+
+/* ---------- quiz ---------- */
+.q{border:1px solid var(--line); border-radius:12px; padding:17px 19px; margin:0 0 14px; background:#fff}
+.q .qt{font-weight:650; color:var(--ink); margin-bottom:11px}
+.q .qt .qn{color:var(--plum); font-weight:800; margin-right:7px}
+.opt{
+  display:flex; gap:11px; align-items:flex-start; border:1px solid var(--line); background:#fff;
+  border-radius:9px; padding:10px 13px; margin:0 0 7px; cursor:pointer; font-size:.94rem;
+  transition:border-color .13s, background .13s; text-align:left; width:100%; font-family:inherit; color:var(--body);
+}
+.opt:hover{border-color:#b9c3d6; background:var(--wash)}
+.opt .mark{
+  flex:0 0 auto; width:21px; height:21px; border-radius:6px; border:1.5px solid var(--line);
+  display:grid; place-items:center; font-size:.72rem; font-weight:800; color:var(--muted); background:#fff; margin-top:1px;
+}
+.opt.sel{border-color:var(--navy); background:var(--wash-2)}
+.opt.sel .mark{background:var(--navy); border-color:var(--navy); color:#fff}
+.opt.right{border-color:var(--teal); background:var(--teal-soft)}
+.opt.right .mark{background:var(--teal); border-color:var(--teal); color:#fff}
+.opt.wrong{border-color:var(--rose); background:var(--rose-soft)}
+.opt.wrong .mark{background:var(--rose); border-color:var(--rose); color:#fff}
+.opt:disabled{cursor:default}
+.fb{display:none; margin-top:10px; font-size:.9rem; border-radius:9px; padding:10px 13px; border:1px solid}
+.fb.show{display:block}
+.fb.good{background:var(--teal-soft); border-color:#bfe3db; color:#0b5a4f}
+.fb.bad{background:var(--rose-soft); border-color:#f0c8d1; color:#8a1b33}
+
+textarea.notebook-in{
+  width:100%; min-height:96px; border:1px solid var(--line); border-radius:10px; padding:11px 13px;
+  font:inherit; font-size:.94rem; color:var(--ink); background:#fff; resize:vertical; line-height:1.55;
+}
+textarea.notebook-in:focus{outline:2px solid var(--plum); outline-offset:1px; border-color:var(--plum)}
+:focus-visible{outline:2.5px solid var(--plum); outline-offset:2px; border-radius:4px}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important}
+}
+label.field{display:block; font-weight:650; color:var(--ink); font-size:.93rem; margin:0 0 7px}
+</style>
+<style>
+/* ============================================================
+   APP INVENTOR SIMULATOR — shared chrome
+   ============================================================ */
+.ai-shell{position:relative; border:1px solid var(--line); border-radius:var(--radius); overflow:visible; background:#fff; box-shadow:var(--shadow); margin:0 0 20px}
+.ai-bar{
+  border-radius:13px 13px 0 0;
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  background:linear-gradient(180deg,#1a3057,#132444); color:#fff; padding:9px 14px; font-size:.83rem;
+}
+.ai-bar .brand{font-weight:800; letter-spacing:.02em; display:flex; align-items:center; gap:7px}
+.ai-bar .brand svg{opacity:.9}
+.ai-bar .proj{color:#a9bad6; font-size:.79rem}
+.ai-bar .spacer{flex:1}
+.ai-toggle{display:flex; background:rgba(255,255,255,.1); border-radius:8px; padding:2px}
+.ai-toggle button{
+  font:inherit; font-size:.79rem; font-weight:650; border:0; background:none; color:#c6d3e8;
+  padding:5px 13px; border-radius:6px; cursor:pointer;
+}
+.ai-toggle button[aria-pressed="true"]{background:#fff; color:var(--navy)}
+.ai-panels{display:grid; min-height:430px}
+.ai-panel{position:relative; border-right:1px solid var(--line); min-width:0; display:flex; flex-direction:column}
+.ai-panel:last-child{border-right:0}
+.ai-panel > h5{
+  margin:0; font-size:.68rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; color:var(--muted);
+  padding:9px 11px; background:var(--wash); border-bottom:1px solid var(--line); flex:0 0 auto;
+}
+.ai-panel .pbody{flex:1; overflow:auto; padding:8px; min-height:0}
+
+/* ---- palette drawers ---- */
+.drawer{margin-bottom:4px}
+.drawer > button{
+  width:100%; text-align:left; font:inherit; font-size:.83rem; font-weight:650; color:var(--ink);
+  background:var(--wash); border:1px solid var(--line); border-radius:8px; padding:7px 10px; cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
+}
+.drawer > button:hover{background:var(--wash-2)}
+.drawer > button .car{transition:transform .18s; color:var(--muted); font-size:.7rem}
+.drawer.open > button{border-radius:8px 8px 0 0; background:var(--navy); color:#fff; border-color:var(--navy)}
+.drawer.open > button .car{transform:rotate(90deg); color:#fff}
+.drawer .items{display:none; border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; padding:6px}
+.drawer.open .items{display:block}
+.comp-chip{
+  display:flex; align-items:center; gap:8px; width:100%; background:#fff; border:1px solid var(--line);
+  border-radius:7px; padding:6px 9px; margin-bottom:5px; font-size:.82rem; color:var(--ink); cursor:grab;
+  font-family:inherit; text-align:left; touch-action:none; user-select:none;
+}
+.comp-chip:last-child{margin-bottom:0}
+.comp-chip:hover{border-color:var(--plum); background:var(--plum-soft)}
+.comp-chip .ci{width:19px; height:19px; flex:0 0 auto; border-radius:5px; display:grid; place-items:center; font-size:.68rem; font-weight:800; color:#fff; background:var(--plum)}
+.comp-chip.placed{opacity:.42; cursor:default; pointer-events:none}
+.comp-chip .nv{font-size:.66rem; color:var(--muted); margin-left:auto}
+
+/* ---- viewer / phone ---- */
+.viewer-wrap{display:flex; flex-direction:column; align-items:center; gap:10px; padding:14px 8px}
+.phone{
+  width:236px; border:3px solid var(--ink); border-radius:22px; background:#fff; overflow:hidden;
+  box-shadow:0 10px 30px rgba(13,27,52,.16); flex:0 0 auto; position:relative;
+}
+.phone .statusbar{height:19px; background:var(--ink); color:#fff; font-size:.56rem; display:flex; align-items:center; justify-content:space-between; padding:0 9px; letter-spacing:.04em}
+.phone .titlebar{background:#3f6bb5; color:#fff; font-size:.72rem; font-weight:650; padding:6px 9px}
+.phone .screen{min-height:322px; background:#fff; padding:7px; display:flex; flex-direction:column; gap:7px; position:relative}
+.phone .screen.drop-hot{outline:2px dashed var(--plum); outline-offset:-5px; background:var(--plum-soft)}
+.phone .empty-hint{color:#a9b3c6; font-size:.72rem; text-align:center; margin:auto; padding:0 16px; line-height:1.5}
+.nonvis{border-top:1px dashed var(--line); padding:8px 9px; background:var(--wash)}
+.nonvis .lbl{font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:800; margin-bottom:5px}
+.nonvis .row{display:flex; gap:9px; flex-wrap:wrap}
+.nonvis .nvitem{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:.56rem; color:var(--muted); width:52px; text-align:center; line-height:1.25}
+.nonvis .nvitem .box{width:24px; height:24px; border-radius:6px; background:var(--b-method); color:#fff; display:grid; place-items:center; font-size:.62rem; font-weight:800}
+
+/* rendered components inside the phone */
+.pc{position:relative; cursor:pointer; border:1.5px solid transparent; border-radius:4px}
+.pc.sel{border-color:var(--plum); box-shadow:0 0 0 2px rgba(107,47,122,.16)}
+.pc-button{background:#e6e6e6; border:1px solid #999; border-radius:4px; padding:5px 9px; font-size:.74rem; color:#111; text-align:center; align-self:flex-start; min-width:74px}
+.pc-canvas{background:#dfe6ef; border:1px dashed #93a3ba; height:150px; display:grid; place-items:center; color:#7a8ba3; font-size:.66rem; position:relative; overflow:hidden}
+.pc-canvas canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
+.pc-label{font-size:.72rem; color:#111}
+.pc-slider{height:16px; display:flex; align-items:center}
+.pc-slider .track{height:3px; background:#c3ccd9; flex:1; border-radius:3px; position:relative}
+.pc-slider .track b{position:absolute; left:38%; top:-5px; width:13px; height:13px; border-radius:50%; background:#3f6bb5; display:block}
+.pc-harr{display:flex; gap:5px; border:1px dashed #b9c4d4; padding:4px; min-height:30px; align-items:center}
+
+/* ---- components tree + properties ---- */
+.tree{font-size:.82rem}
+.tree .tnode{
+  display:flex; align-items:center; gap:7px; padding:5px 8px; border-radius:7px; cursor:pointer; color:var(--ink);
+  border:1px solid transparent; width:100%; background:none; font:inherit; text-align:left;
+}
+.tree .tnode:hover{background:var(--wash)}
+.tree .tnode.sel{background:var(--navy); color:#fff; border-color:var(--navy)}
+.tree .tnode .dot{width:8px; height:8px; border-radius:2px; background:var(--b-method); flex:0 0 auto}
+.tree .kids{padding-left:13px; border-left:1px dashed var(--line); margin-left:11px}
+.prop-row{margin-bottom:11px}
+.prop-row label{display:block; font-size:.72rem; font-weight:700; color:var(--muted); margin-bottom:4px; letter-spacing:.03em}
+.prop-row input[type=text]{width:100%; font:inherit; font-size:.82rem; padding:6px 8px; border:1px solid var(--line); border-radius:7px; color:var(--ink)}
+.prop-row input:focus{outline:2px solid var(--plum); outline-offset:1px}
+.prop-row .swatches{display:flex; gap:5px; flex-wrap:wrap}
+.prop-row .sw{width:23px; height:23px; border-radius:6px; border:2px solid transparent; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(0,0,0,.16)}
+.prop-row .sw[aria-pressed="true"]{border-color:var(--navy)}
+.prop-empty{color:var(--muted); font-size:.79rem; padding:8px 4px}
+
+/* ============================================================
+   BLOCKS EDITOR
+   ============================================================ */
+.blk-tree .tnode .dot{border-radius:50%}
+.flyout{
+  position:absolute; z-index:40; background:rgba(238,242,249,.985); border:1px solid var(--line);
+  border-radius:12px; padding:11px; box-shadow:var(--shadow-lg); max-height:330px; overflow:auto; width:min(330px,84vw);
+}
+.flyout .fhead{font-size:.67rem; letter-spacing:.12em; text-transform:uppercase; font-weight:800; color:var(--muted); margin-bottom:9px; display:flex; justify-content:space-between; align-items:center; gap:8px}
+.flyout .fhead button{border:0; background:none; font:inherit; cursor:pointer; color:var(--muted); font-size:1rem; line-height:1; padding:2px 5px; border-radius:5px}
+.flyout .fhead button:hover{background:var(--line-2); color:var(--ink)}
+
+.workspace{
+  position:relative; background:
+    radial-gradient(circle at 1px 1px, #ccd5e4 1px, transparent 0) 0 0/19px 19px, #f4f7fc;
+  min-height:400px; max-height:min(70vh,520px); padding:16px 16px 60px; overflow:auto;
+}
+.workspace .ws-hint{position:absolute; inset:0; display:grid; place-items:center; color:#9aa7bd; font-size:.86rem; text-align:center; padding:26px; pointer-events:none; line-height:1.6}
+.workspace.drop-hot{box-shadow:inset 0 0 0 3px rgba(107,47,122,.35)}
+.trash{
+  position:absolute; right:12px; bottom:12px; width:44px; height:44px; border-radius:11px; background:#fff;
+  border:1px dashed var(--line); display:grid; place-items:center; color:var(--muted); font-size:1.05rem; z-index:5;
+}
+.trash.drop-hot{border-color:var(--rose); color:var(--rose); background:var(--rose-soft); border-style:solid}
+
+/* --- block shapes --- */
+.blk{font-family:var(--sans); font-size:.8rem; font-weight:600; color:#fff; user-select:none; position:relative}
+.blk .bh{touch-action:none; display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:7px 11px; border-radius:8px; line-height:1.35; position:relative}
+.blk .bh .kw{opacity:.9; font-weight:600}
+.blk .bh .nm{font-weight:800}
+.blk .bh .dd{background:rgba(255,255,255,.2); border-radius:5px; padding:1px 6px; font-weight:700}
+
+/* event (hat) block */
+.blk-event{margin:0 0 14px; width:max-content; max-width:100%}
+.blk-event > .bh{background:var(--b-event); border:1px solid var(--b-event-d); border-bottom:0; border-radius:9px 9px 0 0; box-shadow:0 2px 0 rgba(0,0,0,.07)}
+.blk-event > .bh .args{display:flex; gap:4px; margin-left:5px}
+.arg-pill{background:var(--b-var); border:1px solid var(--b-var-d); border-radius:9px; padding:1px 8px; font-size:.72rem; font-weight:700; cursor:grab; touch-action:none; color:#fff}
+.arg-pill:hover{filter:brightness(1.12)}
+.blk-event > .do{
+  background:var(--b-event); border:1px solid var(--b-event-d); border-top:0; border-radius:0 0 9px 9px;
+  display:flex; gap:8px; padding:0 9px 9px 11px; align-items:flex-start;
+}
+.blk-event > .do > .dolbl{font-size:.76rem; opacity:.92; padding-top:8px}
+.slot{
+  flex:1; min-width:186px; min-height:38px; background:rgba(0,0,0,.14); border-radius:7px; padding:7px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.slot.drop-hot{background:rgba(255,255,255,.42); box-shadow:inset 0 0 0 2px #fff}
+.slot .slot-hint{font-size:.7rem; color:rgba(255,255,255,.72); font-weight:600; text-align:center; padding:5px 4px; letter-spacing:.02em}
+
+/* statement blocks */
+.blk-stmt{width:max-content; max-width:100%}
+.blk-stmt > .bh{border-radius:7px; border:1px solid; box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.blk-stmt.k-method > .bh{background:var(--b-method); border-color:var(--b-method-d)}
+.blk-stmt.k-prop > .bh{background:var(--b-prop); border-color:var(--b-prop-d)}
+.blk-stmt.dragging,.blk-event.dragging{opacity:.35}
+
+/* value blocks + sockets */
+.socket{
+  display:inline-flex; align-items:center; min-width:62px; min-height:23px; border-radius:5px;
+  background:rgba(0,0,0,.2); box-shadow:inset 0 0 0 1px rgba(255,255,255,.14); padding:2px;
+}
+.socket.drop-hot{background:rgba(255,255,255,.5); box-shadow:inset 0 0 0 2px #fff}
+.socket .sk-hint{font-size:.66rem; color:rgba(255,255,255,.6); padding:0 6px; font-weight:600}
+.blk-val{display:inline-flex; align-items:center; border-radius:9px; border:1px solid; padding:2px 9px; font-size:.75rem; font-weight:700; color:#fff; white-space:nowrap}
+.blk-val.k-var{background:var(--b-var); border-color:var(--b-var-d)}
+.blk-val.k-color{background:var(--b-color); border-color:var(--b-color-d); gap:6px}
+.blk-val .cswatch{width:13px; height:13px; border-radius:3px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+.blk-val.k-num{background:#3f71b5; border-color:#2f568c}
+
+.drag-ghost{position:fixed; z-index:9999; pointer-events:none; opacity:.94; filter:drop-shadow(0 8px 18px rgba(13,27,52,.3)); transform-origin:top left}
+
+.mission{
+  display:flex; gap:13px; align-items:flex-start; background:var(--wash); border:1px solid var(--line);
+  border-radius:12px; padding:14px 16px; margin:0 0 16px;
+}
+.mission .mno{flex:0 0 auto; width:31px; height:31px; border-radius:9px; background:var(--plum); color:#fff; font-weight:800; font-size:.84rem; display:grid; place-items:center}
+.mission .mbody{min-width:0; flex:1}
+.mission h4{margin:1px 0 5px}
+.mission p{margin:0; font-size:.92rem; color:var(--body)}
+.mission.done{background:var(--teal-soft); border-color:#bfe3db}
+.mission.done .mno{background:var(--teal)}
+.mission .mstat{font-size:.78rem; font-weight:800; color:var(--teal); margin-top:7px; display:none}
+.mission.done .mstat{display:block}
+
+.testbar{border-radius:0 0 13px 13px; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:10px 14px; background:var(--wash); border-top:1px solid var(--line)}
+.testbar .msg{font-size:.85rem; color:var(--muted); flex:1; min-width:170px}
+.testbar .msg.good{color:var(--teal); font-weight:650}
+.testbar .msg.bad{color:var(--rose); font-weight:650}
+
+/* live phone (companion) */
+.companion{display:flex; flex-direction:column; align-items:center; gap:9px; padding:14px 10px; background:var(--wash-2); border-left:1px solid var(--line)}
+.companion .cap{font-size:.66rem; letter-spacing:.11em; text-transform:uppercase; font-weight:800; color:var(--muted)}
+.live-screen{width:100%; display:flex; flex-direction:column; gap:6px; padding:7px}
+.live-canvas{position:relative; width:100%; height:186px; background:#eef1f6; border:1px solid #c3ccd9; overflow:hidden; touch-action:none; cursor:crosshair}
+.live-canvas canvas{position:absolute; inset:0; width:100%; height:100%}
+.live-canvas .nocanvas{position:absolute; inset:0; display:grid; place-items:center; color:#98a4b8; font-size:.68rem; text-align:center; padding:14px}
+.live-btn{background:#e6e6e6; border:1px solid #999; border-radius:4px; padding:6px 9px; font-size:.74rem; color:#111; cursor:pointer; font-family:inherit; align-self:flex-start; min-width:78px}
+.live-btn:active{background:#d0d0d0}
+.live-colorrow{display:flex; gap:5px}
+.live-colorbtn{width:31px; height:24px; border-radius:4px; border:1px solid #888; cursor:pointer}
+.shakebtn{font:inherit; font-size:.76rem; font-weight:650; border:1px solid var(--line); background:#fff; border-radius:8px; padding:6px 12px; cursor:pointer; color:var(--ink)}
+.shakebtn:hover{background:var(--wash)}
+.evlog{width:100%; font-family:var(--mono); font-size:.66rem; background:var(--ink); color:#b9e6d5; border-radius:8px; padding:8px 9px; height:78px; overflow:auto; line-height:1.5}
+.evlog .e-warn{color:#ffc98a}
+.evlog .e-dim{color:#8290a8}
+
+@media (max-width:900px){
+  .ai-panels{grid-template-columns:1fr !important}
+  .ai-panel{border-right:0; border-bottom:1px solid var(--line)}
+  .ai-panel .pbody{max-height:300px}
+}
+</style>
+<style>
+@media print{
+  nav.steps, .btnrow, .ai-shell, #missions, .trash, footer{display:none !important}
+  body{background:#fff; font-size:11pt}
+  .hero{background:#0d1b34 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  section.step{display:block !important; break-before:page}
+  section.step:first-of-type{break-before:auto}
+  .card,.callout{break-inside:avoid; box-shadow:none}
+  textarea.notebook-in{min-height:70px}
+  #export-box{display:none}
+}
+</style>
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">PLTW Computer Science Essentials &middot; Activity 1.1.1</div>
+    <h1>Getting Started with Block-based Programming: Digital Doodle</h1>
+    <p class="lede">Take a picture. Draw on it. Shake to erase. You will design the interface, wire up the
+      event handlers, and debug your way to a working app &mdash; one iteration at a time.</p>
+    <div class="hero-meta">
+      <span class="chip">90-minute block</span>
+      <span class="chip">MIT App Inventor</span>
+      <span class="chip">Events &middot; Procedures &middot; Arguments</span>
+      <span class="chip">Practice studio, then build for real</span>
+    </div>
+  </div>
+</header>
+
+<nav class="steps" aria-label="Lesson sections">
+  <div class="steps-inner" id="stepnav"></div>
+  <div class="progressbar"><i id="progfill"></i></div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ 0. BRIEF ============ -->
+<section class="step" id="sec-brief" data-title="The Brief" data-mins="12">
+  <div class="sec-head">
+    <div class="kicker">Section 1 of 6</div>
+    <h2>The Brief: user stories before blocks</h2>
+    <p>Professional developers do not open the code editor first. They decide who the user is and what
+      the user needs to be able to do. That list is what you build against &mdash; and what you test against.</p>
+  </div>
+
+  <div class="card">
+    <h3>App description</h3>
+    <p>You talk to a friend, Nalini, about your plan to make an app and ask her whether she has any ideas.
+      While she's not exactly sure, she suggests that starting by learning how to use some capabilities of
+      mobile devices might provide inspiration.</p>
+    <p style="border-left:3px solid var(--plum); padding-left:14px; color:var(--ink); font-style:italic">
+      &ldquo;Hey, we could take pictures with the device camera and use the touch screen to mark them up
+      first. It'll just be a digital doodle at first, but I could see it being used for&hellip;&rdquo;</p>
+    <p>In this activity you will create an app that allows the user to take a picture and then draw on the
+      picture in the user interface. For replay value, the screen clears whenever the user shakes the device.
+      Each of these items is an app <strong>feature</strong> &mdash; a specific thing the app may do.</p>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <h3>User stories</h3>
+      <p style="font-size:.93rem; color:var(--muted)">Three user interactions define this app:</p>
+      <ul>
+        <li>An app event that allows a user to <strong>take a picture</strong> when they touch a button.</li>
+        <li>Another event that allows a user to <strong>touch the screen</strong> (swipe gesture as input) to draw on the picture.</li>
+        <li>A final app event that allows <strong>shaking the device</strong> to clear all the outputs.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Initial backlog breakdown</h3>
+      <p style="font-size:.93rem; color:var(--muted)">The user needs to be able to:</p>
+      <ul>
+        <li>Push a button to take a picture</li>
+        <li>Draw on the picture</li>
+        <li>Clear the picture</li>
+        <li>Change the color they draw with <em>(if time permits)</em></li>
+        <li>Change the line width <em>(if time permits)</em></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout notebook">
+    <div class="ct">Computer Science Notebook</div>
+    <p><strong>Design terminology.</strong> Start a <strong>TEMP chart</strong> (Term, Example, Meaning, Picture)
+      in your notebook. Add every bolded vocabulary word from this activity as you meet it. Begin with
+      <em>user story</em>, <em>user centered</em>, and <em>user interface</em>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Match the design terminology</h3>
+    <p style="font-size:.93rem; color:var(--muted); margin-bottom:16px">Drag is not needed &mdash; pick the term each definition describes.</p>
+    <div id="quiz-brief"></div>
+  </div>
+
+  <div class="card">
+    <h3>Reflection</h3>
+    <p>Record three ideas for apps that could leverage the device's camera or the ability to draw on images.
+      These ideas can be original or existing apps. Share as directed by your teacher.</p>
+    <label class="field" for="nb-ideas">Three app ideas</label>
+    <textarea class="notebook-in" id="nb-ideas" data-nb="Three app ideas that use the camera or drawing"
+      placeholder="1.&#10;2.&#10;3."></textarea>
+  </div>
+
+  <div class="btnrow" style="margin-top:22px">
+    <button class="btn" data-goto="next">Next: Designer View &rarr;</button>
+  </div>
+</section>
+
+<!-- ============ 1. DESIGNER ============ -->
+<section class="step" id="sec-designer" data-title="Designer View" data-mins="15">
+  <div class="sec-head">
+    <div class="kicker">Section 2 of 6</div>
+    <h2>Designer View: build what the user sees</h2>
+    <p>App Inventor has two views. The Designer is where you add <strong>components</strong> &mdash; tidy packages
+      of functionality for an input or an output. The Blocks view is where you program how they behave.</p>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <h3>Which view?</h3>
+      <table class="data" style="margin:0">
+        <tr><td>If I am making adjustments to <strong>what the user sees</strong>, I should use the&hellip;</td>
+            <td style="font-weight:700; color:var(--plum); white-space:nowrap">Designer View</td></tr>
+        <tr><td>If I am changing <strong>what will happen</strong> in the app, I should use the&hellip;</td>
+            <td style="font-weight:700; color:var(--teal); white-space:nowrap">Blocks View</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Anatomy of the Designer</h3>
+      <ul style="font-size:.94rem">
+        <li><strong>Palette</strong> &mdash; drawers of components by category (User Interface, Media, Sensors&hellip;).</li>
+        <li><strong>Viewer</strong> &mdash; the phone screen you drag components onto.</li>
+        <li><strong>Components</strong> &mdash; the list of everything you added; select, rename, or delete here.</li>
+        <li><strong>Properties</strong> &mdash; options for whichever component is selected.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout note">
+    <div class="ct">Note</div>
+    <p>Throughout this course, images of App Inventor are shown in the <strong>Classic</strong> theme. If your
+      App Inventor looks different, open <code>Settings &rsaquo; User Interface Settings</code> and choose
+      <strong>Classic style</strong>. Newer themes do not label the panels.</p>
+  </div>
+
+  <h3 style="margin-top:30px">Practice studio &mdash; Designer</h3>
+  <p style="color:var(--muted); font-size:.95rem; max-width:70ch">Drag components out of the drawers and onto the
+    phone. Everything you add here becomes available in the Blocks view later &mdash; exactly like the real thing.</p>
+
+  <div class="ai-shell">
+    <div class="ai-bar">
+      <span class="brand">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="#7ec6a8"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="#f0c25c"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="#8fb6f0"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="#c99ed6"/></svg>
+        App Inventor</span>
+      <span class="proj">Project: <strong id="proj-name">DigitalDoodle</strong></span>
+      <span class="spacer"></span>
+      <span style="font-size:.75rem; color:#a9bad6">Designer</span>
+    </div>
+    <div class="ai-panels" style="grid-template-columns:186px 1fr 168px 196px">
+      <div class="ai-panel"><h5>Palette</h5><div class="pbody" id="palette"></div></div>
+      <div class="ai-panel"><h5>Viewer</h5><div class="pbody" style="padding:0"><div class="viewer-wrap">
+        <div class="phone">
+          <div class="statusbar"><span>&#9673; AI Companion</span><span>9:41</span></div>
+          <div class="titlebar">Screen1</div>
+          <div class="screen" id="phone-screen"><div class="empty-hint">Drag components here from the Palette</div></div>
+          <div class="nonvis" id="nonvis-area" hidden>
+            <div class="lbl">Non-visible components</div>
+            <div class="row" id="nonvis-row"></div>
+          </div>
+        </div>
+      </div></div></div>
+      <div class="ai-panel"><h5>Components</h5><div class="pbody"><div class="tree" id="comp-tree"></div></div></div>
+      <div class="ai-panel"><h5>Properties</h5><div class="pbody" id="props"></div></div>
+    </div>
+    <div class="testbar">
+      <span class="msg" id="designer-msg">Goal: add a <strong>Button</strong>, a <strong>Canvas</strong>, and a <strong>Camera</strong>, then set the button's Text to &ldquo;Take a Picture!&rdquo;</span>
+      <button class="btn sm ghost" id="designer-reset">Reset</button>
+      <button class="btn sm" id="designer-check">Check my design</button>
+    </div>
+  </div>
+
+  <div class="card" id="designer-checklist">
+    <h3>Checkpoint</h3>
+    <ul style="list-style:none; padding:0; margin:0; font-size:.94rem" id="dchk">
+      <li data-k="btn">Button added from the <strong>User Interface</strong> drawer</li>
+      <li data-k="canvas">Canvas added from the <strong>Drawing and Animation</strong> drawer</li>
+      <li data-k="camera">Camera added from the <strong>Media</strong> drawer <span style="color:var(--muted)">(non-visible)</span></li>
+      <li data-k="text">Button <code>Text</code> property changed to <code>Take a Picture!</code></li>
+    </ul>
+  </div>
+
+  <div class="btnrow" style="margin-top:22px">
+    <button class="btn ghost" data-goto="prev">&larr; Back</button>
+    <button class="btn" data-goto="next">Next: Blocks View &rarr;</button>
+  </div>
+</section>
+
+<!-- ============ 2. BLOCKS ============ -->
+<section class="step" id="sec-blocks" data-title="Blocks View" data-mins="30">
+  <div class="sec-head">
+    <div class="kicker">Section 3 of 6</div>
+    <h2>Blocks View: program the behavior</h2>
+    <p>An <strong>event</strong> is something that happens &mdash; a button click, a finger drag, a shake.
+      An <strong>event handler</strong> is a block of code that listens for that event and then responds to,
+      or &ldquo;handles,&rdquo; it.</p>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <h3>Events and outputs</h3>
+      <p style="font-size:.94rem">Inputs or events cause the program to take action. Events usually produce
+        <strong>outputs</strong> the user can experience &mdash; a picture, a new screen. Sometimes the program
+        produces no noticeable output but changes something internally.</p>
+      <p style="font-size:.94rem; margin-bottom:0">Most components listen to more than one event, so most
+        components have more than one event handler block. Grab the right one.</p>
+    </div>
+    <div class="card">
+      <h3>Event handlers and abstraction</h3>
+      <p style="font-size:.94rem"><strong>Abstraction</strong> hides the complexity of a task by concealing the
+        details, making it easier to focus on the relevant steps.</p>
+      <p style="font-size:.94rem; margin-bottom:0">App Inventor hands you a Camera component with all of its
+        properties and behaviors already defined. You never write the code for <em>how</em> to take a picture.
+        Each block is doing a lot of work for you behind the scenes.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The four blocks you need first</h3>
+    <div class="tscroll"><table class="data">
+      <thead><tr><th style="width:33%">Block</th><th style="width:22%">Location</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>call Camera1.TakePicture</code></td><td>Camera drawer</td><td>A block that calls a procedure that lets the user take a picture.</td></tr>
+        <tr><td><code>set Canvas1.BackgroundImage to</code></td><td>Canvas drawer</td><td>Sets the background image of the canvas whenever the event handler the block is placed in is activated.</td></tr>
+        <tr><td><code>when Camera1.AfterPicture</code></td><td>Camera drawer</td><td>Handles the event after the user takes the picture.</td></tr>
+        <tr><td><code>when Button1.Click</code></td><td>Button drawer</td><td>An event handler that executes the blocks within it whenever Button1 is clicked. Be sure to grab the <em>when Click</em> handler and not one of the others.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="callout tip">
+    <div class="ct">Helpful tip</div>
+    <p>If you cannot find a block described in the procedures:</p>
+    <ol style="margin-bottom:0">
+      <li>Verify that the component is in the Designer <strong>Components</strong> panel.</li>
+      <li>If the component is not in the Designer view, add it there, then return to the Blocks view.</li>
+      <li>Find that same component in the Blocks view to grab the blocks associated with it.</li>
+    </ol>
+  </div>
+
+  <h3 style="margin-top:30px">Practice studio &mdash; Blocks</h3>
+  <p style="color:var(--muted); font-size:.95rem; max-width:72ch">Open a drawer, drag blocks into the workspace,
+    and snap them together. The phone on the right runs <em>your</em> blocks &mdash; if you wire it wrong, it behaves
+    wrong, just like the real companion app. Hover an orange <span class="arg-pill" style="cursor:default">argument</span>
+    to grab its <code>get</code> block.</p>
+
+  <div id="missions"></div>
+
+  <div class="ai-shell" style="position:relative">
+    <div class="ai-bar">
+      <span class="brand">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="#7ec6a8"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="#f0c25c"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="#8fb6f0"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="#c99ed6"/></svg>
+        App Inventor</span>
+      <span class="proj">Project: <strong>DigitalDoodle</strong></span>
+      <span class="spacer"></span>
+      <span style="font-size:.75rem; color:#a9bad6">Blocks</span>
+    </div>
+    <div class="ai-panels" style="grid-template-columns:178px 1fr 216px">
+      <div class="ai-panel"><h5>Blocks</h5><div class="pbody"><div class="tree blk-tree" id="blk-tree"></div></div></div>
+      <div class="ai-panel" style="padding:0">
+        <h5>Viewer</h5>
+        <div class="workspace" id="workspace">
+          <div class="ws-hint" id="ws-hint">Drag an event handler block out of a drawer to begin.<br>Blocks snap together like puzzle pieces.</div>
+        </div>
+        <div class="trash" id="trash" title="Drag a block here to delete it">&#128465;</div>
+      </div>
+      <div class="ai-panel companion">
+        <div class="cap">AI Companion</div>
+        <div class="phone" style="width:100%; max-width:196px">
+          <div class="statusbar"><span>&#9673; Connected</span><span>9:41</span></div>
+          <div class="titlebar">Screen1</div>
+          <div class="live-screen" id="live-screen"></div>
+        </div>
+        <button class="shakebtn" id="shake-btn">&#128241; Shake the device</button>
+        <div class="evlog" id="evlog"></div>
+      </div>
+    </div>
+    <div class="testbar">
+      <span class="msg" id="blocks-msg">Mission 1: make the button take a picture.</span>
+      <button class="btn sm ghost" id="blocks-reset">Clear workspace</button>
+      <button class="btn sm" id="blocks-check">Test my app</button>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="ct">Scope matters</div>
+    <p>Blocks you create from an event handler may <strong>only</strong> be used inside the handler you pulled them
+      from. The <code>image</code> block is a variable connected to <code>when Camera1.AfterPicture</code>. Other
+      event handlers do not have access to the camera's image, so this variable works only with the camera's
+      specific event handler.</p>
+  </div>
+
+  <div class="btnrow" style="margin-top:22px">
+    <button class="btn ghost" data-goto="prev">&larr; Back</button>
+    <button class="btn" data-goto="next">Next: Debugging &rarr;</button>
+  </div>
+</section>
+<!-- ============ 3. DEBUGGING ============ -->
+<section class="step" id="sec-debug" data-title="Debugging" data-mins="13">
+  <div class="sec-head">
+    <div class="kicker">Section 4 of 6</div>
+    <h2>Debugging &amp; version control</h2>
+    <p><strong>Debugging</strong> means looking at your code piece by piece to determine why the program is doing
+      something different from what you intended it to do. Be patient with yourself, and seek help from those
+      around you.</p>
+  </div>
+
+  <div class="grid side">
+    <div class="card">
+      <h3>Connect and test</h3>
+      <ol class="numlist" style="margin-top:14px">
+        <li><strong>Connect &rsaquo; AI Companion</strong> in the App Inventor browser window.</li>
+        <li>Launch the companion app on the mobile device. The browser displays a six-character code.</li>
+        <li>Enter the six-character code and select <strong>Connect with code</strong>, or scan the QR code.</li>
+      </ol>
+      <div class="callout note" style="margin:6px 0 0">
+        <div class="ct">Your program works if you can</div>
+        <ul style="margin-bottom:0"><li>Touch the button as <strong>input</strong>, and</li>
+        <li>Receive the <strong>output</strong> of an image on the screen after you take the picture.</li></ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Steps for debugging code</h3>
+      <ol style="font-size:.93rem">
+        <li><strong>Describe</strong> what you expected versus what actually happened.</li>
+        <li><strong>Isolate</strong> the smallest piece that misbehaves &mdash; one event handler at a time.</li>
+        <li><strong>Read</strong> the blocks out loud, in order, as the device would run them.</li>
+        <li><strong>Check</strong> the Designer: does every block's component actually exist?</li>
+        <li><strong>Check</strong> for empty sockets and blocks sitting outside a handler.</li>
+        <li><strong>Change one thing</strong>, retest, and note the result.</li>
+      </ol>
+      <p style="font-size:.9rem; color:var(--muted); margin-bottom:0">Save this list &mdash; you will use it all year.</p>
+    </div>
+  </div>
+
+  <div class="callout notebook">
+    <div class="ct">Computer Science Notebook</div>
+    <p style="margin-bottom:0"><strong>Debugging.</strong> Title a page &ldquo;Debugging.&rdquo; Use it all year to record
+      information and tips about debugging your code &mdash; including every bug you fix below.</p>
+  </div>
+
+  <div class="card">
+    <h3>Bug hunt</h3>
+    <p style="font-size:.94rem; color:var(--muted)">Each app below is broken. Read the blocks, decide what the device
+      would actually do, and pick the fix.</p>
+    <div id="bughunt"></div>
+  </div>
+
+  <div class="card">
+    <h3>Iteration and version control</h3>
+    <p>After testing and debugging, you have a functioning app &mdash; and you want to keep it that way while you add
+      features. Saving your project as a new version with a new name minimizes how much you have to fix later.
+      Use <code>Projects &rsaquo; Save project as&hellip;</code></p>
+    <p style="font-size:.94rem">Naming matters, because it helps you review previous versions of your code as you
+      develop toward the final app. Discuss naming conventions with your teacher.</p>
+    <div id="quiz-iter" style="margin-top:16px"></div>
+  </div>
+
+  <div class="btnrow" style="margin-top:22px">
+    <button class="btn ghost" data-goto="prev">&larr; Back</button>
+    <button class="btn" data-goto="next">Next: Procedures &amp; Arguments &rarr;</button>
+  </div>
+</section>
+
+<!-- ============ 4. PROCEDURES ============ -->
+<section class="step" id="sec-proc" data-title="Procedures &amp; Arguments" data-mins="12">
+  <div class="sec-head">
+    <div class="kicker">Section 5 of 6</div>
+    <h2>Procedures and arguments</h2>
+    <p>You already wrote procedures. Every event handler you built is a <strong>procedure</strong> &mdash; a group of
+      statements that performs some task. Now look at how information gets <em>into</em> one.</p>
+  </div>
+
+  <div class="card">
+    <h3>Procedures, methods, and functions</h3>
+    <p>Through built-in procedures you see <strong>abstraction</strong> &mdash; the removal of smaller details to focus
+      on the bigger details. The terms are often used interchangeably depending on the language you are writing in.
+      A function returns a value; a procedure does not necessarily have to.</p>
+    <div class="tscroll"><table class="data">
+      <thead><tr><th style="width:22%">Term</th><th>Definition</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Function</strong></td><td>Something that takes a bunch of inputs and returns one or more values.</td></tr>
+        <tr><td><strong>Procedure</strong></td><td>A small component of a computer program that may contain one or several specific algorithms to accomplish a certain task.</td></tr>
+        <tr><td><strong>Method</strong></td><td>Similar to functions in text-based languages like Python. Some languages use function, method, and procedure interchangeably; block-based programming does not differentiate between them.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>Arguments are local variables</h3>
+    <p>The orange blocks known as <strong>arguments</strong> are specific to a particular event handler and are stored
+      in that event handler. They are <strong>local variables</strong> that can only be used within that handler.</p>
+    <p>The details of how that information is accessed and stored are <strong>abstracted</strong>, so all you do is drag
+      in the value the argument is holding. You do not need to know how they work &mdash; just that they hold information
+      you need. In future activities you will define your own variables.</p>
+    <div class="callout note" style="margin-bottom:0">
+      <div class="ct">Why <code>Canvas1.Dragged</code> gives you four numbers</div>
+      <p style="margin-bottom:0">To draw a line, the procedure needs the x and y coordinates on the screen. The app needs to
+        know <strong>where the user first touched</strong> (<code>prevX</code>, <code>prevY</code>) and
+        <strong>where they touch next</strong> (<code>currentX</code>, <code>currentY</code>). Plugging those
+        <code>get</code> blocks into <code>call Canvas1.DrawLine</code> passes the information to the procedure as arguments.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Check your understanding</h3>
+    <div id="quiz-proc"></div>
+  </div>
+
+  <div class="card">
+    <h3>Optional extension &mdash; three challenges</h3>
+    <p style="font-size:.94rem; color:var(--muted)">Your teacher will direct you about which additional features to add.
+      Use iterative saves and the naming convention outlined by your teacher so you never lose a working app.</p>
+    <div class="grid two" style="margin-top:16px">
+      <div style="border:1px solid var(--line); border-radius:11px; padding:15px 17px; background:var(--wash)">
+        <h4 style="color:var(--plum)">Challenge A &mdash; Pen size</h4>
+        <p style="font-size:.9rem; margin-bottom:8px">Add a slider to adjust the width of the line that draws as you drag.</p>
+        <p style="font-size:.86rem; color:var(--muted); margin-bottom:0"><strong>Needs:</strong> a HorizontalArrangement
+          (drag it in <em>first</em>), a Label, and a Slider. Set the arrangement's <code>Width</code> to
+          <strong>Fill parent</strong>. Watch the argument the <code>Slider.PositionChanged</code> handler offers.
+          Save with an <strong>A</strong> on the end of the name.</p>
+      </div>
+      <div style="border:1px solid var(--line); border-radius:11px; padding:15px 17px; background:var(--wash)">
+        <h4 style="color:var(--plum)">Challenge B &mdash; Color change</h4>
+        <p style="font-size:.9rem; margin-bottom:8px">Add buttons that change the color of the pen.</p>
+        <p style="font-size:.86rem; color:var(--muted); margin-bottom:0"><strong>Needs:</strong> a HorizontalArrangement and
+          three Buttons inside it. Set each button's <code>Shape</code> and <code>BackgroundColor</code>, and
+          <strong>rename</strong> each one (e.g. <code>ButtonBlue</code>) so you can keep track. Save with a <strong>B</strong>.</p>
+      </div>
+      <div style="border:1px solid var(--line); border-radius:11px; padding:15px 17px; background:var(--wash)">
+        <h4 style="color:var(--plum)">Challenge C &mdash; A fourth button</h4>
+        <p style="font-size:.9rem; margin-bottom:8px">Add a fourth button with a custom color.</p>
+        <p style="font-size:.86rem; color:var(--muted); margin-bottom:0">Instead of a color block, build the color from
+          a <strong>make color</strong> list of three numbers: red, green, blue. Change the values to see what colors you
+          can make. Save with a <strong>C</strong>.</p>
+      </div>
+      <div style="border:1px solid var(--line); border-radius:11px; padding:15px 17px; background:var(--plum-soft); border-color:#e6cdee">
+        <h4 style="color:var(--plum)">Keep exploring</h4>
+        <p style="font-size:.9rem; margin-bottom:0">Explore the other components and choose one feature to try in this app.
+          See the <strong>App Inventor Component Reference</strong> for the full list.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Back up and share your work</h3>
+    <ul style="font-size:.94rem">
+      <li>Show your MIT App Inventor screen and demonstrate the app on a mobile device.</li>
+      <li><strong>Android or iOS:</strong> <code>Projects &rsaquo; Export selected project (.AIA) to my computer</code>.</li>
+      <li><strong>Android only:</strong> <code>Build &rsaquo; App (save .APK to my computer)</code>.</li>
+      <li><strong>Quick reference image:</strong> in the Blocks view, right-click a blank area and choose
+        <code>Download Blocks as Images</code>. Share the image with your teacher.</li>
+    </ul>
+  </div>
+
+  <div class="btnrow" style="margin-top:22px">
+    <button class="btn ghost" data-goto="prev">&larr; Back</button>
+    <button class="btn" data-goto="next">Next: Wrap-up &rarr;</button>
+  </div>
+</section>
+
+<!-- ============ 5. WRAP-UP ============ -->
+<section class="step" id="sec-wrap" data-title="Wrap-up" data-mins="18">
+  <div class="sec-head">
+    <div class="kicker">Section 6 of 6</div>
+    <h2>Wrap-up: exit ticket, ethics, and conclusion</h2>
+    <p>Answer the exit ticket first, then capture your conclusion responses. Everything you type here can be copied
+      into your Computer Science Notebook at the end.</p>
+  </div>
+
+  <div class="card">
+    <h3>Exit ticket</h3>
+    <p style="font-size:.93rem; color:var(--muted)">Ten questions. You get one retry on anything you miss.</p>
+    <div id="exit-quiz"></div>
+    <div class="btnrow" style="margin-top:16px">
+      <button class="btn" id="exit-grade">Grade my exit ticket</button>
+      <span id="exit-score" style="font-weight:700; color:var(--ink)"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Ethical scenario</h3>
+    <p>Imagine an app designed to help people share information about ride-share drivers or passengers that have made
+      them feel unsafe. The benefits are clear from the description, but this app could also have negative societal impacts.</p>
+    <label class="field" for="nb-eth1">1. Write a pro and con list of the effects such an app might have.</label>
+    <textarea class="notebook-in" id="nb-eth1" data-nb="Ethical scenario - pros and cons" placeholder="Pros:&#10;&#10;Cons:"></textarea>
+    <label class="field" for="nb-eth2" style="margin-top:14px">2. If you were to implement a ride-share safety app that could take pictures, how might you protect against misuse?</label>
+    <textarea class="notebook-in" id="nb-eth2" data-nb="Ethical scenario - protecting against misuse"></textarea>
+  </div>
+
+  <div class="card">
+    <h3>Conclusion questions</h3>
+    <div id="conclusion"></div>
+  </div>
+
+  <div class="card">
+    <h3>Take your work with you</h3>
+    <p style="font-size:.94rem">Copy everything you typed into one block of text for your notebook or your class LMS,
+      or print this page as a PDF.</p>
+    <div class="btnrow">
+      <button class="btn plum" id="copy-all">Copy all my responses</button>
+      <button class="btn ghost" id="print-all">Print / Save as PDF</button>
+      <span id="copy-msg" style="font-size:.88rem; color:var(--teal); font-weight:650"></span>
+    </div>
+    <textarea id="export-box" class="notebook-in" style="margin-top:14px; min-height:150px; font-family:var(--mono); font-size:.82rem" readonly hidden></textarea>
+  </div>
+
+  <div class="btnrow" style="margin-top:22px">
+    <button class="btn ghost" data-goto="prev">&larr; Back</button>
+  </div>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--line); background:#fff; padding:26px 0; color:var(--muted); font-size:.84rem">
+  <div class="wrap">
+    <p style="margin:0 0 6px"><strong style="color:var(--ink)">PLTW Computer Science Essentials &mdash; Activity 1.1.1</strong>
+      &middot; Interactive companion built for Mr. Babb's class. The practice studio is a simulation for learning the
+      workflow; the graded build happens in real MIT App Inventor.</p>
+    <p style="margin:0">Career Connection: <strong>Marina Umaschi Bers</strong>, professor at Tufts University and
+      co-developer of ScratchJr, researches how robotics and programming languages promote critical thinking,
+      collaboration, and character strengths.</p>
+  </div>
+</footer>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function el(tag,cls,txt){var e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e;}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* =======================================================
+   SECTION NAVIGATION
+   ======================================================= */
+var sections=$$('section.step'), navWrap=$('#stepnav'), cur=0, visited={0:true};
+sections.forEach(function(s,i){
+  var b=el('button','stepbtn'); b.type='button';
+  var n=el('span','num'); n.appendChild(el('i',null,String(i+1)));
+  b.appendChild(n);
+  var t=el('span'); t.innerHTML=s.dataset.title+' <span style="opacity:.6;font-weight:500">&middot; '+s.dataset.mins+' min</span>';
+  b.appendChild(t);
+  b.addEventListener('click',function(){go(i);});
+  navWrap.appendChild(b);
+});
+function go(i){
+  if(i<0||i>=sections.length) return;
+  cur=i; visited[i]=true;
+  sections.forEach(function(s,j){ s.classList.toggle('active', j===i); });
+  $$('.stepbtn',navWrap).forEach(function(b,j){
+    b.setAttribute('aria-current', j===i?'true':'false');
+    b.classList.toggle('done', !!visited[j] && j<i);
+  });
+  $('#progfill').style.width=(((i+1)/sections.length)*100)+'%';
+  var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({top:0,behavior:rm?'auto':'smooth'});
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-goto]'); if(!b) return;
+  go(b.dataset.goto==='next'?cur+1:cur-1);
+});
+sections.forEach(function(s,j){ s.classList.toggle('active', j===0); });
+$$('.stepbtn',navWrap).forEach(function(b,j){ b.setAttribute('aria-current', j===0?'true':'false'); });
+$('#progfill').style.width=(100/sections.length)+'%';
+
+/* =======================================================
+   QUIZ ENGINE
+   ======================================================= */
+function buildQuiz(mount, items, opts){
+  opts=opts||{};
+  var host=(typeof mount==='string')?$(mount):mount;
+  if(!host) return null;
+  host.innerHTML='';
+  var state=items.map(function(){return {picked:null, locked:false, tries:0};});
+  items.forEach(function(it,qi){
+    var q=el('div','q'); q.dataset.qi=qi;
+    var t=el('div','qt'); t.innerHTML='<span class="qn">'+(qi+1)+'.</span>'+it.q; q.appendChild(t);
+    if(it.pre){var p=el('div'); p.innerHTML=it.pre; p.style.margin='0 0 12px'; q.insertBefore(p,t.nextSibling);}
+    it.a.forEach(function(txt,ai){
+      var o=el('button','opt'); o.type='button';
+      var m=el('span','mark',String.fromCharCode(65+ai));
+      var s=el('span'); s.innerHTML=txt;
+      o.appendChild(m); o.appendChild(s);
+      o.addEventListener('click',function(){ pick(qi,ai); });
+      q.appendChild(o);
+    });
+    var fb=el('div','fb'); q.appendChild(fb);
+    host.appendChild(q);
+  });
+  function pick(qi,ai){
+    var st=state[qi]; if(st.locked) return;
+    var q=$('.q[data-qi="'+qi+'"]',host), opts_=$$('.opt',q), it=items[qi], fb=$('.fb',q);
+    st.picked=ai;
+    if(opts.instant===false){ opts_.forEach(function(o,i){o.classList.toggle('sel',i===ai);}); return; }
+    st.tries++;
+    var right=(ai===it.c);
+    if(right||st.tries>=2){
+      st.locked=true;
+      opts_.forEach(function(o,i){ o.disabled=true; if(i===it.c)o.classList.add('right'); else if(i===ai&&!right)o.classList.add('wrong'); });
+      fb.className='fb show '+(right?'good':'bad');
+      fb.innerHTML=(right?'<strong>Correct.</strong> ':'<strong>Not quite.</strong> ')+it.why;
+      if(opts.onDone) opts.onDone(qi,right);
+    }else{
+      opts_[ai].classList.add('wrong');
+      fb.className='fb show bad';
+      fb.innerHTML='<strong>Try once more.</strong> '+(it.hint||'Re-read the question and eliminate one answer.');
+      setTimeout(function(){ opts_[ai].classList.remove('wrong'); },1400);
+    }
+  }
+  return {
+    state:state,
+    grade:function(){
+      var right=0;
+      items.forEach(function(it,qi){
+        var st=state[qi], q=$('.q[data-qi="'+qi+'"]',host), opts_=$$('.opt',q), fb=$('.fb',q);
+        st.locked=true;
+        opts_.forEach(function(o,i){ o.disabled=true;
+          if(i===it.c)o.classList.add('right');
+          else if(i===st.picked)o.classList.add('wrong'); });
+        fb.className='fb show '+(st.picked===it.c?'good':'bad');
+        fb.innerHTML=(st.picked===it.c?'<strong>Correct.</strong> ':'<strong>Answer: '+String.fromCharCode(65+it.c)+'.</strong> ')+it.why;
+        if(st.picked===it.c) right++;
+      });
+      return right;
+    },
+    answered:function(){ return state.filter(function(s){return s.picked!==null;}).length; }
+  };
+}
+window.__buildQuiz=buildQuiz;
+window.__el=el; window.__$=$; window.__$$=$$;
+
+/* =======================================================
+   NOTEBOOK EXPORT
+   ======================================================= */
+function collectResponses(){
+  var out=['PLTW CSE — Activity 1.1.1 Getting Started with Block-based Programming: Digital Doodle',
+           'My responses — '+new Date().toLocaleString(),
+           '='.repeat(64),''];
+  $$('textarea[data-nb]').forEach(function(t){
+    out.push(t.dataset.nb.toUpperCase());
+    out.push(t.value.trim()? t.value.trim() : '(no response yet)');
+    out.push('');
+  });
+  return out.join('\n');
+}
+document.addEventListener('DOMContentLoaded',function(){});
+window.__collect=collectResponses;
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=window.__$, $$=window.__$$, el=window.__el;
+
+/* ---------- generic pointer drag helper ---------- */
+var DRAG=null;
+function startDrag(e, ghostNode, payload, onDrop){
+  e.preventDefault();
+  var g=ghostNode.cloneNode(true);
+  g.classList.add('drag-ghost');
+  g.style.width=ghostNode.offsetWidth?ghostNode.offsetWidth+'px':'auto';
+  document.body.appendChild(g);
+  DRAG={ghost:g,payload:payload,onDrop:onDrop,lastHot:null};
+  move(e);
+  function move(ev){
+    var x=(ev.touches?ev.touches[0].clientX:ev.clientX);
+    var y=(ev.touches?ev.touches[0].clientY:ev.clientY);
+    g.style.left=(x+10)+'px'; g.style.top=(y+10)+'px';
+    g.style.display='none';
+    var sc=document.getElementById('workspace'), handled=false;
+    if(sc){
+      var sr=sc.getBoundingClientRect();
+      if(x>sr.left&&x<sr.right&&y>sr.top&&y<sr.bottom){
+        if(y>sr.bottom-34 && sc.scrollTop+sc.clientHeight<sc.scrollHeight-1){ sc.scrollTop+=14; handled=true; }
+        else if(y<sr.top+34 && sc.scrollTop>0){ sc.scrollTop-=14; handled=true; }
+      }
+    }
+    if(!handled){
+      if(y>window.innerHeight-58) window.scrollBy(0,16);
+      else if(y<58) window.scrollBy(0,-16);
+    }
+    var under=document.elementFromPoint(x,y);
+    g.style.display='';
+    var t=under?under.closest('[data-drop]'):null;
+    if(DRAG.lastHot && DRAG.lastHot!==t) DRAG.lastHot.classList.remove('drop-hot');
+    if(t && payload.accepts && payload.accepts(t)) { t.classList.add('drop-hot'); DRAG.lastHot=t; }
+    else DRAG.lastHot=null;
+    DRAG.target=(DRAG.lastHot?t:null);
+  }
+  function up(ev){
+    document.removeEventListener('pointermove',move);
+    document.removeEventListener('pointerup',up);
+    document.removeEventListener('pointercancel',up);
+    if(DRAG.lastHot) DRAG.lastHot.classList.remove('drop-hot');
+    g.remove();
+    var tgt=DRAG.target; DRAG=null;
+    onDrop(tgt, ev);
+  }
+  document.addEventListener('pointermove',move);
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',up);
+}
+window.__startDrag=startDrag;
+
+/* =======================================================
+   DESIGNER SIMULATOR
+   ======================================================= */
+var PALETTE=[
+  {name:'User Interface', open:true, items:[
+    {type:'Button', ic:'B', vis:true},
+    {type:'Label', ic:'L', vis:true},
+    {type:'Slider', ic:'S', vis:true},
+    {type:'CheckBox', ic:'C', vis:true}
+  ]},
+  {name:'Layout', items:[
+    {type:'HorizontalArrangement', ic:'H', vis:true},
+    {type:'VerticalArrangement', ic:'V', vis:true}
+  ]},
+  {name:'Media', items:[
+    {type:'Camera', ic:'◎', vis:false},
+    {type:'Camcorder', ic:'▶', vis:false},
+    {type:'Player', ic:'♪', vis:false}
+  ]},
+  {name:'Drawing and Animation', items:[
+    {type:'Canvas', ic:'▦', vis:true},
+    {type:'Ball', ic:'●', vis:true},
+    {type:'ImageSprite', ic:'△', vis:true}
+  ]},
+  {name:'Sensors', items:[
+    {type:'AccelerometerSensor', ic:'≈', vis:false},
+    {type:'Clock', ic:'◴', vis:false},
+    {type:'LocationSensor', ic:'⌖', vis:false}
+  ]}
+];
+var DEFAULTS={
+  Button:{Text:'Text for Button', BackgroundColor:'#e6e6e6'},
+  Label:{Text:'Text for Label'},
+  Canvas:{PaintColor:'#000000'},
+  CheckBox:{Text:'Check Box'},
+  Slider:{},
+  Camera:{}, Camcorder:{}, Player:{},
+  AccelerometerSensor:{}, Clock:{}, LocationSensor:{},
+  HorizontalArrangement:{}, VerticalArrangement:{}, Ball:{}, ImageSprite:{}
+};
+var D={comps:[], sel:null, counts:{}};
+
+function paletteRender(){
+  var host=$('#palette'); if(!host) return; host.innerHTML='';
+  PALETTE.forEach(function(dr,di){
+    var w=el('div','drawer'+(dr.open?' open':''));
+    var b=el('button'); b.type='button';
+    b.innerHTML='<span>'+dr.name+'</span><span class="car">&#9656;</span>';
+    b.addEventListener('click',function(){ w.classList.toggle('open'); });
+    var items=el('div','items');
+    dr.items.forEach(function(it){
+      var c=el('button','comp-chip'); c.type='button';
+      c.innerHTML='<span class="ci">'+it.ic+'</span><span>'+it.type+'</span>'+(it.vis?'':'<span class="nv">non-visible</span>');
+      c.addEventListener('pointerdown',function(e){
+        startDrag(e, c, {accepts:function(t){return t.dataset.drop==='screen';}}, function(target){
+          if(target) addComp(it);
+        });
+      });
+      items.appendChild(c);
+    });
+    w.appendChild(b); w.appendChild(items); host.appendChild(w);
+  });
+}
+function addComp(def){
+  D.counts[def.type]=(D.counts[def.type]||0)+1;
+  var id=def.type+D.counts[def.type];
+  var props={}; var dp=DEFAULTS[def.type]||{};
+  for(var k in dp) props[k]=dp[k];
+  D.comps.push({id:id, type:def.type, vis:def.vis, props:props, ic:def.ic});
+  D.sel=id;
+  renderAll();
+  msg('Added <strong>'+id+'</strong> to the Viewer.');
+}
+function msg(html,cls){
+  var m=$('#designer-msg'); if(!m) return;
+  m.className='msg'+(cls?' '+cls:''); m.innerHTML=html;
+}
+function renderPhone(){
+  var scr=$('#phone-screen'); if(!scr) return;
+  scr.innerHTML='';
+  var vis=D.comps.filter(function(c){return c.vis;});
+  if(!vis.length){ scr.appendChild(el('div','empty-hint','Drag components here from the Palette')); }
+  vis.forEach(function(c){
+    var n=el('div','pc pc-'+c.type.toLowerCase()+(D.sel===c.id?' sel':''));
+    n.dataset.cid=c.id;
+    if(c.type==='Button'){ n.className='pc pc-button'+(D.sel===c.id?' sel':''); n.textContent=c.props.Text; n.style.background=c.props.BackgroundColor||'#e6e6e6'; }
+    else if(c.type==='Label'||c.type==='CheckBox'){ n.className='pc pc-label'+(D.sel===c.id?' sel':''); n.textContent=(c.type==='CheckBox'?'☐ ':'')+c.props.Text; }
+    else if(c.type==='Canvas'){ n.className='pc pc-canvas'+(D.sel===c.id?' sel':''); n.textContent='Canvas'; }
+    else if(c.type==='Slider'){ n.className='pc pc-slider'+(D.sel===c.id?' sel':''); n.innerHTML='<span class="track"><b></b></span>'; }
+    else if(c.type==='HorizontalArrangement'||c.type==='VerticalArrangement'){ n.className='pc pc-harr'+(D.sel===c.id?' sel':''); n.textContent=c.type.replace('Arrangement',' arrangement'); n.style.fontSize='.64rem'; n.style.color='#93a3ba'; }
+    else { n.className='pc pc-label'+(D.sel===c.id?' sel':''); n.textContent=c.type; }
+    n.addEventListener('click',function(){ D.sel=c.id; renderAll(); });
+    scr.appendChild(n);
+  });
+  var nonvis=D.comps.filter(function(c){return !c.vis;});
+  var area=$('#nonvis-area'), row=$('#nonvis-row');
+  area.hidden=!nonvis.length; row.innerHTML='';
+  nonvis.forEach(function(c){
+    var it=el('div','nvitem');
+    var bx=el('div','box',c.ic); it.appendChild(bx); it.appendChild(el('span',null,c.id));
+    it.style.cursor='pointer';
+    it.addEventListener('click',function(){ D.sel=c.id; renderAll(); });
+    row.appendChild(it);
+  });
+}
+function renderTree(){
+  var host=$('#comp-tree'); if(!host) return; host.innerHTML='';
+  var root=el('button','tnode'+(D.sel==='Screen1'?' sel':'')); root.type='button';
+  root.innerHTML='<span class="dot" style="background:#3f6bb5"></span><span>Screen1</span>';
+  root.addEventListener('click',function(){D.sel='Screen1'; renderAll();});
+  host.appendChild(root);
+  var kids=el('div','kids');
+  D.comps.forEach(function(c){
+    var n=el('button','tnode'+(D.sel===c.id?' sel':'')); n.type='button';
+    n.innerHTML='<span class="dot"></span><span>'+c.id+'</span>';
+    n.addEventListener('click',function(){ D.sel=c.id; renderAll(); });
+    kids.appendChild(n);
+  });
+  host.appendChild(kids);
+  if(D.comps.length){
+    var del=el('button','btn sm ghost','Delete selected'); del.type='button';
+    del.style.cssText='margin-top:10px;width:100%;font-size:.76rem';
+    del.addEventListener('click',function(){
+      if(!D.sel||D.sel==='Screen1'){ msg('Select a component in the Components list first.','bad'); return; }
+      var gone=D.sel;
+      D.comps=D.comps.filter(function(c){return c.id!==gone;});
+      D.sel=null; renderAll(); msg('Deleted <strong>'+gone+'</strong>.');
+    });
+    host.appendChild(del);
+  }
+}
+var SWATCH=['#000000','#ff0000','#0000ff','#00a651','#ffcc00','#ffffff','#888888','#ff66cc'];
+function renderProps(){
+  var host=$('#props'); if(!host) return; host.innerHTML='';
+  var c=D.comps.filter(function(x){return x.id===D.sel;})[0];
+  if(!c){ host.appendChild(el('div','prop-empty', D.sel==='Screen1'?'Screen1 selected. Choose a component to see its properties.':'Select a component to see its properties.')); return; }
+  var h=el('div'); h.style.cssText='font-weight:800;color:var(--ink);font-size:.86rem;margin:2px 0 12px';
+  h.textContent=c.id; host.appendChild(h);
+  var rn=el('div','prop-row');
+  rn.innerHTML='<label>Rename component</label>';
+  var ri=el('input'); ri.type='text'; ri.value=c.id;
+  ri.addEventListener('change',function(){
+    var v=ri.value.trim().replace(/[^A-Za-z0-9_]/g,'');
+    if(!v){ ri.value=c.id; return; }
+    if(D.comps.some(function(x){return x.id===v && x!==c;})){ msg('A component named <strong>'+v+'</strong> already exists.','bad'); ri.value=c.id; return; }
+    c.id=v; D.sel=v; renderAll();
+  });
+  rn.appendChild(ri); host.appendChild(rn);
+  if('Text' in c.props){
+    var r=el('div','prop-row'); r.innerHTML='<label>Text</label>';
+    var i=el('input'); i.type='text'; i.value=c.props.Text;
+    i.addEventListener('input',function(){ c.props.Text=i.value; renderPhone(); });
+    r.appendChild(i); host.appendChild(r);
+  }
+  if('BackgroundColor' in c.props) host.appendChild(swatchRow('BackgroundColor',c));
+  if('PaintColor' in c.props) host.appendChild(swatchRow('PaintColor',c));
+  if(!c.vis){
+    var nv=el('div','prop-empty','This is a non-visible component. It appears under the phone screen, but the user never sees it.');
+    nv.style.fontSize='.74rem'; host.appendChild(nv);
+  }
+}
+function swatchRow(prop,c){
+  var r=el('div','prop-row'); r.innerHTML='<label>'+prop+'</label>';
+  var sw=el('div','swatches');
+  SWATCH.forEach(function(col){
+    var b=el('button','sw'); b.type='button'; b.style.background=col;
+    b.setAttribute('aria-pressed', c.props[prop]===col?'true':'false');
+    b.addEventListener('click',function(){ c.props[prop]=col; renderAll(); });
+    sw.appendChild(b);
+  });
+  r.appendChild(sw); return r;
+}
+function renderAll(){ renderPhone(); renderTree(); renderProps(); }
+
+function checkDesigner(){
+  var has=function(t){ return D.comps.filter(function(c){return c.type===t;})[0]; };
+  var btn=has('Button'), cv=has('Canvas'), cam=has('Camera');
+  var txt=btn && String(btn.props.Text||'').trim().toLowerCase().replace(/[!.]+$/,'')==='take a picture';
+  var ok={btn:!!btn, canvas:!!cv, camera:!!cam, text:!!txt};
+  $$('#dchk li').forEach(function(li){
+    var k=li.dataset.k, good=ok[k];
+    li.style.cssText='padding:8px 0 8px 30px;position:relative;border-bottom:1px solid var(--line-2)';
+    var old=li.querySelector('.tick'); if(old) old.remove();
+    var t=el('span','tick', good?'✓':'○');
+    t.style.cssText='position:absolute;left:0;top:8px;font-weight:800;color:'+(good?'var(--teal)':'var(--muted)');
+    li.appendChild(t);
+    li.style.color=good?'var(--ink)':'var(--muted)';
+  });
+  var all=ok.btn&&ok.canvas&&ok.camera&&ok.text;
+  if(all){ msg('&#10003; Design complete. Your user interface is ready — now go program the behavior in the Blocks view.','good'); }
+  else{
+    var miss=[];
+    if(!ok.btn) miss.push('a <strong>Button</strong> (User Interface drawer)');
+    if(!ok.canvas) miss.push('a <strong>Canvas</strong> (Drawing and Animation drawer)');
+    if(!ok.camera) miss.push('a <strong>Camera</strong> (Media drawer — it lands below the screen)');
+    if(ok.btn&&!ok.text) miss.push('the Button’s <code>Text</code> set to <strong>Take a Picture!</strong> (select the Button, then edit Text in Properties)');
+    msg('Still needed: '+miss.join('; ')+'.','bad');
+  }
+}
+document.addEventListener('DOMContentLoaded',init);
+if(document.readyState!=='loading') init();
+var inited=false;
+function init(){
+  if(inited) return; inited=true;
+  if(!$('#palette')) return;
+  var scr=$('#phone-screen'); if(scr) scr.dataset.drop='screen';
+  paletteRender(); renderAll(); checkDesigner();
+  $('#designer-check').addEventListener('click',checkDesigner);
+  $('#designer-reset').addEventListener('click',function(){
+    D.comps=[]; D.sel=null; D.counts={}; renderAll(); checkDesigner();
+    msg('Viewer cleared. Start again from the Palette.');
+  });
+}
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=window.__$, $$=window.__$$, el=window.__el, startDrag=window.__startDrag;
+if(!document.getElementById('workspace')) return;
+
+/* =======================================================
+   BLOCK DEFINITIONS
+   ======================================================= */
+var DEFS={
+ /* ---- events ---- */
+ 'ev.Button1.Click':{kind:'event',sig:'Button1.Click',comp:'Button1',ev:'Click',args:[],drawer:'Button1'},
+ 'ev.Button1.LongClick':{kind:'event',sig:'Button1.LongClick',comp:'Button1',ev:'LongClick',args:[],drawer:'Button1'},
+ 'ev.Button1.GotFocus':{kind:'event',sig:'Button1.GotFocus',comp:'Button1',ev:'GotFocus',args:[],drawer:'Button1'},
+ 'ev.Camera1.AfterPicture':{kind:'event',sig:'Camera1.AfterPicture',comp:'Camera1',ev:'AfterPicture',args:['image'],drawer:'Camera1'},
+ 'ev.Canvas1.Dragged':{kind:'event',sig:'Canvas1.Dragged',comp:'Canvas1',ev:'Dragged',args:['startX','startY','prevX','prevY','currentX','currentY','draggedAnySprite'],drawer:'Canvas1'},
+ 'ev.Canvas1.Touched':{kind:'event',sig:'Canvas1.Touched',comp:'Canvas1',ev:'Touched',args:['x','y','touchedAnySprite'],drawer:'Canvas1'},
+ 'ev.Accel1.Shaking':{kind:'event',sig:'AccelerometerSensor1.Shaking',comp:'AccelerometerSensor1',ev:'Shaking',args:[],drawer:'AccelerometerSensor1'},
+ 'ev.Accel1.AccelerationChanged':{kind:'event',sig:'AccelerometerSensor1.AccelerationChanged',comp:'AccelerometerSensor1',ev:'AccelerationChanged',args:['xAccel','yAccel','zAccel'],drawer:'AccelerometerSensor1'},
+ 'ev.ButtonRed.Click':{kind:'event',sig:'ButtonRed.Click',comp:'ButtonRed',ev:'Click',args:[],drawer:'ButtonRed'},
+ /* ---- method calls ---- */
+ 'm.Camera1.TakePicture':{kind:'method',comp:'Camera1',name:'TakePicture',sockets:[],drawer:'Camera1'},
+ 'm.Canvas1.Clear':{kind:'method',comp:'Canvas1',name:'Clear',sockets:[],drawer:'Canvas1'},
+ 'm.Canvas1.DrawLine':{kind:'method',comp:'Canvas1',name:'DrawLine',sockets:['x1','y1','x2','y2'],drawer:'Canvas1'},
+ 'm.Canvas1.DrawCircle':{kind:'method',comp:'Canvas1',name:'DrawCircle',sockets:['centerX','centerY','radius','fill'],drawer:'Canvas1'},
+ /* ---- property setters ---- */
+ 'p.Canvas1.BackgroundImage':{kind:'prop',comp:'Canvas1',name:'BackgroundImage',sockets:['to'],drawer:'Canvas1'},
+ 'p.Canvas1.PaintColor':{kind:'prop',comp:'Canvas1',name:'PaintColor',sockets:['to'],drawer:'Canvas1'},
+ 'p.Canvas1.LineWidth':{kind:'prop',comp:'Canvas1',name:'LineWidth',sockets:['to'],drawer:'Canvas1'},
+ 'p.Button1.Text':{kind:'prop',comp:'Button1',name:'Text',sockets:['to'],drawer:'Button1'},
+ /* ---- values ---- */
+ 'v.color.red':{kind:'value',vtype:'color',val:'#ff0000',label:'red',drawer:'Colors'},
+ 'v.color.blue':{kind:'value',vtype:'color',val:'#0000ff',label:'blue',drawer:'Colors'},
+ 'v.color.green':{kind:'value',vtype:'color',val:'#00a651',label:'green',drawer:'Colors'},
+ 'v.color.black':{kind:'value',vtype:'color',val:'#000000',label:'black',drawer:'Colors'},
+ 'v.num.2':{kind:'value',vtype:'num',val:2,label:'2',drawer:'Math'},
+ 'v.num.6':{kind:'value',vtype:'num',val:6,label:'6',drawer:'Math'},
+ 'v.num.14':{kind:'value',vtype:'num',val:14,label:'14',drawer:'Math'}
+};
+var DRAWERS=[
+ {key:'Button1',   label:'Button1',                blocks:['ev.Button1.Click','ev.Button1.LongClick','ev.Button1.GotFocus','p.Button1.Text'], always:true},
+ {key:'Canvas1',   label:'Canvas1',                blocks:['ev.Canvas1.Dragged','ev.Canvas1.Touched','m.Canvas1.DrawLine','m.Canvas1.DrawCircle','m.Canvas1.Clear','p.Canvas1.BackgroundImage','p.Canvas1.PaintColor','p.Canvas1.LineWidth'], always:true},
+ {key:'Camera1',   label:'Camera1',                blocks:['ev.Camera1.AfterPicture','m.Camera1.TakePicture'], always:true},
+ {key:'AccelerometerSensor1', label:'AccelerometerSensor1', blocks:['ev.Accel1.Shaking','ev.Accel1.AccelerationChanged']},
+ {key:'ButtonRed', label:'ButtonRed',              blocks:['ev.ButtonRed.Click']},
+ {key:'Colors',    label:'Colors',                 blocks:['v.color.red','v.color.blue','v.color.green','v.color.black'], builtin:true},
+ {key:'Math',      label:'Math',                   blocks:['v.num.2','v.num.6','v.num.14'], builtin:true}
+];
+var unlocked={Button1:1,Canvas1:1,Camera1:1,Colors:1,Math:1};
+
+/* =======================================================
+   WORKSPACE MODEL
+   ======================================================= */
+var uidN=0; function uid(){ return 'b'+(++uidN); }
+var ws=[];
+function mk(key,extra){
+  var d=DEFS[key], o={uid:uid(),key:key};
+  if(d.kind==='event') o.body=[];
+  if(d.kind==='method'||d.kind==='prop'){ o.sockets={}; d.sockets.forEach(function(s){o.sockets[s]=null;}); }
+  if(extra) for(var k in extra) o[k]=extra[k];
+  return o;
+}
+function removeInstance(id){
+  for(var i=0;i<ws.length;i++){
+    var ev=ws[i];
+    if(ev.uid===id){ ws.splice(i,1); return ev; }
+    for(var j=0;j<ev.body.length;j++){
+      var st=ev.body[j];
+      if(st.uid===id){ ev.body.splice(j,1); return st; }
+      for(var k in st.sockets){ if(st.sockets[k]&&st.sockets[k].uid===id){ var v=st.sockets[k]; st.sockets[k]=null; return v; } }
+    }
+  }
+  return null;
+}
+function eventBySig(sig){ return ws.filter(function(e){return DEFS[e.key].sig===sig;}); }
+
+/* =======================================================
+   BLOCK RENDERING
+   ======================================================= */
+function argPill(name,evUid,live){
+  var p=el('span','arg-pill',name);
+  if(live){
+    p.title='Drag out the "get '+name+'" block';
+    p.addEventListener('pointerdown',function(e){
+      e.stopPropagation();
+      var g=valNode({uid:'ghost',key:'g.'+name,ownerEv:evUid},false);
+      startDrag(e,g,{kind:'value',accepts:function(t){return t.dataset.drop==='socket'||t.dataset.drop==='trash';}},
+        function(target){
+          if(!target||target.dataset.drop!=='socket') return;
+          dropValue(target, mk2val('g.'+name,evUid));
+        });
+    });
+  }
+  return p;
+}
+function mk2val(key,ownerEv){ return {uid:uid(),key:key,ownerEv:ownerEv||null}; }
+function valNode(inst,live){
+  var key=inst.key, n;
+  if(key.indexOf('g.')===0){
+    n=el('span','blk-val k-var'); n.innerHTML='<span class="kw" style="opacity:.85;margin-right:4px">get</span>'+key.slice(2);
+  }else{
+    var d=DEFS[key];
+    if(d.vtype==='color'){ n=el('span','blk-val k-color'); var sw=el('span','cswatch'); sw.style.background=d.val; n.appendChild(sw); n.appendChild(el('span',null,d.label)); }
+    else { n=el('span','blk-val k-num',d.label); }
+  }
+  n.dataset.uid=inst.uid;
+  if(live) attachMove(n,inst);
+  return n;
+}
+function socketNode(stmt,skName,evUid,live){
+  var s=el('span','socket');
+  s.dataset.drop='socket'; s.dataset.stmt=stmt.uid; s.dataset.sk=skName; s.dataset.ev=evUid||'';
+  var v=stmt.sockets[skName];
+  if(v) s.appendChild(valNode(v,live));
+  else s.appendChild(el('span','sk-hint','⌷'));
+  return s;
+}
+function stmtNode(inst,evUid,live){
+  var d=DEFS[inst.key];
+  var n=el('div','blk blk-stmt '+(d.kind==='method'?'k-method':'k-prop'));
+  n.dataset.uid=inst.uid;
+  var h=el('div','bh');
+  h.appendChild(el('span','kw',d.kind==='method'?'call':'set'));
+  h.appendChild(el('span','nm',d.comp+'.'+d.name));
+  if(d.kind==='prop'){
+    h.appendChild(el('span','kw','to'));
+    h.appendChild(socketNode(inst,'to',evUid,live));
+  }else{
+    d.sockets.forEach(function(sk){
+      h.appendChild(el('span','kw',sk));
+      h.appendChild(socketNode(inst,sk,evUid,live));
+    });
+  }
+  n.appendChild(h);
+  if(live) attachMove(h,inst,n);
+  return n;
+}
+function eventNode(inst,live){
+  var d=DEFS[inst.key];
+  var n=el('div','blk blk-event'); n.dataset.uid=inst.uid;
+  var h=el('div','bh');
+  h.appendChild(el('span','kw','when'));
+  h.appendChild(el('span','nm',d.comp+'.'+d.ev));
+  if(d.args.length){
+    var a=el('span','args');
+    d.args.forEach(function(x){ a.appendChild(argPill(x,inst.uid,live)); });
+    h.appendChild(a);
+  }
+  n.appendChild(h);
+  var doRow=el('div','do');
+  doRow.appendChild(el('span','dolbl','do'));
+  var slot=el('div','slot');
+  slot.dataset.drop='slot'; slot.dataset.ev=inst.uid;
+  if(inst.body.length) inst.body.forEach(function(st){ slot.appendChild(stmtNode(st,inst.uid,live)); });
+  else slot.appendChild(el('div','slot-hint','drop blocks here'));
+  doRow.appendChild(slot); n.appendChild(doRow);
+  if(live) attachMove(h,inst,n);
+  return n;
+}
+function attachMove(handle,inst,whole){
+  handle.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.socket')||e.target.closest('.arg-pill')) return;
+    e.stopPropagation();
+    var isGet=(inst.key.indexOf('g.')===0);
+    var d=isGet?{kind:'value'}:DEFS[inst.key];
+    var kind=isGet?'value':(d.kind==='event'?'event':(d.kind==='value'?'value':'stmt'));
+    var node=whole||handle;
+    startDrag(e,node,{kind:kind,accepts:function(t){
+        var k=t.dataset.drop;
+        if(k==='trash') return true;
+        if(kind==='event') return k==='workspace';
+        if(kind==='stmt') return k==='slot';
+        return k==='socket';
+      }},
+      function(target){
+        if(!target){ return; }
+        if(target.dataset.drop==='trash'){ removeInstance(inst.uid); render(); log('Deleted a block.','dim'); return; }
+        var moved=removeInstance(inst.uid); if(!moved) return;
+        if(target.dataset.drop==='workspace'){ ws.push(moved); render(); }
+        else if(target.dataset.drop==='slot'){ dropStmt(target,moved); }
+        else if(target.dataset.drop==='socket'){ dropValue(target,moved); }
+      });
+  });
+}
+
+/* ---- drop handlers ---- */
+function dropStmt(slotEl,inst){
+  var evUid=slotEl.dataset.ev;
+  var ev=ws.filter(function(e){return e.uid===evUid;})[0];
+  if(!ev){ render(); return; }
+  ev.body.push(inst); render();
+  log(DEFS[inst.key].comp+'.'+DEFS[inst.key].name+' added to '+DEFS[ev.key].sig,'dim');
+}
+function dropValue(sockEl,inst){
+  var stUid=sockEl.dataset.stmt, sk=sockEl.dataset.sk, evUid=sockEl.dataset.ev;
+  if(inst.ownerEv && inst.ownerEv!==evUid){
+    var src=ws.filter(function(e){return e.uid===inst.ownerEv;})[0];
+    render();
+    say('That orange block is a <strong>local variable</strong> belonging to <code>'+(src?DEFS[src.key].sig:'another event handler')+'</code>. Other event handlers cannot see it — grab an argument from the handler you are working inside.','bad');
+    log('Rejected: '+inst.key.slice(2)+' is out of scope here.','warn');
+    return;
+  }
+  var st=null;
+  ws.forEach(function(e){ e.body.forEach(function(s){ if(s.uid===stUid) st=s; }); });
+  if(!st){ render(); return; }
+  st.sockets[sk]=inst; render();
+}
+
+/* =======================================================
+   FLYOUT / DRAWER TREE
+   ======================================================= */
+var flyout=null;
+function closeFlyout(){ if(flyout){ flyout.remove(); flyout=null; } }
+document.addEventListener('pointerdown',function(e){
+  if(flyout && !e.target.closest('.flyout') && !e.target.closest('.blk-tree')) closeFlyout();
+},true);
+
+function renderTree(){
+  var host=$('#blk-tree'); host.innerHTML='';
+  var root=el('button','tnode'); root.type='button';
+  root.innerHTML='<span class="dot" style="background:#3f6bb5"></span><span>Screen1</span>';
+  host.appendChild(root);
+  var kids=el('div','kids');
+  DRAWERS.forEach(function(dr){
+    if(!unlocked[dr.key]) return;
+    var n=el('button','tnode'); n.type='button';
+    var col=dr.builtin?'var(--b-color)':'var(--b-prop)';
+    n.innerHTML='<span class="dot" style="background:'+col+'"></span><span>'+dr.label+'</span>';
+    n.addEventListener('click',function(e){ e.stopPropagation(); openFlyout(dr,n); });
+    kids.appendChild(n);
+  });
+  host.appendChild(kids);
+  var note=el('div',null,'Components you add in the Designer appear here.');
+  note.style.cssText='font-size:.68rem;color:var(--muted);margin-top:12px;line-height:1.45';
+  host.appendChild(note);
+}
+function openFlyout(dr,anchor){
+  closeFlyout();
+  var f=el('div','flyout');
+  var hd=el('div','fhead'); hd.innerHTML='<span>'+dr.label+'</span>';
+  var x=el('button',null,'×'); x.type='button'; x.addEventListener('click',closeFlyout); hd.appendChild(x);
+  f.appendChild(hd);
+  dr.blocks.forEach(function(key){
+    var d=DEFS[key], node;
+    if(d.kind==='event') node=eventNode({uid:'src',key:key,body:[]},false);
+    else if(d.kind==='value') node=valNode({uid:'src',key:key},false);
+    else node=stmtNode(mk(key),'',false);
+    node.style.margin='0 0 9px';
+    if(d.kind==='value'){ var wr=el('div'); wr.style.margin='0 0 9px'; wr.appendChild(node); node=wr; }
+    node.style.cursor='grab'; node.style.touchAction='none';
+    node.addEventListener('pointerdown',function(e){
+      e.preventDefault(); e.stopPropagation();
+      if(flyout) flyout.style.pointerEvents='none';
+      var kind=(d.kind==='event')?'event':(d.kind==='value')?'value':'stmt';
+      startDrag(e,node,{kind:kind,accepts:function(t){
+          var k=t.dataset.drop;
+          if(k==='trash') return false;
+          if(kind==='event') return k==='workspace';
+          if(kind==='stmt') return k==='slot';
+          return k==='socket';
+        }},
+        function(target){
+          closeFlyout();
+          if(!target) return;
+          if(kind==='event'){ ws.push(mk(key)); render(); log('Added '+d.sig+' handler','dim'); }
+          else if(kind==='stmt'){ dropStmt(target, mk(key)); }
+          else { dropValue(target, mk2val(key,null)); }
+        });
+    });
+    f.appendChild(node);
+  });
+  var shell=anchor.closest('.ai-shell')||document.body;
+  shell.appendChild(f);
+  var sr=shell.getBoundingClientRect(), a=anchor.getBoundingClientRect();
+  f.style.position='absolute';
+  var left=a.right-sr.left+8;
+  if(left+f.offsetWidth>sr.width-6) left=Math.max(6, sr.width-f.offsetWidth-6);
+  f.style.left=left+'px';
+  f.style.top=Math.max(4, a.top-sr.top)+'px';
+  flyout=f;
+}
+
+/* =======================================================
+   WORKSPACE RENDER
+   ======================================================= */
+function render(){
+  var w=$('#workspace');
+  $$('.blk-event',w).forEach(function(n){n.remove();});
+  var hint=$('#ws-hint');
+  hint.style.display=ws.length?'none':'grid';
+  var frag=document.createDocumentFragment();
+  ws.forEach(function(ev){ frag.appendChild(eventNode(ev,true)); });
+  w.appendChild(frag);
+  renderTree(); renderLive(); redraw();
+}
+function say(html,cls){ var m=$('#blocks-msg'); m.className='msg'+(cls?' '+cls:''); m.innerHTML=html; }
+function log(txt,cls){
+  var box=$('#evlog');
+  var line=el('div',cls?('e-'+cls):null, txt);
+  box.appendChild(line); box.scrollTop=box.scrollHeight;
+  while(box.children.length>60) box.removeChild(box.firstChild);
+}
+
+/* =======================================================
+   THE RUNNING APP (interpreter + companion)
+   ======================================================= */
+var APP={bg:null,paint:'#000000',width:3,strokes:[],hasCanvasComp:true};
+var photoN=0;
+function makePhoto(){
+  var c=document.createElement('canvas'); c.width=320; c.height=300;
+  var g=c.getContext('2d');
+  photoN++;
+  var themes=[
+    {sky:['#bfe3ff','#eaf6ff'],ground:'#8fc98f',sun:'#ffd166'},
+    {sky:['#ffd9b3','#ffeede'],ground:'#c9a86b',sun:'#ff8f5e'},
+    {sky:['#cfd8ff','#f0f2ff'],ground:'#9fb8a0',sun:'#f7f0c2'}
+  ];
+  var t=themes[photoN%themes.length];
+  var grad=g.createLinearGradient(0,0,0,300); grad.addColorStop(0,t.sky[0]); grad.addColorStop(1,t.sky[1]);
+  g.fillStyle=grad; g.fillRect(0,0,320,300);
+  g.fillStyle=t.sun; g.beginPath(); g.arc(250,62,30,0,7); g.fill();
+  g.fillStyle=t.ground; g.beginPath(); g.moveTo(0,215);
+  g.bezierCurveTo(90,185,190,240,320,200); g.lineTo(320,300); g.lineTo(0,300); g.closePath(); g.fill();
+  /* a potted plant, as in the activity artwork */
+  g.strokeStyle='#3f7a4a'; g.lineWidth=5; g.lineCap='round';
+  [[-26,-52],[0,-66],[26,-50]].forEach(function(p){
+    g.beginPath(); g.moveTo(160,246); g.quadraticCurveTo(160+p[0]*0.5,246+p[1]*0.6,160+p[0],246+p[1]); g.stroke();
+  });
+  g.fillStyle='#d98b6a'; g.beginPath(); g.moveTo(138,246); g.lineTo(182,246); g.lineTo(174,282); g.lineTo(146,282); g.closePath(); g.fill();
+  g.fillStyle='rgba(0,0,0,.42)'; g.font='600 13px system-ui,sans-serif';
+  g.fillText('photo #'+photoN,10,290);
+  return {type:'image',canvas:c,n:photoN};
+}
+function liveCanvasEl(){ return $('#live-cv'); }
+function redraw(){
+  var cv=liveCanvasEl(); if(!cv) return;
+  var g=cv.getContext('2d');
+  g.clearRect(0,0,cv.width,cv.height);
+  if(APP.bg){ g.drawImage(APP.bg,0,0,cv.width,cv.height); }
+  else { g.fillStyle='#eef1f6'; g.fillRect(0,0,cv.width,cv.height); }
+  APP.strokes.forEach(function(s){
+    g.strokeStyle=s.c; g.lineWidth=s.w; g.lineCap='round';
+    g.beginPath(); g.moveTo(s.x1,s.y1); g.lineTo(s.x2,s.y2); g.stroke();
+  });
+  var nc=$('#live-nocanvas'); if(nc) nc.style.display=APP.bg?'none':'grid';
+}
+var depth=0;
+function fire(sig,ctx){
+  var hs=eventBySig(sig);
+  if(!hs.length){ log('event '+sig+' — no handler','warn'); return false; }
+  if(depth>6){ log('stopped: handlers calling each other too deeply','warn'); return false; }
+  depth++;
+  hs.forEach(function(h){ log('▶ '+sig); h.body.forEach(function(st){ exec(st,h,ctx||{}); }); });
+  depth--;
+  redraw(); return true;
+}
+function evalSock(st,sk,ev,ctx){
+  var v=st.sockets[sk]; if(!v) return null;
+  if(v.key.indexOf('g.')===0){
+    var nm=v.key.slice(2);
+    if(!(nm in ctx)){ log('  '+nm+' is not available here','warn'); return null; }
+    return ctx[nm];
+  }
+  var d=DEFS[v.key];
+  if(d.vtype==='color') return {type:'color',val:d.val};
+  return d.val;
+}
+function exec(st,ev,ctx){
+  var d=DEFS[st.key], full=d.comp+'.'+d.name;
+  if(st.key==='m.Camera1.TakePicture'){
+    log('  call '+full);
+    var img=makePhoto();
+    fire('Camera1.AfterPicture',{image:img});
+    return;
+  }
+  if(st.key==='p.Canvas1.BackgroundImage'){
+    var v=evalSock(st,'to',ev,ctx);
+    if(v&&v.type==='image'){ APP.bg=v.canvas; log('  set Canvas1.BackgroundImage → photo #'+v.n); }
+    else if(v===null){ log('  set Canvas1.BackgroundImage → socket is empty, nothing happened','warn'); }
+    else { log('  set Canvas1.BackgroundImage → that value is not an image','warn'); }
+    return;
+  }
+  if(st.key==='m.Canvas1.DrawLine'){
+    var a=['x1','y1','x2','y2'].map(function(k){return evalSock(st,k,ev,ctx);});
+    if(a.some(function(x){return typeof x!=='number';})){ log('  call Canvas1.DrawLine → missing coordinates, no line drawn','warn'); return; }
+    if(a[0]===a[2]&&a[1]===a[3]){ log('  call Canvas1.DrawLine → start and end are the same point','warn'); }
+    APP.strokes.push({x1:a[0],y1:a[1],x2:a[2],y2:a[3],c:APP.paint,w:APP.width});
+    return;
+  }
+  if(st.key==='m.Canvas1.Clear'){ APP.strokes=[]; log('  call Canvas1.Clear → drawings erased (background kept)'); return; }
+  if(st.key==='p.Canvas1.PaintColor'){
+    var c=evalSock(st,'to',ev,ctx);
+    if(c&&c.type==='color'){ APP.paint=c.val; log('  set Canvas1.PaintColor → '+c.val); }
+    else log('  set Canvas1.PaintColor → socket is empty','warn');
+    return;
+  }
+  if(st.key==='p.Canvas1.LineWidth'){
+    var n=evalSock(st,'to',ev,ctx);
+    if(typeof n==='number'){ APP.width=n; log('  set Canvas1.LineWidth → '+n); }
+    else log('  set Canvas1.LineWidth → socket is empty','warn');
+    return;
+  }
+  if(st.key==='m.Canvas1.DrawCircle'){ log('  call Canvas1.DrawCircle → not what this app needs','warn'); return; }
+  if(st.key==='p.Button1.Text'){ log('  set Button1.Text (no visible effect here)','warn'); return; }
+  log('  '+full);
+}
+
+/* ---- companion UI ---- */
+function renderLive(){
+  var host=$('#live-screen'); if(!host) return;
+  if(!$('#live-cv')){
+    host.innerHTML='';
+    var b=el('button','live-btn','Take a Picture!'); b.id='live-takebtn'; b.type='button';
+    b.addEventListener('click',function(){ fire('Button1.Click',{}); });
+    host.appendChild(b);
+    var wrapc=el('div','live-canvas'); wrapc.id='live-wrap';
+    var cv=el('canvas'); cv.id='live-cv'; cv.width=320; cv.height=300;
+    wrapc.appendChild(cv);
+    var nc=el('div','nocanvas','Canvas1 — take a picture, then drag your finger (or mouse) here to draw.');
+    nc.id='live-nocanvas'; wrapc.appendChild(nc);
+    host.appendChild(wrapc);
+    var row=el('div','live-colorrow'); row.id='live-colorrow'; row.hidden=true;
+    var rb=el('button','live-colorbtn'); rb.type='button'; rb.style.background='#ff0000'; rb.title='ButtonRed';
+    rb.addEventListener('click',function(){ fire('ButtonRed.Click',{}); });
+    row.appendChild(rb);
+    host.appendChild(row);
+    wireDraw(wrapc,cv);
+  }
+  var cr=$('#live-colorrow'); if(cr) cr.hidden=!unlocked.ButtonRed;
+}
+function wireDraw(wrapc,cv){
+  var drawing=false, sx=0,sy=0,px=0,py=0;
+  function pos(e){
+    var r=cv.getBoundingClientRect();
+    return {x:(e.clientX-r.left)*(cv.width/r.width), y:(e.clientY-r.top)*(cv.height/r.height)};
+  }
+  wrapc.addEventListener('pointerdown',function(e){
+    e.preventDefault(); wrapc.setPointerCapture(e.pointerId);
+    var p=pos(e); drawing=true; sx=px=p.x; sy=py=p.y;
+    if(eventBySig('Canvas1.Touched').length) fire('Canvas1.Touched',{x:p.x,y:p.y,touchedAnySprite:false});
+  });
+  wrapc.addEventListener('pointermove',function(e){
+    if(!drawing) return;
+    var p=pos(e);
+    if(Math.abs(p.x-px)<2&&Math.abs(p.y-py)<2) return;
+    var hs=eventBySig('Canvas1.Dragged');
+    if(hs.length){
+      hs.forEach(function(h){ h.body.forEach(function(st){ exec(st,h,{startX:sx,startY:sy,prevX:px,prevY:py,currentX:p.x,currentY:p.y,draggedAnySprite:false}); }); });
+      redraw();
+    }
+    px=p.x; py=p.y;
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+    wrapc.addEventListener(ev,function(e){
+      if(!drawing) return; drawing=false;
+      if(!eventBySig('Canvas1.Dragged').length) log('drag on Canvas1 — no Dragged handler','warn');
+    });
+  });
+}
+
+/* =======================================================
+   MISSIONS
+   ======================================================= */
+function bodyKeys(ev){ return ev.body.map(function(s){return s.key;}); }
+function stmtIn(sig,key){
+  var out=null;
+  eventBySig(sig).forEach(function(e){ e.body.forEach(function(s){ if(s.key===key) out={ev:e,st:s}; }); });
+  return out;
+}
+function sockKey(st,sk){ return st.sockets[sk]?st.sockets[sk].key:null; }
+
+var MISSIONS=[
+{n:1,title:'Make the button take a picture',
+ text:'Build the <code>Button1.Click</code> event handler. What should happen when the button is clicked?',
+ check:function(){
+   var hs=eventBySig('Button1.Click');
+   if(!hs.length) return 'Open the <strong>Button1</strong> drawer and drag out <code>when Button1.Click</code>. Watch out — Button1 has more than one event handler.';
+   var hit=stmtIn('Button1.Click','m.Camera1.TakePicture');
+   if(!hit) return 'The handler is there, but nothing is inside its <code>do</code> area. Open the <strong>Camera1</strong> drawer and drop <code>call Camera1.TakePicture</code> inside it.';
+   if(bodyKeys(hs[0]).length>1) return 'Close — but there are extra blocks in the <code>do</code> area. Mission 1 needs exactly one statement. Drag the extras to the trash.';
+   return true;
+ }},
+{n:2,title:'Show the photo on the canvas',
+ text:'Build the <code>Camera1.AfterPicture</code> handler. The camera should set <code>Canvas1</code> to show the image as its <code>BackgroundImage</code> — and the image lives in the handler’s orange argument.',
+ check:function(){
+   var hs=eventBySig('Camera1.AfterPicture');
+   if(!hs.length) return 'Drag out <code>when Camera1.AfterPicture</code> from the <strong>Camera1</strong> drawer.';
+   var hit=stmtIn('Camera1.AfterPicture','p.Canvas1.BackgroundImage');
+   if(!hit) return 'Put <code>set Canvas1.BackgroundImage to</code> (Canvas1 drawer) inside the AfterPicture handler.';
+   var k=sockKey(hit.st,'to');
+   if(!k) return 'The <code>to</code> socket is empty, so the block sets the background to nothing. Hover the orange <span class="arg-pill" style="cursor:default">image</span> argument on the AfterPicture handler and drag out its <code>get</code> block.';
+   if(k!=='g.image') return 'That socket has the wrong value in it. The photo is stored in the handler’s <code>image</code> argument.';
+   return true;
+ }},
+{n:3,title:'Draw with a swipe',
+ text:'Use <code>when Canvas1.Dragged</code> and <code>call Canvas1.DrawLine</code>. To draw a line, the procedure needs to know <em>where the user first touched</em> and <em>where they touch next</em>.',
+ check:function(){
+   var hs=eventBySig('Canvas1.Dragged');
+   if(!hs.length) return 'Drag out <code>when Canvas1.Dragged</code> from the <strong>Canvas1</strong> drawer. (<code>Touched</code> fires once per tap — it cannot draw a line.)';
+   var hit=stmtIn('Canvas1.Dragged','m.Canvas1.DrawLine');
+   if(!hit) return 'Drop <code>call Canvas1.DrawLine</code> inside the Dragged handler.';
+   var g=['x1','y1','x2','y2'].map(function(s){return sockKey(hit.st,s);});
+   if(g.some(function(x){return !x;})) return 'DrawLine needs all four coordinates. Hover the orange arguments on the Dragged handler to pull out <code>get prevX</code>, <code>get prevY</code>, <code>get currentX</code>, and <code>get currentY</code>.';
+   var A=(g[0]==='g.prevX'&&g[1]==='g.prevY'&&g[2]==='g.currentX'&&g[3]==='g.currentY');
+   var B=(g[0]==='g.currentX'&&g[1]==='g.currentY'&&g[2]==='g.prevX'&&g[3]==='g.prevY');
+   if(!(A||B)) return 'The coordinates are mismatched. One end of the line is (prevX, prevY) — where the finger <em>was</em>. The other end is (currentX, currentY) — where it <em>is</em>. Keep each pair together.';
+   return true;
+ }},
+{n:4,title:'Shake to clear',
+ text:'The accelerometer is a built-in sensor that senses whether and how much the device is tilted. Add it in the Designer first, then handle its <code>Shaking</code> event.',
+ unlockBtn:{key:'AccelerometerSensor1',label:'Add AccelerometerSensor in the Designer',
+   note:'Palette &rsaquo; Sensors &rsaquo; AccelerometerSensor. It is non-visible, so it appears under the screen.'},
+ check:function(){
+   if(!unlocked.AccelerometerSensor1) return 'The block you need does not exist yet. <strong>Verify the component is in the Designer Components panel</strong> — use the button on this mission card to add the AccelerometerSensor.';
+   var hs=eventBySig('AccelerometerSensor1.Shaking');
+   if(!hs.length) return 'Drag out <code>when AccelerometerSensor1.Shaking</code>. Do not grab <code>AccelerationChanged</code> — that one fires constantly, even when the device is still.';
+   var hit=stmtIn('AccelerometerSensor1.Shaking','m.Canvas1.Clear');
+   if(!hit) return 'Put <code>call Canvas1.Clear</code> inside the Shaking handler.';
+   return true;
+ }},
+{n:5,title:'Challenge B — add a color',
+ text:'Add a red button that changes the pen color. In the Designer you would add a Button, rename it <code>ButtonRed</code>, and set its color; here the component is ready once you add it.',
+ unlockBtn:{key:'ButtonRed',label:'Add ButtonRed in the Designer',
+   note:'Rename the new Button to <code>ButtonRed</code> so you can keep track of it — that is what real programmers do.'},
+ check:function(){
+   if(!unlocked.ButtonRed) return 'Add the <code>ButtonRed</code> component first using the button on this mission card.';
+   var hs=eventBySig('ButtonRed.Click');
+   if(!hs.length) return 'Drag out <code>when ButtonRed.Click</code> from the <strong>ButtonRed</strong> drawer.';
+   var hit=stmtIn('ButtonRed.Click','p.Canvas1.PaintColor');
+   if(!hit) return 'Put <code>set Canvas1.PaintColor to</code> inside the ButtonRed.Click handler.';
+   var k=sockKey(hit.st,'to');
+   if(!k) return 'Open the <strong>Colors</strong> drawer and plug a color into the empty socket.';
+   if(k.indexOf('v.color')!==0) return 'That socket needs a <strong>color</strong> block from the Colors drawer.';
+   return true;
+ }}
+];
+var mi=0, mdone=[];
+function renderMissions(){
+  var host=$('#missions'); host.innerHTML='';
+  MISSIONS.forEach(function(m,i){
+    if(i>mi) return;
+    var d=el('div','mission'+(mdone[i]?' done':''));
+    d.appendChild(el('div','mno',mdone[i]?'✓':String(m.n)));
+    var b=el('div','mbody');
+    b.appendChild(el('h4',null,'Mission '+m.n+' · '+m.title));
+    var p=el('p'); p.innerHTML=m.text; b.appendChild(p);
+    if(m.unlockBtn && !unlocked[m.unlockBtn.key] && !mdone[i]){
+      var ub=el('button','btn sm plum',m.unlockBtn.label); ub.type='button';
+      ub.style.marginTop='10px';
+      ub.addEventListener('click',function(){
+        unlocked[m.unlockBtn.key]=1; renderTree(); renderLive(); renderMissions();
+        log(m.unlockBtn.key+' added in the Designer','dim');
+        say('<strong>'+m.unlockBtn.key+'</strong> now has a drawer in the Blocks panel. '+m.unlockBtn.note);
+      });
+      b.appendChild(ub);
+    }
+    var s=el('div','mstat','Complete'); b.appendChild(s);
+    d.appendChild(b); host.appendChild(d);
+  });
+}
+function checkMission(){
+  var m=MISSIONS[mi];
+  if(!m){ say('All five missions are complete. Keep experimenting — then build the real thing in App Inventor.','good'); return; }
+  var r=m.check();
+  if(r===true){
+    mdone[mi]=true;
+    var last=(mi===MISSIONS.length-1);
+    say('&#10003; <strong>Mission '+m.n+' complete.</strong> '+(last?'That is the whole app — take a picture, doodle, shake, and switch colors.':'Try it on the companion, then move to Mission '+(m.n+1)+'.'),'good');
+    log('✓ Mission '+m.n+' passed');
+    if(!last) mi++;
+    renderMissions();
+  }else{
+    say(r,'bad');
+  }
+}
+
+/* =======================================================
+   INIT
+   ======================================================= */
+var w=$('#workspace'); w.dataset.drop='workspace';
+$('#trash').dataset.drop='trash';
+$('#blocks-check').addEventListener('click',checkMission);
+$('#blocks-reset').addEventListener('click',function(){
+  ws=[]; APP.bg=null; APP.strokes=[]; APP.paint='#000000'; APP.width=3;
+  render(); say('Workspace cleared. Mission '+MISSIONS[mi].n+' is still waiting.');
+  log('workspace cleared','dim');
+});
+$('#shake-btn').addEventListener('click',function(){ fire('AccelerometerSensor1.Shaking',{}); });
+renderMissions(); render();
+log('AI Companion connected.','dim');
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=window.__$, $$=window.__$$, el=window.__el, buildQuiz=window.__buildQuiz;
+
+/* ---- static block art helpers ---- */
+function pill(a){return '<span class="arg-pill" style="cursor:default">'+a+'</span>';}
+function sock(i){return '<span class="socket">'+(i||'<span class="sk-hint">⌷</span>')+'</span>';}
+function getv(n){return '<span class="blk-val k-var"><span class="kw" style="opacity:.85;margin-right:4px">get</span>'+n+'</span>';}
+function colv(n,h){return '<span class="blk-val k-color"><span class="cswatch" style="background:'+h+'"></span>'+n+'</span>';}
+function callb(name,pairs){
+  var s='<div class="blk blk-stmt k-method"><div class="bh"><span class="kw">call</span><span class="nm">'+name+'</span>';
+  (pairs||[]).forEach(function(p){ s+='<span class="kw">'+p[0]+'</span>'+sock(p[1]); });
+  return s+'</div></div>';
+}
+function setb(name,inner){
+  return '<div class="blk blk-stmt k-prop"><div class="bh"><span class="kw">set</span><span class="nm">'+name+
+    '</span><span class="kw">to</span>'+sock(inner)+'</div></div>';
+}
+function evb(name,args,body){
+  var s='<div class="blk blk-event" style="margin-bottom:10px"><div class="bh"><span class="kw">when</span><span class="nm">'+name+'</span>';
+  if(args&&args.length){ s+='<span class="args">'+args.map(pill).join('')+'</span>'; }
+  s+='</div><div class="do"><span class="dolbl">do</span><div class="slot">'+
+     (body||'<div class="slot-hint">(empty)</div>')+'</div></div></div>';
+  return s;
+}
+function art(html){ return '<div style="background:#f4f7fc;border:1px solid var(--line);border-radius:11px;padding:15px;overflow-x:auto">'+html+'</div>'; }
+
+/* =======================================================
+   SECTION 1 — design terminology
+   ======================================================= */
+buildQuiz('#quiz-brief',[
+ {q:'Which of these is a <strong>user story</strong> for the Digital Doodle app?',
+  a:['&ldquo;The app uses the Canvas component from the Drawing and Animation drawer.&rdquo;',
+     '&ldquo;A user can shake the device to clear everything they have drawn.&rdquo;',
+     '&ldquo;The Button1.Click event handler calls Camera1.TakePicture.&rdquo;',
+     '&ldquo;The project is saved as DigitalDoodle_v2.&rdquo;'],
+  c:1,
+  hint:'A user story describes what the <em>user</em> can do — not which blocks or components you used.',
+  why:'A user story names a feature from the user’s point of view. The other three describe implementation details or file management, which come later.'},
+ {q:'A team builds a photo markup app with tiny buttons and no labels, so their intended users — people wearing gloves on a job site — cannot use it. Which idea did the team ignore?',
+  a:['Abstraction','User centered design','Version control','Debugging'],
+  c:1,
+  hint:'Who was going to use this app, and did the design account for them?',
+  why:'If the design and development of a software solution is not <strong>user centered</strong>, the app may not be used by the intended audience.'},
+ {q:'Which of these is part of the <strong>user interface</strong>?',
+  a:['Only the buttons you can see on the screen',
+     'The touch screen, the buttons, and even the accelerometer that senses the device’s orientation',
+     'The Blocks view of App Inventor',
+     'The name you give your project when you save it'],
+  c:1,
+  hint:'The user interface includes anything that senses the user or shows them something.',
+  why:'A user interface is what the user interacts with on the device. It includes the touch screen, buttons, and sensors such as the accelerometer, and it sends messages to the operating system based on what it senses.'}
+]);
+
+/* =======================================================
+   SECTION 4 — bug hunt
+   ======================================================= */
+buildQuiz('#bughunt',[
+ {q:'<strong>Bug 1.</strong> The student presses the button and absolutely nothing happens. No photo, no error.',
+  pre:art(evb('Button1.Click',[],'')+evb('Camera1.AfterPicture',['image'],callb('Camera1.TakePicture'))),
+  a:['Delete the <code>Camera1.AfterPicture</code> handler — it is not needed.',
+     'Move <code>call Camera1.TakePicture</code> into the <code>Button1.Click</code> handler.',
+     'Add a second Camera component in the Designer view.',
+     'Rename Button1 to something more descriptive.'],
+  c:1,
+  hint:'Read the handlers out loud. Which event actually happens when the user presses the button?',
+  why:'The <code>Click</code> handler is empty, so clicking does nothing. <code>AfterPicture</code> only fires <em>after</em> a picture is taken — and no picture is ever taken, so its blocks never run. Move the call into <code>Button1.Click</code>.'},
+ {q:'<strong>Bug 2.</strong> The camera opens and takes a photo, but the canvas stays blank.',
+  pre:art(evb('Button1.Click',[],callb('Camera1.TakePicture'))+evb('Camera1.AfterPicture',['image'],setb('Canvas1.BackgroundImage',''))),
+  a:['Plug <code>get image</code> from the AfterPicture handler into the empty socket.',
+     'Change <code>BackgroundImage</code> to <code>PaintColor</code>.',
+     'Move the <code>set</code> block into the Click handler.',
+     'Add a Clock component so the image has time to load.'],
+  c:0,
+  hint:'Look at the socket on the right of the <code>set</code> block.',
+  why:'The <code>to</code> socket is empty, so the block sets the background to nothing at all. The photo is stored in the handler’s orange <code>image</code> argument — hover it and drag out <code>get image</code>.'},
+ {q:'<strong>Bug 3.</strong> A student drags <code>get image</code> into a different handler and App Inventor marks the block with an error.',
+  pre:art(evb('Button1.Click',[],setb('Canvas1.BackgroundImage',getv('image')))),
+  a:['Rename the argument to <code>Image</code> with a capital I.',
+     'Add a second Canvas so there is a place to put the image.',
+     '<code>image</code> is a local variable belonging to <code>Camera1.AfterPicture</code>; move the <code>set</code> block into that handler instead.',
+     'Nothing is wrong — App Inventor is mistaken.'],
+  c:2,
+  hint:'Where did that orange block come from, and who is allowed to see it?',
+  why:'Blocks you create from an event handler may only be used inside the handler you pulled them from. <code>image</code> is a local variable connected to <code>when Camera1.AfterPicture</code>; other event handlers have no access to the camera’s image.'},
+ {q:'<strong>Bug 4.</strong> Dragging a finger across the picture leaves nothing behind — or at most a few specks.',
+  pre:art(evb('Canvas1.Dragged',['startX','startY','prevX','prevY','currentX','currentY'],
+     callb('Canvas1.DrawLine',[['x1',getv('currentX')],['y1',getv('currentY')],['x2',getv('currentX')],['y2',getv('currentY')]]))),
+  a:['Use <code>Canvas1.Touched</code> instead of <code>Canvas1.Dragged</code>.',
+     'Set <code>x2</code> and <code>y2</code> to <code>get prevX</code> and <code>get prevY</code>.',
+     'Increase the LineWidth to 20.',
+     'Move the DrawLine block outside the event handler.'],
+  c:1,
+  hint:'A line needs two <em>different</em> points. What are the four numbers here?',
+  why:'Both ends of the line are the same point, so every &ldquo;line&rdquo; has zero length. One end must be where the finger <em>was</em> (<code>prevX</code>, <code>prevY</code>) and the other where it <em>is</em> (<code>currentX</code>, <code>currentY</code>).'},
+ {q:'<strong>Bug 5.</strong> A student says: &ldquo;I opened every drawer and there is no <code>AccelerometerSensor1.Shaking</code> block anywhere.&rdquo;',
+  a:['The block only appears after you connect the AI Companion.',
+     'Shaking is only available on Android devices.',
+     'Add the AccelerometerSensor component in the <strong>Designer</strong> view first; then its drawer appears in the Blocks view.',
+     'Type the block name into the Blocks search bar to create it.'],
+  c:2,
+  hint:'Follow the Helpful Tip: step 1 is always to verify the component exists.',
+  why:'All of the components you define in the Designer get a sub-drawer under Screen1 in the Blocks view. No component, no drawer, no blocks. Add it in the Designer, then return to Blocks.'}
+]);
+
+/* =======================================================
+   SECTION 4 — iteration
+   ======================================================= */
+buildQuiz('#quiz-iter',[
+ {q:'You have a working app that takes a picture and draws. You are about to add the accelerometer. What is the smart move first?',
+  a:['Delete the blocks you are unsure about so the workspace is clean.',
+     'Use <code>Projects &rsaquo; Save project as…</code> to save a new, clearly named version.',
+     'Export the .APK and email it to yourself.',
+     'Add all three challenges at once so you only have to test once.'],
+  c:1,
+  hint:'What lets you get back to a working app if the next feature breaks everything?',
+  why:'Saving as a new version means that if the new feature breaks the app, the last working iteration is still there. Naming it well is what makes it findable later.'},
+ {q:'Which set of project names would help you most six weeks from now?',
+  a:['Project1, Project2, Project3, final, finalFINAL',
+     'DigitalDoodle, DigitalDoodle_copy, DigitalDoodle_copy_copy',
+     'DigitalDoodle_v1_camera, DigitalDoodle_v2_draw, DigitalDoodle_v3_shake, DigitalDoodle_v4A_slider',
+     'doodle, doodle2, dd, ddnew'],
+  c:2,
+  hint:'A good name says what changed, not just that something changed.',
+  why:'Naming that records <em>which feature</em> each iteration added lets you review previous versions of your code as you develop toward the final app — and jump straight back to the last version that worked.'}
+]);
+
+/* =======================================================
+   SECTION 5 — procedures and arguments
+   ======================================================= */
+buildQuiz('#quiz-proc',[
+ {q:'What is the difference between a function and a procedure, as described in this activity?',
+  a:['A function runs faster than a procedure.',
+     'A function returns one or more values; a procedure does not necessarily have to.',
+     'A function is block-based; a procedure is text-based.',
+     'There is no difference in any language.'],
+  c:1,
+  hint:'One of the two is defined by what it hands back.',
+  why:'A function takes inputs and returns one or more values. A procedure is a small component of a program that accomplishes a task and does not necessarily return anything. Block-based programming does not differentiate between them.'},
+ {q:'Why are the orange argument blocks called <strong>local</strong> variables?',
+  a:['Because they only store small numbers.',
+     'Because they are stored on the local device rather than the internet.',
+     'Because they can only be used inside the event handler they belong to.',
+     'Because you have to name them yourself before you use them.'],
+  c:2,
+  hint:'Think about what happened when you tried to use <code>get image</code> somewhere else.',
+  why:'Arguments are specific to a particular event handler and are stored in that handler. They are local variables that can only be used within it.'},
+ {q:'The <code>Canvas1.Dragged</code> event handler hands you <code>prevX</code>, <code>prevY</code>, <code>currentX</code>, and <code>currentY</code> automatically. Which big idea does that illustrate?',
+  a:['Abstraction — the details of how the coordinates are sensed and stored are hidden from you.',
+     'Iteration — the values change every time the event fires.',
+     'Debugging — the values help you find errors.',
+     'User centered design — the values come from the user.'],
+  c:0,
+  hint:'You never wrote any code to read the touch screen. Who did that work?',
+  why:'Abstraction hides the complexity of a task by concealing the details. You do not need to know <em>how</em> the touch coordinates are captured and stored — just that they hold information you need.'},
+ {q:'In Challenge A, the <code>Slider1.PositionChanged</code> handler offers a <code>thumbPosition</code> argument. Which component property should accept that argument?',
+  a:['<code>Canvas1.BackgroundImage</code>','<code>Canvas1.LineWidth</code>','<code>Canvas1.PaintColor</code>','<code>Button1.Text</code>'],
+  c:1,
+  hint:'What is the slider supposed to control?',
+  why:'The slider adjusts the width of the line that draws as you drag, so the value it produces is passed to <code>set Canvas1.LineWidth to</code>.'}
+]);
+
+/* =======================================================
+   SECTION 6 — exit ticket
+   ======================================================= */
+var EXIT=[
+ {q:'In App Inventor, which view do you use to change <em>what the user sees</em>?',
+  a:['Blocks view','Designer view','Viewer settings','The AI Companion'],c:1,
+  why:'The Designer view is where you create the user interface and add the components you will later program.'},
+ {q:'A <strong>component</strong> is best described as:',
+  a:['A tidy package of functionality for an input or an output',
+     'A single line of text-based code',
+     'A saved version of your project',
+     'The six-character code used to connect the companion'],c:0,
+  why:'Components live in the Palette drawers and each one packages up an input or output — a Button, a Canvas, a Camera, a sensor.'},
+ {q:'An <strong>event handler</strong> is a block of code that:',
+  a:['Runs once when the app is installed',
+     'Listens for user inputs, or events, and then responds to them',
+     'Stores a value for the whole program to use',
+     'Converts blocks into Java'],c:1,
+  why:'Event handlers listen to events such as a click, a drag, or a shake, and then handle them by running the blocks inside their <code>do</code> area.'},
+ {q:'Which drawer holds the <strong>Camera</strong> component in the Designer?',
+  a:['User Interface','Sensors','Media','Drawing and Animation'],c:2,
+  why:'Camera is in the Media drawer. It is non-visible, so it appears below the phone screen in the Viewer.'},
+ {q:'Why is the Camera called a <em>non-visible</em> component?',
+  a:['It has no blocks in the Blocks view',
+     'It only works when the device is face down',
+     'It does not appear in the user interface on the screen, even though the app uses it',
+     'It is invisible until you take a picture'],c:2,
+  why:'Non-visible components do real work but have no on-screen presence, so App Inventor shows them under the screen in the Viewer.'},
+ {q:'What does <strong>abstraction</strong> do for you when you use the Camera component?',
+  a:['It makes the app run faster on older phones',
+     'It hides the complexity of how a picture is taken so you can focus on the relevant steps',
+     'It compresses the photo so it fits on the canvas',
+     'It removes blocks you are not using'],c:1,
+  why:'Abstraction hides complexity by concealing details. App Inventor gives you a Camera with its behaviors already defined — you never write the code for <em>how</em> to take a picture.'},
+ {q:'The <code>image</code> argument on <code>Camera1.AfterPicture</code> can be used:',
+  a:['Anywhere in the program','Only inside the <code>Camera1.AfterPicture</code> handler',
+     'Only inside the Designer view','Only after you shake the device'],c:1,
+  why:'Arguments are local variables stored in the event handler they belong to. Other handlers have no access to the camera’s image.'},
+ {q:'Why does <code>call Canvas1.DrawLine</code> need four numbers?',
+  a:['One for each edge of the screen',
+     'Two for the color and two for the width',
+     'A line needs a starting point (x, y) and an ending point (x, y)',
+     'Three for red, green, blue, plus one for transparency'],c:2,
+  why:'To draw a line the procedure needs where the user first touched and where they touch next — <code>prevX, prevY</code> and <code>currentX, currentY</code>.'},
+ {q:'You cannot find any blocks for a component you want to program. The first thing to check is:',
+  a:['Whether the component exists in the Designer Components panel',
+     'Whether your device is charged',
+     'Whether you are signed in to Google',
+     'Whether the project name has a number in it'],c:0,
+  why:'Every component you define in the Designer gets a sub-drawer under Screen1 in the Blocks view. No component, no blocks.'},
+ {q:'What is the main reason to do an <strong>iteration save</strong> before adding a new feature?',
+  a:['It backs the project up to your phone',
+     'It makes the blocks run in a different order',
+     'It keeps a working version you can return to if the new feature breaks the app',
+     'It is required before you can use the AI Companion'],c:2,
+  why:'Saving a new, clearly named version minimizes how much you have to debug or fix moving forward, and lets you review previous versions of your code.'}
+];
+var exitQ=buildQuiz('#exit-quiz',EXIT,{instant:false});
+$('#exit-grade').addEventListener('click',function(){
+  if(exitQ.answered()<EXIT.length){
+    if(!confirm('You have answered '+exitQ.answered()+' of '+EXIT.length+' questions. Grade anyway?')) return;
+  }
+  var n=exitQ.grade();
+  var sc=$('#exit-score');
+  sc.textContent=n+' / '+EXIT.length+'  ('+Math.round(n/EXIT.length*100)+'%)';
+  sc.style.color=(n>=8)?'var(--teal)':(n>=6)?'var(--amber)':'var(--rose)';
+  $('#exit-grade').disabled=true;
+});
+
+/* =======================================================
+   SECTION 6 — conclusion questions
+   ======================================================= */
+var CONC=[
+ 'Have you ever installed an app on a device that asked for permission to use your camera?',
+ 'What should you need to think about before you allow an app access to your camera?',
+ 'Can you think of a time you, a friend, or a family member felt unsafe or disrespected because of who they are? Do a web search to see whether any apps exist to help address these issues.',
+ 'Why is it important to design incrementally? Consider: during what iteration did you have a working app? What did you stand to lose and gain with each iteration?',
+ 'Why do you think computer science professionals included things like communication, collaboration, and fostering an inclusive computing environment in the computer science practices?',
+ 'How did you interpret and respond to the Essential Questions? (Why is it important to become a creator and not just a user? How does block-based programming make life easier when coding?) Capture your thoughts for future conversations.'
+];
+(function(){
+  var host=$('#conclusion');
+  CONC.forEach(function(q,i){
+    var wrap=el('div'); wrap.style.marginBottom='18px';
+    var l=el('label','field'); l.setAttribute('for','conc'+i);
+    l.innerHTML='<span style="color:var(--plum)">Question '+(i+1)+'.</span> '+q;
+    var t=el('textarea','notebook-in'); t.id='conc'+i; t.dataset.nb='Conclusion Q'+(i+1)+': '+q;
+    wrap.appendChild(l); wrap.appendChild(t); host.appendChild(wrap);
+  });
+})();
+
+/* =======================================================
+   EXPORT
+   ======================================================= */
+$('#copy-all').addEventListener('click',function(){
+  var txt=window.__collect();
+  var box=$('#export-box');
+  box.hidden=false; box.value=txt; box.select();
+  var ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+  if(!ok && navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(function(){ flash('Copied to your clipboard.'); },
+      function(){ flash('Select the text below and copy it manually.'); });
+    return;
+  }
+  flash(ok?'Copied to your clipboard.':'Select the text below and copy it manually.');
+});
+function flash(m){ var s=$('#copy-msg'); s.textContent=m; setTimeout(function(){s.textContent='';},4000); }
+$('#print-all').addEventListener('click',function(){
+  var secs=$$('section.step'), was=-1;
+  secs.forEach(function(s,i){ if(s.classList.contains('active')) was=i; });
+  secs.forEach(function(s){ s.classList.add('active'); });
+  window.print();
+  setTimeout(function(){
+    secs.forEach(function(s,i){ s.classList.toggle('active', i===was); });
+  },400);
+});
+})();
+</script>
+</body></html>

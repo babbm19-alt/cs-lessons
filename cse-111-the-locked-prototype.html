@@ -1,0 +1,606 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+</head><body>
+<title>The Locked Prototype</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+:root{
+  color-scheme: dark;
+  --bg:#080e1a; --bg-2:#0d1526; --panel:#121c31; --panel-2:#18243d;
+  --line:#243350; --line-2:#1a2740;
+  --text:#e9eefb; --muted:#93a4c4; --dim:#67789a;
+  --gold:#e0a83a; --gold-d:#a97d24; --gold-soft:rgba(224,168,58,.13);
+  --teal:#3ed0a4; --teal-d:#1f8f6e; --teal-soft:rgba(62,208,164,.12);
+  --rose:#f0647f; --rose-soft:rgba(240,100,127,.13);
+  --violet:#a077d6;
+  --b-event:#b18e35; --b-event-d:#8e7029;
+  --b-method:#7d5ba6; --b-method-d:#634784;
+  --b-prop:#3f9e78; --b-prop-d:#2f7a5c;
+  --b-var:#d2801e; --b-var-d:#a86317;
+  --sans:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  --display:'Sora','Public Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--sans);
+  font-size:16.5px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(760px 420px at 82% -8%, rgba(160,119,214,.16), transparent 62%),
+    radial-gradient(620px 400px at 6% 104%, rgba(62,208,164,.10), transparent 60%);
+  background-attachment:fixed;
+}
+h1,h2,h3,h4{font-family:var(--display); margin:0 0 .5em; line-height:1.2; font-weight:700; letter-spacing:-.015em; color:#fff; text-wrap:balance}
+h1{font-size:clamp(1.8rem,4.6vw,2.7rem); letter-spacing:-.03em}
+h2{font-size:1.35rem}
+h3{font-size:1.06rem}
+p{margin:0 0 1em}
+code{font-family:var(--mono); font-size:.86em; background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:5px; padding:.08em .38em; color:#dbe6ff}
+.wrap{max-width:900px; margin:0 auto; padding:0 20px}
+:focus-visible{outline:2.5px solid var(--gold); outline-offset:2px; border-radius:5px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms !important; transition-duration:.001ms !important}}
+
+/* ---------- header ---------- */
+header.top{padding:46px 0 28px; text-align:center; position:relative}
+.badge{
+  display:inline-flex; align-items:center; gap:9px; font-size:.68rem; font-weight:700; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--gold); border:1px solid rgba(224,168,58,.34);
+  background:var(--gold-soft); padding:6px 14px; border-radius:999px; margin-bottom:18px;
+}
+header.top p.sub{color:var(--muted); max-width:56ch; margin:0 auto; font-size:1.02rem}
+
+/* ---------- status bar ---------- */
+.hud{
+  position:sticky; top:0; z-index:50; background:rgba(8,14,26,.9); backdrop-filter:blur(11px);
+  border-bottom:1px solid var(--line); padding:11px 0; margin-bottom:34px;
+}
+.hud-in{max-width:900px; margin:0 auto; padding:0 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+.slots{display:flex; gap:8px; flex:1; min-width:200px}
+.slot-d{
+  width:44px; height:54px; border-radius:10px; border:1.5px dashed var(--line);
+  display:grid; place-items:center; font-family:var(--mono); font-size:1.5rem; font-weight:700;
+  color:var(--dim); background:var(--bg-2); position:relative; transition:all .35s cubic-bezier(.2,.8,.3,1);
+}
+.slot-d.filled{border-style:solid; border-color:var(--teal); color:var(--teal); background:var(--teal-soft); box-shadow:0 0 0 3px rgba(62,208,164,.09)}
+.slot-d small{position:absolute; bottom:3px; font-family:var(--sans); font-size:.52rem; letter-spacing:.1em; color:var(--dim); font-weight:700}
+.timer{font-family:var(--mono); font-size:1.28rem; font-weight:700; color:var(--text); letter-spacing:.02em; font-variant-numeric:tabular-nums}
+.timer small{display:block; font-family:var(--sans); font-size:.56rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dim); font-weight:700; text-align:right}
+
+/* ---------- lock cards ---------- */
+.lock{
+  background:linear-gradient(180deg,var(--panel),var(--bg-2)); border:1px solid var(--line);
+  border-radius:16px; padding:24px 26px; margin:0 0 20px; position:relative; overflow:hidden;
+}
+.lock::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--gold); opacity:.8}
+.lock.solved::before{background:var(--teal)}
+.lock.locked-out{opacity:.5}
+.lock-head{display:flex; align-items:flex-start; gap:14px; margin-bottom:16px}
+.lock-no{
+  flex:0 0 auto; width:38px; height:38px; border-radius:11px; background:var(--gold-soft);
+  border:1px solid rgba(224,168,58,.35); color:var(--gold); font-family:var(--display); font-weight:800;
+  font-size:.95rem; display:grid; place-items:center;
+}
+.lock.solved .lock-no{background:var(--teal-soft); border-color:rgba(62,208,164,.4); color:var(--teal)}
+.lock-head h3{margin:2px 0 3px}
+.lock-head .lk{font-size:.68rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dim); font-weight:700}
+.lock-body p{color:var(--muted); font-size:.95rem}
+.lock-body p strong,.lock-body p code{color:var(--text)}
+
+.choices{display:grid; gap:9px; margin:16px 0 0}
+@media(min-width:700px){ .choices.two{grid-template-columns:1fr 1fr} }
+.choice{
+  display:flex; gap:11px; align-items:flex-start; text-align:left; width:100%; font:inherit;
+  background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+  border-radius:11px; padding:13px 15px; cursor:pointer; font-size:.94rem; transition:border-color .14s, background .14s, transform .1s;
+}
+.choice:hover:not(:disabled){border-color:#39527f; background:#1c2a46}
+.choice:active:not(:disabled){transform:translateY(1px)}
+.choice .k{
+  flex:0 0 auto; width:22px; height:22px; border-radius:6px; background:var(--bg); border:1px solid var(--line);
+  color:var(--dim); font-size:.72rem; font-weight:800; display:grid; place-items:center; margin-top:1px; font-family:var(--mono);
+}
+.choice.right{border-color:var(--teal); background:var(--teal-soft)}
+.choice.right .k{background:var(--teal); border-color:var(--teal); color:#04231a}
+.choice.wrong{border-color:var(--rose); background:var(--rose-soft)}
+.choice.wrong .k{background:var(--rose); border-color:var(--rose); color:#2a0510}
+.choice:disabled{cursor:default}
+
+.resp{margin-top:14px; font-size:.92rem; border-radius:11px; padding:12px 15px; border:1px solid; display:none}
+.resp.show{display:block}
+.resp.good{background:var(--teal-soft); border-color:rgba(62,208,164,.35); color:#a9f0d8}
+.resp.bad{background:var(--rose-soft); border-color:rgba(240,100,127,.35); color:#ffc4ce}
+.resp.info{background:rgba(255,255,255,.045); border-color:var(--line); color:var(--muted)}
+
+.digit-reveal{
+  margin-top:15px; display:flex; align-items:center; gap:13px; background:var(--teal-soft);
+  border:1px solid rgba(62,208,164,.32); border-radius:12px; padding:13px 16px;
+}
+.digit-reveal .d{font-family:var(--mono); font-size:2rem; font-weight:700; color:var(--teal); line-height:1}
+.digit-reveal .t{font-size:.88rem; color:#a9f0d8}
+
+/* dropdown lock */
+.pairs{display:grid; gap:11px; margin-top:15px}
+.pair{display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--panel-2); border:1px solid var(--line); border-radius:11px; padding:12px 15px}
+.pair .cname{font-weight:700; font-family:var(--mono); font-size:.9rem; color:#ffd98a; min-width:96px}
+.pair select{
+  font:inherit; font-size:.9rem; background:var(--bg); color:var(--text); border:1px solid var(--line);
+  border-radius:8px; padding:7px 10px; flex:1; min-width:170px;
+}
+.pair.ok{border-color:var(--teal)}
+.pair.no{border-color:var(--rose)}
+
+/* clickable block art */
+.artbox{background:#0a1120; border:1px solid var(--line); border-radius:13px; padding:17px; margin-top:16px; overflow-x:auto}
+.blk{font-family:var(--sans); font-size:.8rem; font-weight:600; color:#fff; user-select:none}
+.blk .bh{display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:7px 11px; line-height:1.35}
+.blk .bh .kw{opacity:.9}
+.blk .bh .nm{font-weight:800}
+.blk-event{margin:0 0 12px; width:max-content; max-width:100%}
+.blk-event > .bh{background:var(--b-event); border:1px solid var(--b-event-d); border-bottom:0; border-radius:9px 9px 0 0}
+.blk-event > .do{background:var(--b-event); border:1px solid var(--b-event-d); border-top:0; border-radius:0 0 9px 9px; display:flex; gap:8px; padding:0 9px 9px 11px; align-items:flex-start}
+.blk-event > .do > .dolbl{font-size:.76rem; opacity:.92; padding-top:8px}
+.slotc{flex:1; min-width:160px; background:rgba(0,0,0,.16); border-radius:7px; padding:7px; display:flex; flex-direction:column; gap:6px}
+.args{display:flex; gap:4px; margin-left:5px; flex-wrap:wrap}
+.arg-pill{background:var(--b-var); border:1px solid var(--b-var-d); border-radius:9px; padding:1px 8px; font-size:.72rem; font-weight:700; color:#fff}
+.blk-stmt{width:max-content; max-width:100%}
+.blk-stmt > .bh{border-radius:7px; border:1px solid}
+.blk-stmt.k-method > .bh{background:var(--b-method); border-color:var(--b-method-d)}
+.blk-stmt.k-prop > .bh{background:var(--b-prop); border-color:var(--b-prop-d)}
+.socket{display:inline-flex; align-items:center; min-width:56px; min-height:22px; border-radius:5px; background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px rgba(255,255,255,.13); padding:2px}
+.socket .sk-hint{font-size:.66rem; color:rgba(255,255,255,.55); padding:0 6px; font-weight:600}
+.blk-val{display:inline-flex; align-items:center; border-radius:9px; border:1px solid; padding:2px 9px; font-size:.75rem; font-weight:700; color:#fff; white-space:nowrap}
+.blk-val.k-var{background:var(--b-var); border-color:var(--b-var-d)}
+.pickable{cursor:pointer; transition:filter .12s, box-shadow .12s}
+.pickable:hover{filter:brightness(1.16); box-shadow:0 0 0 2px rgba(255,255,255,.4)}
+.pickable.hit{box-shadow:0 0 0 3px var(--rose)}
+.pickable.correct{box-shadow:0 0 0 3px var(--teal)}
+
+/* option cards containing art */
+.artchoices{display:grid; gap:13px; margin-top:16px}
+@media(min-width:760px){ .artchoices{grid-template-columns:1fr 1fr} }
+.artchoice{
+  background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:13px; cursor:pointer;
+  text-align:left; font:inherit; color:var(--text); transition:border-color .14s, background .14s; overflow:hidden;
+}
+.artchoice:hover:not(:disabled){border-color:#39527f}
+.artchoice .lbl{font-family:var(--mono); font-size:.72rem; font-weight:700; color:var(--dim); letter-spacing:.1em; margin-bottom:9px}
+.artchoice.right{border-color:var(--teal); background:var(--teal-soft)}
+.artchoice.wrong{border-color:var(--rose); background:var(--rose-soft)}
+.artchoice:disabled{cursor:default}
+.artchoice .scroller{overflow-x:auto}
+
+/* sequencer */
+.seq-pool{display:flex; flex-direction:column; gap:9px; margin-top:15px}
+.seq-item{
+  display:flex; align-items:center; gap:12px; background:var(--panel-2); border:1px solid var(--line);
+  border-radius:11px; padding:12px 15px; cursor:pointer; font:inherit; color:var(--text); text-align:left; font-size:.93rem;
+  transition:border-color .14s, background .14s, opacity .2s;
+}
+.seq-item:hover:not(:disabled){border-color:#39527f}
+.seq-item.placed{opacity:.32; cursor:default; border-style:dashed}
+.seq-item .ord{width:24px; height:24px; border-radius:7px; background:var(--bg); border:1px solid var(--line); color:var(--dim); font-family:var(--mono); font-size:.76rem; font-weight:800; display:grid; place-items:center; flex:0 0 auto}
+.seq-item.placed .ord{background:var(--teal); border-color:var(--teal); color:#04231a}
+.seq-built{margin-top:14px; font-size:.86rem; color:var(--muted); font-family:var(--mono)}
+
+/* ---------- final device ---------- */
+.finale{margin:38px 0 60px; text-align:center}
+.device{
+  width:290px; margin:0 auto; border:3px solid #263553; border-radius:30px; background:#060b16;
+  padding:26px 20px 22px; box-shadow:0 30px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.device .lockicon{font-size:1.7rem; margin-bottom:6px}
+.device .devtitle{font-family:var(--display); font-weight:700; font-size:1rem; color:#fff; margin-bottom:3px}
+.device .devsub{font-size:.74rem; color:var(--dim); margin-bottom:18px}
+.pin{display:flex; gap:8px; justify-content:center; margin-bottom:18px}
+.pin i{
+  width:15px; height:15px; border-radius:50%; border:1.5px solid #3a4d75; display:block; font-style:normal;
+  transition:background .15s, border-color .15s;
+}
+.pin i.on{background:var(--gold); border-color:var(--gold)}
+.keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.keypad button{
+  font-family:var(--mono); font-size:1.14rem; font-weight:700; color:var(--text); background:#101a2e;
+  border:1px solid #22314f; border-radius:50%; aspect-ratio:1; cursor:pointer; transition:background .12s, transform .08s;
+}
+.keypad button:hover{background:#1a2740}
+.keypad button:active{transform:scale(.94)}
+.keypad button.wide{grid-column:span 1; font-size:.72rem; font-family:var(--sans); font-weight:700; border-radius:50%}
+.finale .msg{margin-top:20px; font-size:.95rem; min-height:1.5em; font-weight:600}
+.finale .msg.bad{color:var(--rose)}
+.finale .msg.good{color:var(--teal)}
+
+.win{
+  display:none; margin-top:26px; background:linear-gradient(180deg,rgba(62,208,164,.14),rgba(62,208,164,.04));
+  border:1px solid rgba(62,208,164,.36); border-radius:16px; padding:26px 28px; text-align:left;
+}
+.win.show{display:block; animation:pop .45s cubic-bezier(.2,.9,.3,1)}
+@keyframes pop{from{opacity:0; transform:scale(.97) translateY(8px)} to{opacity:1; transform:none}}
+.win h2{color:var(--teal)}
+.win table{width:100%; border-collapse:collapse; font-size:.9rem; margin-top:14px}
+.win table td{padding:7px 10px; border-bottom:1px solid rgba(62,208,164,.18); vertical-align:top}
+.win table td:first-child{font-family:var(--mono); font-weight:700; color:var(--teal); width:34px; text-align:center}
+
+footer{border-top:1px solid var(--line); padding:24px 0 42px; color:var(--dim); font-size:.83rem}
+.btn{font:inherit; font-weight:650; font-size:.9rem; border-radius:10px; padding:9px 16px; cursor:pointer; border:1px solid var(--line); background:var(--panel-2); color:var(--text)}
+.btn:hover{background:#1c2a46}
+</style>
+<header class="top">
+  <div class="wrap">
+    <div class="badge">PLTW CSE &middot; Activity 1.1.1 review</div>
+    <h1>The Locked Prototype</h1>
+    <p class="sub">Nalini finished the Digital Doodle prototype and locked the test device before break.
+      Five locks stand between you and the passcode. Each one you open reveals a digit.</p>
+  </div>
+</header>
+
+<div class="hud">
+  <div class="hud-in">
+    <div class="slots" id="slots"></div>
+    <div class="timer"><span id="clock">00:00</span><small>elapsed</small></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="locks"></div>
+
+  <section class="finale">
+    <h2>Enter the passcode</h2>
+    <p style="color:var(--muted); max-width:52ch; margin:0 auto 24px">Five digits, in lock order. The device knows
+      whether you actually opened the locks.</p>
+    <div class="device">
+      <div class="lockicon" id="lockicon">&#128274;</div>
+      <div class="devtitle">Nalini's test device</div>
+      <div class="devsub">DigitalDoodle_v5C</div>
+      <div class="pin" id="pin"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="keypad" id="keypad"></div>
+    </div>
+    <div class="msg" id="finalmsg"></div>
+    <div class="win" id="win">
+      <h2>Unlocked.</h2>
+      <p style="color:#a9f0d8">You rebuilt the whole activity from the inside out. Every digit was a fact about how
+        this app works:</p>
+      <table id="whytable"></table>
+      <p style="margin-top:16px; color:#a9f0d8">Elapsed time: <strong id="finaltime"></strong>. Locks opened on the
+        first try: <strong id="firsttry"></strong> of 5.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    PLTW Computer Science Essentials &mdash; Activity 1.1.1 review game. Built for Mr. Babb's class.
+    Everything here comes straight from the Digital Doodle activity: Designer drawers, event handlers,
+    arguments and scope, debugging, and iterative saves.
+  </div>
+</footer>
+<script>
+(function(){
+"use strict";
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+function el(t,c,x){var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;}
+
+/* ---------- block art helpers ---------- */
+function sock(i){return '<span class="socket">'+(i||'<span class="sk-hint">&#8999;</span>')+'</span>';}
+function getv(n){return '<span class="blk-val k-var"><span class="kw" style="opacity:.85;margin-right:4px">get</span>'+n+'</span>';}
+function callb(name,pairs,tag){
+  var s='<div class="blk blk-stmt k-method"'+(tag?' data-pick="'+tag+'"':'')+'><div class="bh"><span class="kw">call</span><span class="nm">'+name+'</span>';
+  (pairs||[]).forEach(function(p){ s+='<span class="kw">'+p[0]+'</span>'+sock(p[1]); });
+  return s+'</div></div>';
+}
+function setb(name,inner,tag){
+  return '<div class="blk blk-stmt k-prop"'+(tag?' data-pick="'+tag+'"':'')+'><div class="bh"><span class="kw">set</span><span class="nm">'+name+
+    '</span><span class="kw">to</span>'+sock(inner)+'</div></div>';
+}
+function evb(name,args,body,tag){
+  var s='<div class="blk blk-event"'+(tag?' data-pick="'+tag+'"':'')+'><div class="bh"><span class="kw">when</span><span class="nm">'+name+'</span>';
+  if(args&&args.length) s+='<span class="args">'+args.map(function(a){return '<span class="arg-pill">'+a+'</span>';}).join('')+'</span>';
+  s+='</div><div class="do"><span class="dolbl">do</span><div class="slotc">'+(body||'')+'</div></div></div>';
+  return s;
+}
+function DL(a,b,c,d){
+  return callb('Canvas1.DrawLine',[['x1',getv(a)],['y1',getv(b)],['x2',getv(c)],['y2',getv(d)]]);
+}
+
+/* ---------- lock definitions ---------- */
+var DRAWER_OPTS=['— choose a drawer —','User Interface','Layout','Media','Drawing and Animation','Sensors','Colors'];
+var LOCKS=[
+{
+  key:'Palette drawer', title:'Which drawer holds each part?', digit:3,
+  why:'Three components make the core app: Button, Canvas, Camera.',
+  intro:'The Designer Palette is sorted into drawers. Nalini deleted her components list. Put each one back where it came from &mdash; all three have to be right before the lock turns.',
+  type:'pairs',
+  pairs:[
+    {name:'Button', ans:'User Interface'},
+    {name:'Canvas', ans:'Drawing and Animation'},
+    {name:'Camera', ans:'Media'}
+  ],
+  fail:'At least one is in the wrong drawer. Think about what each component is <em>for</em>: one is something the user presses, one is a surface you draw on, one uses the device hardware.',
+  pass:'Button lives in User Interface, Canvas in Drawing and Animation, and Camera in Media &mdash; where it is non-visible, so it sits below the screen in the Viewer.'
+},
+{
+  key:'Event trace', title:'Read the blocks. What does the device do?', digit:2,
+  why:'App Inventor has two views: Designer and Blocks.',
+  intro:'Here is the program exactly as Nalini left it. The user presses the button once. Trace what the device actually does.',
+  type:'choice',
+  art:evb('Button1.Click',[],callb('Camera1.TakePicture'))+
+      evb('Camera1.AfterPicture',['image'],setb('Canvas1.BackgroundImage',getv('image'))),
+  options:[
+    'Nothing happens &mdash; <code>AfterPicture</code> never fires on its own.',
+    'The camera opens, the user takes a photo, and that photo becomes the canvas background.',
+    'The camera opens and the photo is saved to the device, but the canvas stays blank.',
+    'The camera opens repeatedly in a loop until the user shakes the device.'
+  ],
+  correct:1,
+  fail:'Follow the arrows. Pressing the button fires one handler; that handler causes an event which fires the second handler. What is the last thing that happens?',
+  pass:'<code>Click</code> calls <code>TakePicture</code>. Taking a picture fires <code>AfterPicture</code>, whose <code>image</code> argument holds the photo, and the <code>set</code> block puts it on the canvas. Two handlers, one chain.'
+},
+{
+  key:'Argument wiring', title:'Which wiring actually draws a line?', digit:4,
+  why:'DrawLine needs four numbers: two points, x and y for each.',
+  intro:'All four of these are inside <code>when Canvas1.Dragged</code>, which hands you <span class="arg-pill">prevX</span> <span class="arg-pill">prevY</span> <span class="arg-pill">currentX</span> <span class="arg-pill">currentY</span>. Only one draws a visible line that follows the finger.',
+  type:'artchoice',
+  options:[
+    {art:DL('currentX','currentY','currentX','currentY')},
+    {art:DL('prevX','prevY','currentX','currentY')},
+    {art:DL('prevX','currentX','prevY','currentY')},
+    {art:DL('startX','startY','startX','startY')}
+  ],
+  correct:1,
+  fail:'A line needs two <em>different</em> points, and each point needs its own x paired with its own y. Check which of these keeps <code>prevX</code> with <code>prevY</code>.',
+  pass:'One end of the line is where the finger <em>was</em> &mdash; <code>prevX, prevY</code> &mdash; and the other is where it <em>is</em> &mdash; <code>currentX, currentY</code>. B keeps each pair together, so the line follows the swipe. A and D draw zero-length lines; C mixes the pairs and the line jumps diagonally.'
+},
+{
+  key:'Bug trap', title:'Click the block that breaks this app.', digit:1,
+  why:'Debugging rule: change one thing at a time.',
+  intro:'A student reports: &ldquo;I press the button and the camera never opens, but if I could somehow get a photo the drawing part works fine.&rdquo; Click the single block that is in the wrong place.',
+  type:'pick',
+  art:evb('Button1.Click',[],'<span style="font-size:.72rem;color:rgba(255,255,255,.62);font-weight:600;padding:3px 7px">(empty)</span>',null)+
+      evb('Camera1.AfterPicture',['image'],
+          callb('Camera1.TakePicture',null,'guilty')+setb('Canvas1.BackgroundImage',getv('image')))+
+      evb('Canvas1.Dragged',['prevX','prevY','currentX','currentY'],DL('prevX','prevY','currentX','currentY')),
+  answer:'guilty',
+  fail:'The Click handler is empty, so pressing the button does nothing at all. Which block should be inside it instead?',
+  pass:'<code>call Camera1.TakePicture</code> is stranded inside <code>AfterPicture</code> &mdash; a handler that only runs <em>after</em> a picture exists. Since no picture is ever taken, it never runs. Move it into <code>Button1.Click</code>.'
+},
+{
+  key:'Iteration order', title:'Rebuild the version history.', digit:5,
+  why:'Challenge C is saved as iteration 5.',
+  intro:'Nalini used iterative saves, but the names got scrambled. Put the five versions back in the order they were built &mdash; each one adds a feature to the working app before it. One wrong pick resets the lock.',
+  type:'seq',
+  items:[
+    {t:'v1 &mdash; press the button and the camera takes a picture', o:0},
+    {t:'v2 &mdash; the photo appears as the canvas background', o:1},
+    {t:'v3 &mdash; dragging a finger draws a line on the photo', o:2},
+    {t:'v4 &mdash; shaking the device clears the drawing', o:3},
+    {t:'v5B &mdash; color buttons change the pen color', o:4}
+  ],
+  fail:'That is not the next version. Each save has to leave you with an app that still works &mdash; you cannot draw on a photo you have not displayed yet.',
+  pass:'Camera first, then show the photo, then draw on it, then clear it, then add color. Every step leaves a working app, so a broken feature only ever costs you one save.'
+}];
+
+var solved=[], firstTry=[], current=0, t0=Date.now(), timerId=null;
+
+/* ---------- HUD ---------- */
+function renderSlots(){
+  var host=$('#slots'); host.innerHTML='';
+  LOCKS.forEach(function(L,i){
+    var d=el('div','slot-d'+(solved[i]?' filled':''), solved[i]?String(L.digit):'—');
+    d.appendChild(el('small',null,'LOCK '+(i+1)));
+    host.appendChild(d);
+  });
+}
+function tick(){
+  var s=Math.floor((Date.now()-t0)/1000);
+  $('#clock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+timerId=setInterval(tick,1000); tick();
+
+/* ---------- lock rendering ---------- */
+function solve(i,card,extra){
+  if(solved[i]) return;
+  solved[i]=true;
+  card.classList.add('solved');
+  var r=$('.resp',card); r.className='resp show good';
+  r.innerHTML='<strong>Lock '+(i+1)+' open.</strong> '+LOCKS[i].pass;
+  var dr=el('div','digit-reveal');
+  dr.innerHTML='<span class="d">'+LOCKS[i].digit+'</span><span class="t">Digit '+(i+1)+' of the passcode. '+LOCKS[i].why+'</span>';
+  card.appendChild(dr);
+  renderSlots();
+  if(current===i && i+1<LOCKS.length){
+    current=i+1;
+    setTimeout(function(){
+      var n=buildLock(i+1); $('#locks').appendChild(n);
+      n.scrollIntoView({block:'center',behavior:'smooth'});
+    },520);
+  }else if(i+1===LOCKS.length){
+    setTimeout(function(){ $('.finale').scrollIntoView({block:'center',behavior:'smooth'}); },620);
+  }
+}
+function miss(i,card,msg){
+  if(firstTry[i]===undefined) firstTry[i]=false;
+  var r=$('.resp',card); r.className='resp show bad';
+  r.innerHTML='<strong>Still locked.</strong> '+(msg||LOCKS[i].fail);
+}
+function markTry(i){ if(firstTry[i]===undefined) firstTry[i]=true; }
+
+function buildLock(i){
+  var L=LOCKS[i];
+  var card=el('section','lock'); card.dataset.i=i;
+  var head=el('div','lock-head');
+  head.appendChild(el('div','lock-no',String(i+1)));
+  var ht=el('div');
+  ht.appendChild(el('div','lk','Lock '+(i+1)+' · '+L.key));
+  ht.appendChild(el('h3',null,L.title));
+  head.appendChild(ht); card.appendChild(head);
+  var body=el('div','lock-body');
+  var p=el('p'); p.innerHTML=L.intro; body.appendChild(p);
+  if(L.art){ var a=el('div','artbox'); a.innerHTML=L.art; body.appendChild(a); }
+
+  if(L.type==='pairs') buildPairs(L,i,card,body);
+  else if(L.type==='choice') buildChoice(L,i,card,body);
+  else if(L.type==='artchoice') buildArtChoice(L,i,card,body);
+  else if(L.type==='pick') buildPick(L,i,card,body);
+  else if(L.type==='seq') buildSeq(L,i,card,body);
+
+  card.appendChild(body);
+  card.appendChild(el('div','resp'));
+  return card;
+}
+function buildPairs(L,i,card,body){
+  var wrap=el('div','pairs');
+  L.pairs.forEach(function(pr,pi){
+    var row=el('div','pair');
+    row.appendChild(el('span','cname',pr.name));
+    var sel=el('select'); sel.dataset.pi=pi;
+    DRAWER_OPTS.forEach(function(o,oi){ var op=el('option',null,o); op.value=oi?o:''; sel.appendChild(op); });
+    row.appendChild(sel); wrap.appendChild(row);
+  });
+  body.appendChild(wrap);
+  var b=el('button','btn','Turn the lock'); b.type='button'; b.style.marginTop='14px';
+  b.addEventListener('click',function(){
+    markTry(i);
+    var rows=$$('.pair',wrap), allGood=true;
+    rows.forEach(function(row,ri){
+      var v=$('select',row).value, good=(v===L.pairs[ri].ans);
+      row.className='pair '+(v?(good?'ok':'no'):'');
+      if(!good) allGood=false;
+    });
+    if(allGood){ rows.forEach(function(r){ $('select',r).disabled=true; }); b.disabled=true; solve(i,card); }
+    else{ firstTry[i]=false; miss(i,card); }
+  });
+  body.appendChild(b);
+}
+function buildChoice(L,i,card,body){
+  var wrap=el('div','choices');
+  L.options.forEach(function(o,oi){
+    var b=el('button','choice'); b.type='button';
+    b.innerHTML='<span class="k">'+String.fromCharCode(65+oi)+'</span><span>'+o+'</span>';
+    b.addEventListener('click',function(){
+      markTry(i);
+      if(oi===L.correct){ $$('.choice',wrap).forEach(function(x){x.disabled=true;}); b.classList.add('right'); solve(i,card); }
+      else{ firstTry[i]=false; b.classList.add('wrong'); b.disabled=true; miss(i,card); }
+    });
+    wrap.appendChild(b);
+  });
+  body.appendChild(wrap);
+}
+function buildArtChoice(L,i,card,body){
+  var wrap=el('div','artchoices');
+  L.options.forEach(function(o,oi){
+    var b=el('button','artchoice'); b.type='button';
+    b.innerHTML='<div class="lbl">OPTION '+String.fromCharCode(65+oi)+'</div><div class="scroller">'+o.art+'</div>';
+    b.addEventListener('click',function(){
+      markTry(i);
+      if(oi===L.correct){ $$('.artchoice',wrap).forEach(function(x){x.disabled=true;}); b.classList.add('right'); solve(i,card); }
+      else{ firstTry[i]=false; b.classList.add('wrong'); b.disabled=true; miss(i,card); }
+    });
+    wrap.appendChild(b);
+  });
+  body.appendChild(wrap);
+}
+function buildPick(L,i,card,body){
+  var art=$('.artbox',body);
+  $$('.blk',art).forEach(function(n){
+    n.classList.add('pickable');
+    n.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(solved[i]) return;
+      markTry(i);
+      if(n.dataset.pick===L.answer){
+        $$('.pickable',art).forEach(function(x){x.classList.remove('pickable','hit');});
+        n.classList.add('correct'); solve(i,card);
+      }else{
+        firstTry[i]=false;
+        n.classList.add('hit');
+        setTimeout(function(){n.classList.remove('hit');},900);
+        miss(i,card);
+      }
+    });
+  });
+  var hint=el('p'); hint.style.cssText='font-size:.85rem;color:var(--dim);margin:12px 0 0';
+  hint.textContent='Click a block to accuse it.';
+  body.appendChild(hint);
+}
+function buildSeq(L,i,card,body){
+  var order=[], pool=el('div','seq-pool');
+  var shuffled=L.items.slice().sort(function(a,b){ return (a.o*7%5)-(b.o*7%5); });
+  shuffled=[L.items[2],L.items[4],L.items[0],L.items[3],L.items[1]];
+  var built=el('div','seq-built'); built.textContent='Order so far: (empty)';
+  shuffled.forEach(function(it){
+    var b=el('button','seq-item'); b.type='button';
+    b.innerHTML='<span class="ord">?</span><span>'+it.t+'</span>';
+    b.addEventListener('click',function(){
+      if(solved[i]||b.classList.contains('placed')) return;
+      markTry(i);
+      if(it.o===order.length){
+        order.push(it.o);
+        b.classList.add('placed'); $('.ord',b).textContent=order.length;
+        built.textContent='Order so far: '+order.map(function(x){return 'v'+(x+1);}).join(' → ');
+        var r=$('.resp',card);
+        if(order.length===L.items.length){ $$('.seq-item',pool).forEach(function(x){x.disabled=true;}); solve(i,card); }
+        else{ r.className='resp show info'; r.innerHTML='Correct so far &mdash; '+order.length+' of '+L.items.length+'.'; }
+      }else{
+        firstTry[i]=false;
+        order=[];
+        $$('.seq-item',pool).forEach(function(x){ x.classList.remove('placed'); $('.ord',x).textContent='?'; });
+        built.textContent='Order so far: (empty)';
+        miss(i,card);
+      }
+    });
+    pool.appendChild(b);
+  });
+  body.appendChild(pool); body.appendChild(built);
+}
+
+/* ---------- keypad ---------- */
+var entered=[];
+(function(){
+  var kp=$('#keypad');
+  ['1','2','3','4','5','6','7','8','9','clear','0','enter'].forEach(function(k){
+    var b=el('button',null,k==='clear'?'CLR':(k==='enter'?'GO':k)); b.type='button';
+    if(k==='clear'||k==='enter') b.className='wide';
+    b.addEventListener('click',function(){
+      if(k==='clear'){ entered=[]; }
+      else if(k==='enter'){ tryCode(); return; }
+      else if(entered.length<5){ entered.push(k); }
+      paintPin();
+      if(entered.length===5) tryCode();
+    });
+    kp.appendChild(b);
+  });
+})();
+function paintPin(){ $$('#pin i').forEach(function(n,i){ n.classList.toggle('on', i<entered.length); }); }
+function fmsg(t,cls){ var m=$('#finalmsg'); m.className='msg'+(cls?' '+cls:''); m.innerHTML=t; }
+function tryCode(){
+  if(entered.length<5){ fmsg('The passcode is five digits.','bad'); return; }
+  var code=entered.join('');
+  var real=LOCKS.map(function(L){return L.digit;}).join('');
+  var opened=solved.filter(Boolean).length;
+  if(opened<LOCKS.length){
+    fmsg('The device rejects it. '+opened+' of 5 locks are still closed &mdash; a passcode you did not earn is just a guess.','bad');
+    entered=[]; paintPin(); return;
+  }
+  if(code!==real){
+    fmsg('Wrong passcode. Check the digits in the bar at the top, in lock order.','bad');
+    entered=[]; paintPin(); return;
+  }
+  clearInterval(timerId);
+  $('#lockicon').textContent='🔓';
+  fmsg('Device unlocked.','good');
+  var wt=$('#whytable'); wt.innerHTML='';
+  LOCKS.forEach(function(L){
+    var tr=el('tr'); tr.innerHTML='<td>'+L.digit+'</td><td>'+L.why+'</td>'; wt.appendChild(tr);
+  });
+  $('#finaltime').textContent=$('#clock').textContent;
+  $('#firsttry').textContent=String(firstTry.filter(function(x){return x===true;}).length);
+  $('#win').classList.add('show');
+  setTimeout(function(){ $('#win').scrollIntoView({block:'start',behavior:'smooth'}); },200);
+}
+
+/* ---------- go ---------- */
+renderSlots();
+$('#locks').appendChild(buildLock(0));
+})();
+</script>
+</body></html>
