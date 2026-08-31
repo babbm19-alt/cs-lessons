@@ -1,0 +1,565 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+</head><body>
+<title>You Already Know This</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap');
+:root{
+  color-scheme: light;
+  --navy:#0d1b34; --ink:#1a2233; --body:#33405a; --muted:#6b7894; --faint:#98a3bb;
+  --line:#dfe4ee; --line-2:#eef1f7; --paper:#fff; --wash:#f6f8fc; --wash-2:#eef2f9;
+  --plum:#6b2f7a; --plum-soft:#f7edfa; --plum-line:#e6cdee;
+  --teal:#0f7b6c; --teal-soft:#e6f4f1; --teal-line:#bfe3db;
+  --amber:#9a6712; --amber-soft:#fdf3e0; --amber-line:#f0dcb4;
+  --rose:#a8213f; --rose-soft:#fcecef; --rose-line:#f0c8d1;
+  --b-event:#b18e35; --b-event-d:#8e7029;
+  --b-method:#7d5ba6; --b-method-d:#634784;
+  --sans:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  --display:'Sora','Public Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(13,27,52,.05), 0 8px 24px rgba(13,27,52,.06);
+  --shadow-lg:0 4px 12px rgba(13,27,52,.08), 0 22px 54px rgba(13,27,52,.14);
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; font-family:var(--sans); font-size:16.5px; line-height:1.6; color:var(--body);
+  background:var(--wash);
+  background-image:
+    radial-gradient(880px 440px at 86% -10%, rgba(107,47,122,.10), transparent 62%),
+    radial-gradient(640px 400px at 2% 4%, rgba(15,123,108,.09), transparent 60%);
+  background-attachment:fixed; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--display); color:var(--ink); margin:0 0 .45em; line-height:1.16; font-weight:700; text-wrap:balance}
+h1{font-size:clamp(1.9rem,5vw,2.9rem); letter-spacing:-.028em; font-weight:800}
+h2{font-size:clamp(1.25rem,2.8vw,1.6rem); letter-spacing:-.018em}
+h3{font-size:1.05rem}
+p{margin:0 0 .9em}
+strong{color:var(--ink)}
+code{font-family:var(--mono); font-size:.85em; background:var(--wash-2); border:1px solid var(--line); border-radius:5px; padding:.08em .38em; color:var(--ink)}
+.wrap{max-width:900px; margin:0 auto; padding:0 20px}
+:focus-visible{outline:3px solid var(--plum); outline-offset:2px; border-radius:6px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms !important; transition-duration:.001ms !important}}
+
+/* ---------- header ---------- */
+header.top{padding:38px 0 6px}
+.eyebrow{font-family:var(--mono); font-size:.68rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--plum); margin-bottom:14px}
+.headrow{display:flex; align-items:flex-start; justify-content:space-between; gap:26px; flex-wrap:wrap}
+.claim{max-width:46ch}
+.claim h1{margin-bottom:.3em}
+.claim p{color:var(--body); font-size:1.06rem; margin:0}
+.claim .beat{display:block; color:var(--plum); font-weight:700}
+
+/* timer */
+.timer{
+  flex:0 0 auto; background:var(--navy); color:#fff; border-radius:16px; padding:16px 20px 14px;
+  text-align:center; box-shadow:var(--shadow); min-width:168px;
+}
+.timer .t{font-family:var(--mono); font-size:2.3rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.timer .t.low{color:#f3c06a}
+.timer .t.done{color:#ff9aa9}
+.timer .lbl{font-family:var(--mono); font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; color:#94a5c4; margin-top:7px}
+.timer .ctrls{display:flex; gap:6px; justify-content:center; margin-top:11px}
+.timer button{
+  font:inherit; font-family:var(--sans); font-weight:700; font-size:.76rem; color:#fff;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); border-radius:8px;
+  padding:6px 12px; cursor:pointer;
+}
+.timer button:hover{background:rgba(255,255,255,.22)}
+.timer button.go{background:#e0a83a; border-color:#e0a83a; color:#3a2907}
+.timer button.go:hover{background:#eeb44a}
+
+/* ---------- steps ---------- */
+main{padding:10px 0 80px}
+.card{background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:26px 28px; box-shadow:var(--shadow); margin:22px 0 0}
+.card > :last-child{margin-bottom:0}
+.steplabel{display:flex; align-items:center; gap:11px; margin-bottom:14px}
+.steplabel .n{
+  width:30px; height:30px; border-radius:10px; background:var(--plum); color:#fff; flex:0 0 auto;
+  font-family:var(--display); font-weight:800; font-size:.86rem; display:grid; place-items:center;
+}
+.steplabel .tt{font-family:var(--display); font-weight:700; font-size:1.12rem; color:var(--ink)}
+.steplabel .mins{font-family:var(--mono); font-size:.68rem; color:var(--muted); letter-spacing:.08em; margin-left:auto; white-space:nowrap}
+
+/* ---------- sorter ---------- */
+.progress{display:flex; align-items:center; gap:12px; margin:0 0 18px}
+.progress .bar{flex:1; height:7px; background:var(--line-2); border-radius:99px; overflow:hidden}
+.progress .bar i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--plum),var(--teal)); border-radius:99px; transition:width .45s cubic-bezier(.2,.8,.3,1)}
+.progress .cnt{font-family:var(--mono); font-size:.76rem; font-weight:700; color:var(--muted); white-space:nowrap}
+
+.rows{display:flex; flex-direction:column; gap:10px}
+.row{
+  border:1px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--paper);
+  transition:border-color .16s, background .16s;
+}
+.row.done{background:var(--teal-soft); border-color:var(--teal-line)}
+.row .stmt{font-size:1rem; color:var(--ink); font-weight:500; margin-bottom:11px; line-height:1.45}
+.row .stmt .q{font-family:var(--mono); font-size:.72rem; color:var(--faint); margin-right:8px; font-weight:700}
+.chips{display:flex; gap:8px; flex-wrap:wrap}
+.chip{
+  font:inherit; font-family:var(--sans); font-size:.85rem; font-weight:600; color:var(--body);
+  background:var(--wash); border:1.5px solid var(--line); border-radius:10px; padding:8px 14px; cursor:pointer;
+  transition:border-color .14s, background .14s, transform .1s;
+}
+.chip:hover:not(:disabled){border-color:var(--plum); background:var(--plum-soft); color:var(--plum)}
+.chip:active:not(:disabled){transform:translateY(1px)}
+.chip.right{background:var(--teal); border-color:var(--teal); color:#fff}
+.chip.wrong{background:var(--rose-soft); border-color:var(--rose-line); color:var(--rose)}
+.chip:disabled{cursor:default}
+.row .fb{display:none; margin-top:11px; font-size:.9rem; border-radius:10px; padding:10px 13px; border:1px solid}
+.row .fb.show{display:block}
+.row .fb.good{background:#fff; border-color:var(--teal-line); color:var(--ink)}
+.row .fb.good .name{font-family:var(--display); font-weight:800; color:var(--teal)}
+.row .fb.bad{background:var(--amber-soft); border-color:var(--amber-line); color:#6b4a0d}
+
+/* ---------- reveal ---------- */
+.reveal{display:none}
+.reveal.show{display:block; animation:rise .45s cubic-bezier(.2,.85,.3,1)}
+@keyframes rise{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
+.bigidea{
+  background:linear-gradient(160deg,#152a4d,#0d1b34); color:#fff; border-radius:18px; padding:28px 30px;
+  box-shadow:var(--shadow-lg); margin:22px 0 0;
+}
+.bigidea h2{color:#fff; margin-bottom:.4em}
+.bigidea p{color:#c2cee5; margin-bottom:0}
+.fourgrid{display:grid; gap:12px; margin:20px 0 0}
+@media(min-width:660px){ .fourgrid{grid-template-columns:repeat(2,1fr)} }
+.four{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:13px; padding:15px 17px}
+.four .nm{font-family:var(--display); font-weight:800; font-size:1.02rem; color:#fff; margin-bottom:3px}
+.four .plain{font-family:var(--mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:#f3c06a; margin-bottom:7px}
+.four .def{font-size:.9rem; color:#c2cee5; line-height:1.45}
+
+/* block art bridge */
+.bridge{background:var(--wash); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:20px 0 0}
+.bridge .cap{font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); margin-bottom:12px}
+.bridgerow{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+.bridgerow .human{
+  flex:1; min-width:200px; font-size:.98rem; color:var(--ink); font-weight:500;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:13px 15px;
+}
+.bridgerow .arrow{font-size:1.3rem; color:var(--plum); font-weight:700}
+.blk{font-family:var(--sans); font-size:.8rem; font-weight:600; color:#fff; user-select:none; flex:0 0 auto}
+.blk .bh{display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:7px 11px; line-height:1.35}
+.blk .bh .kw{opacity:.9}
+.blk .bh .nm{font-weight:800}
+.blk-event{width:max-content; max-width:100%}
+.blk-event > .bh{background:var(--b-event); border:1px solid var(--b-event-d); border-bottom:0; border-radius:9px 9px 0 0}
+.blk-event > .do{background:var(--b-event); border:1px solid var(--b-event-d); border-top:0; border-radius:0 0 9px 9px; display:flex; gap:8px; padding:0 9px 9px 11px; align-items:flex-start}
+.blk-event > .do > .dolbl{font-size:.76rem; opacity:.92; padding-top:8px}
+.slotc{background:rgba(0,0,0,.16); border-radius:7px; padding:7px}
+.blk-stmt > .bh{background:var(--b-method); border:1px solid var(--b-method-d); border-radius:7px}
+
+/* ---------- write ---------- */
+label.field{display:block; font-weight:700; color:var(--ink); font-size:.98rem; margin:0 0 5px}
+.hint{font-size:.87rem; color:var(--muted); margin:0 0 10px}
+textarea{
+  width:100%; min-height:88px; font:inherit; font-size:.96rem; color:var(--ink); background:var(--wash);
+  border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; resize:vertical; line-height:1.55;
+  transition:border-color .14s, background .14s;
+}
+textarea:focus{background:#fff; border-color:var(--plum)}
+.qblock{margin:0 0 20px}
+.qblock:last-child{margin-bottom:0}
+
+.btn{
+  font:inherit; font-family:var(--sans); font-weight:700; font-size:.92rem; border-radius:11px; padding:11px 20px;
+  cursor:pointer; border:1.5px solid var(--navy); background:var(--navy); color:#fff;
+  transition:transform .1s, box-shadow .16s, background .14s;
+}
+.btn:hover{background:#1b3159; box-shadow:0 8px 20px rgba(13,27,52,.2)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:#fff; color:var(--ink); border-color:var(--line)}
+.btn.ghost:hover{background:var(--wash); box-shadow:none}
+.btn.plum{background:var(--plum); border-color:var(--plum)}
+.btn.plum:hover{background:#57256a}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:20px}
+.msg{font-size:.88rem; font-weight:700; color:var(--teal)}
+
+.tip{border-radius:13px; padding:15px 18px; border:1px solid; font-size:.93rem; margin:20px 0 0}
+.tip .th{font-family:var(--mono); font-size:.65rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; margin-bottom:6px}
+.tip.plum{background:var(--plum-soft); border-color:var(--plum-line)}
+.tip.plum .th{color:var(--plum)}
+.tip.amber{background:var(--amber-soft); border-color:var(--amber-line)}
+.tip.amber .th{color:var(--amber)}
+.tip > :last-child{margin-bottom:0}
+
+/* stretch */
+.stretch{border:1px dashed var(--line); border-radius:16px; padding:22px 24px; margin:26px 0 0; background:var(--paper)}
+.stretch > summary{
+  cursor:pointer; font-family:var(--display); font-weight:700; font-size:1.05rem; color:var(--ink);
+  list-style:none; display:flex; align-items:center; gap:10px;
+}
+.stretch > summary::-webkit-details-marker{display:none}
+.stretch > summary::before{content:"+"; font-family:var(--mono); font-weight:700; color:var(--plum); font-size:1.2rem}
+.stretch[open] > summary::before{content:"–"}
+.stretch > summary .mins{font-family:var(--mono); font-size:.68rem; color:var(--muted); letter-spacing:.08em; margin-left:auto; font-weight:400}
+.pair{display:grid; gap:12px; margin:16px 0 0}
+@media(min-width:660px){ .pair{grid-template-columns:1fr 1fr} }
+.opt{
+  text-align:left; font:inherit; background:var(--wash); border:1.5px solid var(--line); border-radius:13px;
+  padding:15px 17px; cursor:pointer; color:var(--body); font-size:.95rem; transition:border-color .14s, background .14s;
+}
+.opt:hover:not(:disabled){border-color:var(--plum); background:var(--plum-soft)}
+.opt .lb{font-family:var(--mono); font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); display:block; margin-bottom:6px}
+.opt.right{border-color:var(--teal); background:var(--teal-soft)}
+.opt.wrong{border-color:var(--rose-line); background:var(--rose-soft)}
+.opt:disabled{cursor:default}
+
+footer{border-top:1px solid var(--line); background:#fff; padding:22px 0 40px; color:var(--muted); font-size:.85rem; margin-top:44px}
+
+@media print{
+  .timer,.btnrow,.stretch,footer{display:none !important}
+  body{background:#fff}
+  .reveal{display:block !important}
+  .card{box-shadow:none; break-inside:avoid}
+}
+</style>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Computer Science Essentials &middot; Day one Do Now</div>
+    <div class="headrow">
+      <div class="claim">
+        <h1>You already know this</h1>
+        <p>You have never written a line of code.
+          <span class="beat">You have also been writing instructions for machines your whole life.</span>
+          Both of those are true. Here is the proof.</p>
+      </div>
+      <div class="timer">
+        <div class="t" id="clock">06:00</div>
+        <div class="lbl">Do Now</div>
+        <div class="ctrls">
+          <button class="go" id="tg" type="button">Start</button>
+          <button id="tr" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ STEP 1 ============ -->
+  <section class="card">
+    <div class="steplabel">
+      <span class="n">1</span>
+      <span class="tt">Sort these eight everyday things</span>
+      <span class="mins">3 MIN</span>
+    </div>
+    <p>None of these are about computers. Read each one and pick the description that fits it best.
+      There is no trick and nothing here is graded &mdash; go with your gut.</p>
+    <div class="progress">
+      <span class="bar"><i id="pfill"></i></span>
+      <span class="cnt" id="pcnt">0 of 8 sorted</span>
+    </div>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <!-- ============ STEP 2 ============ -->
+  <div class="reveal" id="reveal">
+    <div class="bigidea">
+      <div class="steplabel" style="margin-bottom:10px">
+        <span class="n" style="background:#e0a83a; color:#3a2907">2</span>
+        <span class="tt" style="color:#fff">What you just did</span>
+        <span class="mins" style="color:#94a5c4">1 MIN</span>
+      </div>
+      <h2>Those four groups have names. You sorted them before anyone taught you what they were called.</h2>
+      <p>Every program ever written &mdash; every app on your phone, every game you have played &mdash; is built out
+        of these four ideas and nothing more exotic. You will spend this year learning to write them down
+        precisely enough that a machine can follow them.</p>
+      <div class="fourgrid">
+        <div class="four">
+          <div class="plain">Step by step</div>
+          <div class="nm">Sequence</div>
+          <div class="def">Instructions that run in order, one after another. Change the order and you change the result.</div>
+        </div>
+        <div class="four">
+          <div class="plain">Depends on something</div>
+          <div class="nm">Selection</div>
+          <div class="def">The program checks whether something is true, then picks a path. Often called an <em>if</em> statement.</div>
+        </div>
+        <div class="four">
+          <div class="plain">Happens over and over</div>
+          <div class="nm">Repetition</div>
+          <div class="def">The same instructions run again and again until a condition is met, or a set number of times. A <em>loop</em>.</div>
+        </div>
+        <div class="four">
+          <div class="plain">Waits for a signal</div>
+          <div class="nm">Event</div>
+          <div class="def">Nothing happens until something happens &mdash; a tap, a shake, a message arriving. Then the code runs.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="bridge" style="margin-top:0">
+        <div class="cap">Number 4 on your list, in the blocks you will build with next class</div>
+        <div class="bridgerow">
+          <div class="human">&ldquo;When someone texts you, your phone buzzes.&rdquo;</div>
+          <span class="arrow">&rarr;</span>
+          <div class="blk blk-event">
+            <div class="bh"><span class="kw">when</span><span class="nm">Button1.Click</span></div>
+            <div class="do"><span class="dolbl">do</span>
+              <div class="slotc">
+                <div class="blk blk-stmt"><div class="bh"><span class="kw">call</span><span class="nm">Camera1.TakePicture</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:14px 0 0; font-size:.9rem; color:var(--muted)">Same shape: <strong>wait for a signal, then
+          do something.</strong> The gold block is the waiting. The purple block is the doing. Those are the actual
+          blocks from the first app you are going to build &mdash; it takes a picture when the button is tapped.</p>
+      </div>
+    </div>
+
+    <!-- ============ STEP 3 ============ -->
+    <section class="card">
+      <div class="steplabel">
+        <span class="n">3</span>
+        <span class="tt">Two questions, then you are done</span>
+        <span class="mins">2 MIN</span>
+      </div>
+      <div class="qblock">
+        <label class="field" for="q1">Name one app you use almost every day. What is one thing about it that annoys you, or that you would change?</label>
+        <p class="hint">Be specific. &ldquo;It's slow&rdquo; is less useful than &ldquo;it takes four taps to do the one thing I always want.&rdquo;</p>
+        <textarea id="q1" data-nb="An app I use every day, and what I would change" placeholder="The app:&#10;What I would change:"></textarea>
+      </div>
+      <div class="qblock">
+        <label class="field" for="q2">Somebody decided it would work that way. Why might it matter to be a person who <em>makes</em> the technology, and not only a person who uses it?</label>
+        <p class="hint">There is no right answer here. I actually want to know what you think.</p>
+        <textarea id="q2" data-nb="Why it matters to be a creator, not only a user"></textarea>
+      </div>
+      <div class="tip plum">
+        <div class="th">Where this goes</div>
+        <p>Hold on to that second question. It is one of the two questions this whole first unit is built around,
+          and you will answer it again at the end of it. It is worth seeing how your answer changes.</p>
+      </div>
+      <div class="btnrow">
+        <button class="btn plum" id="copybtn" type="button">Copy my answers</button>
+        <button class="btn ghost" id="printbtn" type="button">Print / Save as PDF</button>
+        <span class="msg" id="copymsg"></span>
+      </div>
+      <textarea id="exportbox" readonly hidden style="margin-top:14px; font-family:var(--mono); font-size:.82rem; min-height:150px"></textarea>
+    </section>
+
+    <!-- ============ STRETCH ============ -->
+    <details class="stretch">
+      <summary>Finished early? Try the hard part <span class="mins">+3 MIN</span></summary>
+      <p style="margin-top:14px">Here is the catch. A person can follow a vague instruction. A machine cannot &mdash;
+        it does exactly what you say, not what you meant. For each pair, pick the one a machine could actually follow.</p>
+      <div id="stretch"></div>
+    </details>
+  </div>
+
+  <div class="tip amber" id="lockedhint">
+    <div class="th">Keep going</div>
+    <p>Sort all eight above and the rest of the page opens up.</p>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0">PLTW Computer Science Essentials &middot; Mr. Babb. This page does not save your work &mdash;
+      copy or print your answers before you close the tab.</p>
+  </div>
+</footer>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function el(t,c,x){var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;}
+
+/* ---------------- the four buckets ---------------- */
+var KINDS=[
+  {k:'seq',  plain:'Step by step',          name:'Sequence'},
+  {k:'sel',  plain:'Depends on something',  name:'Selection'},
+  {k:'rep',  plain:'Happens over and over', name:'Repetition'},
+  {k:'evt',  plain:'Waits for a signal',    name:'Event'}
+];
+var KIND={}; KINDS.forEach(function(o){KIND[o.k]=o;});
+
+var ITEMS=[
+ {t:'Wake up, brush your teeth, get dressed, leave for school.', a:'seq',
+  why:'Four instructions in a fixed order. Swap two of them and your morning goes badly wrong — that is exactly how a program behaves.'},
+ {t:'If it is raining, take an umbrella.', a:'sel',
+  why:'Something has to be checked first. If it is true you do one thing; if it is false you skip it.'},
+ {t:'Keep stirring until the sauce thickens.', a:'rep',
+  why:'One action repeated an unknown number of times, with a condition that decides when to stop.'},
+ {t:'When someone texts you, your phone buzzes.', a:'evt',
+  why:'Your phone is not checking for texts on a schedule you control. It sits there until something arrives, and then it reacts.'},
+ {t:'Shuffle the cards, deal seven to each player, flip the top card face up.', a:'seq',
+  why:'Order is the whole point. Flip the top card before you shuffle and it is a different game.'},
+ {t:'Ten push-ups, rest, then do that four more times.', a:'rep',
+  why:'The same block of actions runs a set number of times. A counted loop.'},
+ {t:'The second the light turns green, you go.', a:'evt',
+  why:'You are waiting. The change in the light is the signal that starts the action.'},
+ {t:'If you have less than $20 on you, order the small one.', a:'sel',
+  why:'A check happens first, and the answer decides what you do next.'}
+];
+
+var state=ITEMS.map(function(){return {done:false,tries:0};});
+
+function buildRows(){
+  var host=$('#rows');
+  ITEMS.forEach(function(it,i){
+    var row=el('div','row'); row.dataset.i=i;
+    var s=el('div','stmt');
+    s.innerHTML='<span class="q">'+(i+1)+'</span>'+it.t;
+    row.appendChild(s);
+    var chips=el('div','chips');
+    KINDS.forEach(function(kd){
+      var b=el('button','chip',kd.plain); b.type='button'; b.dataset.k=kd.k;
+      b.addEventListener('click',function(){ answer(i,kd.k,b,row); });
+      chips.appendChild(b);
+    });
+    row.appendChild(chips);
+    row.appendChild(el('div','fb'));
+    host.appendChild(row);
+  });
+}
+
+function answer(i,k,btn,row){
+  var st=state[i]; if(st.done) return;
+  var it=ITEMS[i], fb=$('.fb',row);
+  st.tries++;
+  if(k===it.a){
+    st.done=true;
+    $$('.chip',row).forEach(function(c){ c.disabled=true; if(c.dataset.k===it.a) c.classList.add('right'); });
+    row.classList.add('done');
+    fb.className='fb show good';
+    fb.innerHTML='<span class="name">'+KIND[it.a].name+'.</span> '+it.why;
+    tally();
+  }else if(st.tries>=2){
+    st.done=true;
+    $$('.chip',row).forEach(function(c){
+      c.disabled=true;
+      if(c.dataset.k===it.a) c.classList.add('right');
+      else if(c.dataset.k===k) c.classList.add('wrong');
+    });
+    row.classList.add('done');
+    fb.className='fb show good';
+    fb.innerHTML='<span class="name">'+KIND[it.a].name+'.</span> '+it.why;
+    tally();
+  }else{
+    btn.classList.add('wrong');
+    fb.className='fb show bad';
+    fb.innerHTML='<strong>Not that one.</strong> Read it again — does something have to be <em>checked</em> or <em>waited for</em> before anything happens?';
+    setTimeout(function(){ btn.classList.remove('wrong'); },1300);
+  }
+}
+
+function tally(){
+  var n=state.filter(function(s){return s.done;}).length;
+  $('#pfill').style.width=(n/ITEMS.length*100)+'%';
+  $('#pcnt').textContent=n+' of '+ITEMS.length+' sorted';
+  if(n===ITEMS.length){
+    $('#lockedhint').hidden=true;
+    var r=$('#reveal');
+    if(!r.classList.contains('show')){
+      r.classList.add('show');
+      setTimeout(function(){
+        var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        r.scrollIntoView({block:'start',behavior:rm?'auto':'smooth'});
+      },160);
+    }
+  }
+}
+
+/* ---------------- stretch ---------------- */
+var STRETCH=[
+ {q:'Instructions for making toast',
+  a:['Put the bread in the toaster and wait until it is done.',
+     'Put one slice of bread in the toaster. Push the lever down. Wait 2 minutes. Lift the lever.'],
+  c:1,
+  why:'&ldquo;Until it is done&rdquo; means nothing to a machine — done according to whom? The second one names an amount and a time, so there is nothing left to interpret.'},
+ {q:'Instructions for crossing the street',
+  a:['Look both ways. If no car is coming, walk to the other side.',
+     'Cross the street carefully when it is safe.'],
+  c:0,
+  why:'&ldquo;Carefully&rdquo; and &ldquo;safe&rdquo; are judgments a person makes. The first version turns that judgment into a check the machine can actually perform.'},
+ {q:'Instructions for drawing a square',
+  a:['Draw a square with four equal sides.',
+     'Draw a line 100 steps long. Turn right 90 degrees. Do those two things four times.'],
+  c:1,
+  why:'The first one names the goal. The second one names the moves — and only the second one can be followed by something that has never seen a square.'}
+];
+function buildStretch(){
+  var host=$('#stretch');
+  STRETCH.forEach(function(s,i){
+    var w=el('div'); w.style.margin='18px 0 0';
+    var h=el('div'); h.style.cssText='font-weight:700;color:var(--ink);font-size:.95rem;margin-bottom:2px';
+    h.textContent=s.q; w.appendChild(h);
+    var g=el('div','pair');
+    s.a.forEach(function(txt,j){
+      var b=el('button','opt'); b.type='button';
+      b.innerHTML='<span class="lb">Option '+String.fromCharCode(65+j)+'</span>'+txt;
+      b.addEventListener('click',function(){
+        $$('.opt',g).forEach(function(x){x.disabled=true;});
+        $$('.opt',g)[s.c].classList.add('right');
+        if(j!==s.c) b.classList.add('wrong');
+        var fb=el('div','fb show good');
+        fb.style.cssText='display:block;margin-top:10px;font-size:.9rem;border-radius:10px;padding:10px 13px;border:1px solid var(--teal-line);background:var(--teal-soft);color:var(--ink)';
+        fb.innerHTML=(j===s.c?'<strong>Right. </strong>':'<strong>The machine needs Option '+String.fromCharCode(65+s.c)+'. </strong>')+s.why;
+        w.appendChild(fb);
+      });
+      g.appendChild(b);
+    });
+    w.appendChild(g); host.appendChild(w);
+  });
+}
+
+/* ---------------- timer ---------------- */
+var TOTAL=360, left=TOTAL, running=false, tid=null;
+function paint(){
+  var c=$('#clock');
+  c.textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');
+  c.className='t'+(left<=0?' done':(left<=60?' low':''));
+  $('#tg').textContent=running?'Pause':(left<TOTAL?'Resume':'Start');
+}
+$('#tg').addEventListener('click',function(){
+  if(left<=0) left=TOTAL;
+  running=!running;
+  if(running){ if(tid) clearInterval(tid); tid=setInterval(function(){
+    left--; if(left<=0){ left=0; running=false; clearInterval(tid); tid=null; } paint();
+  },1000); }
+  else if(tid){ clearInterval(tid); tid=null; }
+  paint();
+});
+$('#tr').addEventListener('click',function(){
+  running=false; if(tid){clearInterval(tid); tid=null;} left=TOTAL; paint();
+});
+
+/* ---------------- export ---------------- */
+function collect(){
+  var L=['COMPUTER SCIENCE ESSENTIALS — Day One Do Now','You Already Know This',
+         new Date().toLocaleString(),'='.repeat(56),''];
+  var n=state.filter(function(s){return s.done;}).length;
+  L.push('SORTED: '+n+' of '+ITEMS.length);
+  L.push('');
+  $$('textarea[data-nb]').forEach(function(t){
+    L.push(t.dataset.nb.toUpperCase());
+    L.push(t.value.trim()||'(no response yet)');
+    L.push('');
+  });
+  return L.join('\n');
+}
+$('#copybtn').addEventListener('click',function(){
+  var txt=collect(), box=$('#exportbox');
+  box.hidden=false; box.value=txt; box.select();
+  var done=false;
+  try{ done=document.execCommand('copy'); }catch(e){ done=false; }
+  if(!done && navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(function(){ msg('Copied.'); },function(){ msg('Select the text below and copy it.'); });
+    return;
+  }
+  msg(done?'Copied.':'Select the text below and copy it.');
+});
+function msg(t){ var m=$('#copymsg'); m.textContent=t; setTimeout(function(){m.textContent='';},4500); }
+$('#printbtn').addEventListener('click',function(){ window.print(); });
+
+/* ---------------- go ---------------- */
+buildRows(); buildStretch(); tally(); paint();
+})();
+</script>
+</body></html>
