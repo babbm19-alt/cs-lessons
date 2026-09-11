@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — Gamertag Forge · Mr. Babb</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:#f7f6fa; color:#1b2a4a; padding:18px; }
+  .wrap { max-width:840px; margin:0 auto; }
+  header { background:linear-gradient(135deg,#1b2a4a,#6b3fa0); border-radius:14px; padding:20px 24px; color:#fff; margin-bottom:14px; }
+  .tag { display:inline-block; background:rgba(255,255,255,.18); border-radius:20px; padding:3px 14px; font-size:.75rem; font-weight:700; letter-spacing:2px; }
+  .timer { float:right; font-weight:700; background:rgba(255,255,255,.18); padding:5px 14px; border-radius:20px; font-size:.85rem; }
+  header h1 { font-size:1.45rem; margin-top:8px; }
+  header p { color:#e9def7; font-size:.92rem; margin-top:6px; line-height:1.5; }
+  .card { background:#fff; border:1px solid #ddd4ec; border-radius:14px; padding:16px 18px; margin-bottom:12px; }
+  .card h2 { color:#6b3fa0; font-size:1.02rem; margin-bottom:8px; }
+  .card p, .card li { font-size:.92rem; line-height:1.55; }
+  .card ul, .card ol { margin:6px 0 6px 22px; }
+  pre { background:#1b2a4a; color:#d7f5e3; border-radius:10px; padding:12px 14px; font-family:Consolas,'Courier New',monospace; font-size:.88rem; overflow-x:auto; margin:8px 0; line-height:1.5; }
+  pre.starter { color:#ffe9a8; }
+  .plan { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .chunk { flex:1 1 150px; background:#f2ecf8; border:1px solid #ddd4ec; border-radius:10px; padding:9px 12px; font-size:.82rem; line-height:1.45; }
+  .chunk b { color:#6b3fa0; display:block; }
+  .req { display:flex; gap:10px; align-items:flex-start; background:#f2ecf8; border:1px solid #ddd4ec; border-radius:10px; padding:10px 12px; margin:7px 0; }
+  .req .n { background:#6b3fa0; color:#fff; font-weight:700; border-radius:8px; padding:1px 10px; font-size:.82rem; flex-shrink:0; margin-top:2px; }
+  .req.stretch .n { background:#b7791f; }
+  .req div { font-size:.9rem; line-height:1.5; }
+  code { font-family:Consolas,'Courier New',monospace; background:#f2ecf8; border-radius:5px; padding:1px 6px; font-size:.86em; color:#6b3fa0; font-weight:600; }
+  pre code { background:none; color:inherit; padding:0; font-weight:400; }
+  .recipe { background:#f2ecf8; border:1px dashed #c9bce0; border-radius:10px; padding:10px 14px; margin:8px 0; font-size:.9rem; line-height:1.6; }
+  .btn { background:#6b3fa0; color:#fff; border:none; border-radius:10px; padding:9px 22px; font-weight:700; font-size:.9rem; cursor:pointer; margin-top:10px; font-family:inherit; }
+  .btn:hover { background:#7d4fbb; }
+  .btn.copy { padding:6px 16px; font-size:.8rem; margin-top:4px; }
+  textarea { width:100%; border:2px solid #c9bce0; border-radius:10px; padding:10px 12px; font-family:Consolas,'Courier New',monospace; font-size:.88rem; background:#f2ecf8; color:#1b2a4a; min-height:150px; resize:vertical; }
+  .check-row { display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border-radius:10px; margin:6px 0; border:1px solid #ddd4ec; background:#fdfcff; }
+  .check-row .mark { font-weight:700; flex-shrink:0; width:22px; text-align:center; }
+  .check-row.pass { border-color:#1a7f4e; background:#e8f5ee; }
+  .check-row.pass .mark { color:#1a7f4e; }
+  .check-row.fail { border-color:#b7791f; }
+  .check-row.fail .mark { color:#b7791f; }
+  .check-row div { font-size:.86rem; line-height:1.45; }
+  .check-row .hint { color:#b7791f; }
+  #flight { display:none; background:linear-gradient(135deg,#1a7f4e,#1b2a4a); color:#fff; border-radius:14px; padding:20px; text-align:center; font-size:1.1rem; font-weight:700; margin-top:6px; line-height:1.6; }
+  .foot { text-align:center; color:#8a7fa8; font-size:.75rem; margin-top:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="timer">&#9200; 30 minutes</span>
+    <span class="tag">MINI PROJECT &middot; UNITS 1.1 + 1.2</span>
+    <h1>&#127918; Gamertag Forge</h1>
+    <p>Time to combine everything: <b>variables and operators</b> from 1.1, and <b>String methods</b> from 1.2. You'll write a program that slices pieces out of your own name with <code>substring</code>, measures it with <code>length()</code>, computes your power level with operators, and forges them all into a one-of-a-kind gamertag. Nobody else's program prints your tag.</p>
+  </header>
+
+  <div class="card">
+    <h2>&#9201; Your 30 minutes</h2>
+    <div class="plan">
+      <div class="chunk"><b>0&ndash;3 min</b>Copy the starter shell into Trinket or VS Code. Run it once &mdash; it should compile before you touch anything.</div>
+      <div class="chunk"><b>3&ndash;20 min</b>Forge: slice your name pieces, compute your power level, build the tag, print the reveal card.</div>
+      <div class="chunk"><b>20&ndash;25 min</b>Run the Pre-Flight Check below and fix anything amber.</div>
+      <div class="chunk"><b>25&ndash;30 min</b>Show Mr. Babb your running program, then forge a tag for the person next to you.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>&#127919; What it could look like</h2>
+    <p>Example run for a player named Jordan Mitchell. Yours prints <i>your</i> tag &mdash; and the style of the card is yours to design.</p>
+    <pre>*****************************
+      GAMERTAG  FORGE
+*****************************
+ Player: Jordan Mitchell
+ Letters in your name: 14
+ Power level: 42
+ >>> Your tag: JorMi42 <<<
+*****************************
+ Tag forged. Wear it well.
+*****************************</pre>
+    <div class="recipe"><b>The forge recipe</b> (you may invent your own, as long as it uses substring + a computed number):<br>
+    first 3 letters of your first name&ensp;<b>+</b>&ensp;first 2 letters of your last name&ensp;<b>+</b>&ensp;your power level<br>
+    where power level = <code>(firstName.length() + lastName.length()) * 3</code> &mdash; Jordan (6) + Mitchell (8) = 14, times 3 = <b>42</b>.</div>
+  </div>
+
+  <div class="card">
+    <h2>&#128203; Requirements</h2>
+    <div class="req"><span class="n">R1</span><div>Declare <b>at least 2 String variables</b> (your first and last name) and <b>at least 1 int</b> whose value Java <b>computes</b> &mdash; not one you typed in yourself.</div></div>
+    <div class="req"><span class="n">R2</span><div>Use <code>.substring()</code> <b>at least twice</b> &mdash; slice a piece from BOTH names &mdash; and <code>.length()</code> <b>at least once</b>.</div></div>
+    <div class="req"><span class="n">R3</span><div>Build your tag into <b>its own String variable</b> using concatenation, like <code>String tag = piece1 + piece2 + power;</code> &mdash; then print the variable, not the pieces.</div></div>
+    <div class="req"><span class="n">R4</span><div>Your power level must be <b>computed with an operator</b> (<code>*</code>, <code>/</code>, <code>-</code>, or <code>%</code>) using <code>.length()</code> values from your name.</div></div>
+    <div class="req"><span class="n">R5</span><div>Print a <b>reveal card</b>: at least 5 println statements, with your tag and power level concatenated into the output.</div></div>
+    <div class="req stretch"><span class="n">&#11088;</span><div><b>Stretch goals:</b> end your tag with a random digit using <code>(int)(Math.random() * 10)</code> &middot; grow your tag with <code>+=</code> &middot; forge a second tag for the person next to you and print both cards.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>&#128230; Starter shell</h2>
+    <p>Copy this in and run it first. Then swap in your name and start forging where the comments point.</p>
+    <pre class="starter" id="starter"><code>public class GamertagForge
+{
+    public static void main(String[] args)
+    {
+        // 1. YOUR NAME (swap in your own)
+        String firstName = "Jordan";
+        String lastName = "Mitchell";
+
+        // 2. THE FORGE: slice substring pieces, compute your power level,
+        //    and build your tag in its own String variable
+
+
+        // 3. THE REVEAL CARD: print it with your tag inside
+        System.out.println("*****************************");
+
+
+        System.out.println("*****************************");
+    }
+}</code></pre>
+    <button type="button" class="btn copy" onclick="copyStarter()">Copy starter code</button>
+    <span id="copied" style="font-size:.8rem;color:#1a7f4e;font-weight:600;margin-left:8px"></span>
+  </div>
+
+  <div class="card">
+    <h2>&#128640; Pre-Flight Check</h2>
+    <p>Before you show Mr. Babb: paste your <b>whole program</b> below and hit the button. It checks your code against every requirement &mdash; green means go.</p>
+    <textarea id="code" spellcheck="false" aria-label="Paste your Java program here" placeholder="Paste your entire GamertagForge program here..."></textarea>
+    <button type="button" class="btn" onclick="preflight()">Run Pre-Flight Check</button>
+    <div id="results" style="margin-top:10px"></div>
+  </div>
+
+  <div id="flight">&#9876;&#65039; TAG FORGED &mdash; all requirements detected.<br>Run it one more time, admire the card, and show Mr. Babb your screen.<br><span style="font-size:.85rem;font-weight:400">Done early? Grab a stretch goal &mdash; the random-digit tag is the fan favorite.</span></div>
+
+  <div class="foot">Mr. Babb &middot; AP Computer Science A &middot; Paul Public Charter School</div>
+</div>
+
+<script>
+function copyStarter() {
+  var txt = document.getElementById('starter').textContent;
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.setAttribute('aria-label', 'Clipboard helper');
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).catch(fallback);
+  } else {
+    fallback();
+  }
+  document.getElementById('copied').textContent = 'Copied!';
+  setTimeout(function () { document.getElementById('copied').textContent = ''; }, 2000);
+}
+
+function stripStrings(s) {
+  // Blank out string literal CONTENTS so words inside quotes don't fool the checks
+  return s.replace(/"[^"\n]*"/g, '""');
+}
+
+function preflight() {
+  var code = document.getElementById('code').value;
+  var out = document.getElementById('results');
+  var flight = document.getElementById('flight');
+  flight.style.display = 'none';
+  if (code.trim().length < 20) {
+    out.innerHTML = '<div class="check-row fail"><span class="mark">!</span><div class="hint">Paste your whole program first &mdash; everything from <b>public class</b> down to the last <b>}</b>.</div></div>';
+    return;
+  }
+  var stripped = stripStrings(code);
+
+  var strings = (stripped.match(/String\s+\w+\s*=/g) || []).length;
+  var ints = (stripped.match(/\bint\s+\w+\s*=/g) || []).length;
+  var subs = (stripped.match(/\.substring\s*\(/g) || []).length;
+  var lens = (stripped.match(/\.length\s*\(\s*\)/g) || []).length;
+  var tagBuilt = /String\s+\w+\s*=[^;]*\+[^;]*;/.test(stripped) || /\w+\s*\+=/.test(stripped);
+  var math = /[A-Za-z0-9_)\]]\s*[*\/%]\s*[A-Za-z0-9_(]/.test(stripped) ||
+             /[A-Za-z0-9_)\]]\s+-\s+[A-Za-z0-9_(]/.test(stripped);
+  var prints = (code.match(/System\.out\.println/g) || []).length;
+  var concatOut = /"\s*\+/.test(code) || /\+\s*"/.test(code);
+
+  var checks = [
+    { ok: strings >= 2,
+      pass: 'R1a &mdash; found ' + strings + ' String variable' + (strings === 1 ? '' : 's') + '.',
+      fail: 'R1a &mdash; I only found ' + strings + ' String declaration' + (strings === 1 ? '' : 's') + '. You need your first and last name each stored in their own String.' },
+    { ok: ints >= 1,
+      pass: 'R1b &mdash; int variable declared.',
+      fail: 'R1b &mdash; I don\'t see an int declaration yet. Your power level needs somewhere to live &mdash; and remember which type holds whole numbers.' },
+    { ok: subs >= 2,
+      pass: 'R2a &mdash; ' + subs + ' substring call' + (subs === 1 ? '' : 's') + '. Slicing confirmed.',
+      fail: 'R2a &mdash; I found ' + subs + ' substring call' + (subs === 1 ? '' : 's') + ', and you need at least 2 (one slice from EACH name). Remember: substring takes a start index and an end index, and the end index is not included.' },
+    { ok: lens >= 1,
+      pass: 'R2b &mdash; length() detected. Your name is being measured.',
+      fail: 'R2b &mdash; I don\'t see .length() anywhere. Your power level should come from how long your names are &mdash; there\'s a String method that counts characters for you.' },
+    { ok: tagBuilt,
+      pass: 'R3 &mdash; tag is built into its own String variable with concatenation.',
+      fail: 'R3 &mdash; I don\'t see a String variable being BUILT from pieces with +. Don\'t just print the pieces &mdash; join them into one variable first, then print that variable.' },
+    { ok: math,
+      pass: 'R4 &mdash; computed power level detected. Java is doing your math.',
+      fail: 'R4 &mdash; I don\'t see a calculation outside of quotes. Your power level must be computed with *, /, -, or % &mdash; typing the number yourself doesn\'t count as forging.' },
+    { ok: prints >= 5,
+      pass: 'R5a &mdash; ' + prints + ' println statements. That\'s a real reveal card.',
+      fail: 'R5a &mdash; only ' + prints + ' println statement' + (prints === 1 ? '' : 's') + ' so far. The reveal card needs at least 5 lines &mdash; borders count!' },
+    { ok: concatOut,
+      pass: 'R5b &mdash; concatenation in your output. The tag is on the card.',
+      fail: 'R5b &mdash; I don\'t see any concatenation in your printing. At least one println should join label text to a variable with +, like the "Your tag: " line in the example.' }
+  ];
+
+  var html = '';
+  var all = true;
+  checks.forEach(function (c) {
+    if (c.ok) {
+      html += '<div class="check-row pass"><span class="mark">&#10003;</span><div>' + c.pass + '</div></div>';
+    } else {
+      all = false;
+      html += '<div class="check-row fail"><span class="mark">&#9679;</span><div class="hint">' + c.fail + '</div></div>';
+    }
+  });
+  out.innerHTML = html;
+  if (all) {
+    flight.style.display = 'block';
+    flight.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+</script>
+</body>
+</html>
