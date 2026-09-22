@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turtle Arcade — VS Code Practice (CSP Unit 1)</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#f7f6fa; --card:#fff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:28px 20px 22px; text-align:center;}
+  header h1{font-size:1.6rem; letter-spacing:.3px;}
+  header p{opacity:.88; font-size:.95rem; margin-top:5px;}
+  header .team{display:inline-block; margin-top:10px; background:rgba(255,255,255,.16); padding:5px 14px; border-radius:999px; font-size:.8rem; font-weight:700; letter-spacing:.5px;}
+  nav{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; background:var(--navy); padding:10px 8px; position:sticky; top:0; z-index:50;}
+  nav button{border:none; background:rgba(255,255,255,.12); color:#fff; padding:8px 14px; border-radius:999px; cursor:pointer; font-size:.85rem; font-weight:600; font-family:inherit; transition:.15s;}
+  nav button:hover{background:rgba(255,255,255,.28);}
+  nav button.active{background:#fff; color:var(--navy);}
+  main{max-width:900px; margin:0 auto; padding:24px 16px 80px;}
+  section{display:none;} section.visible{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 1px 3px rgba(27,42,74,.06);}
+  h2{color:var(--purple); font-size:1.32rem; margin-bottom:10px;}
+  h3{color:var(--navy); font-size:1.05rem; margin:16px 0 8px;}
+  p{margin-bottom:10px;}
+  ul,ol{padding-left:22px; margin-bottom:10px;} li{margin-bottom:5px;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  .tag.lvl{background:#e8f3ee; color:var(--green);}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.88rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .codebox .c{color:#8a93a6;} .codebox .s{color:#8fd6a8;} .codebox .n{color:#ffd479;} .codebox .k{color:#7fb4ff;}
+  .warn{background:#fdf6e3; border:1px solid #f0e0b0; border-left:4px solid var(--amber); border-radius:0 12px 12px 0; padding:13px 16px; margin:12px 0; font-size:.93rem;}
+  .warn b{color:var(--amber);}
+  .danger{background:#fdecea; border:1px solid #f5c6c0; border-left:4px solid var(--red); border-radius:0 12px 12px 0; padding:13px 16px; margin:12px 0; font-size:.93rem;}
+  .danger b{color:var(--red);}
+  .note{background:var(--purple-lt); border-left:4px solid var(--purple); border-radius:0 12px 12px 0; padding:13px 16px; margin:12px 0; font-size:.93rem;}
+  .chk{display:flex; gap:11px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--line);}
+  .chk:last-child{border-bottom:none;}
+  .chk .box{flex:0 0 22px; height:22px; border:2px solid var(--line); border-radius:6px; margin-top:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:.85rem; transition:.15s;}
+  .chk .box.on{background:var(--green); border-color:var(--green);}
+  .chk .box.on::after{content:'\2713';}
+  .chk .txt{font-size:.94rem;}
+  .chk .txt b{color:var(--navy);}
+  .goal{display:grid; grid-template-columns:1fr 300px; gap:18px; align-items:start;}
+  @media(max-width:760px){.goal{grid-template-columns:1fr;}}
+  .screen{background:#191970; border-radius:12px; padding:8px; border:1px solid var(--line);}
+  .screen svg{display:block; width:100%; height:auto; border-radius:8px;}
+  table.ref{width:100%; border-collapse:collapse; margin:10px 0; font-size:.88rem;}
+  table.ref th,table.ref td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top;}
+  table.ref th{background:var(--purple); color:#fff; font-size:.78rem; text-transform:uppercase; letter-spacing:.6px;}
+  table.ref td.m{font-family:var(--mono); font-size:.85rem; color:var(--navy); white-space:nowrap;}
+  table.ref tr:nth-child(even) td{background:#faf9fc;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:11px 20px; border-radius:9px; font-size:.94rem; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  textarea{width:100%; min-height:260px; font-family:var(--mono); font-size:.85rem; border:2px solid var(--line); border-radius:10px; padding:12px; resize:vertical; line-height:1.5;}
+  textarea:focus{outline:none; border-color:var(--purple);}
+  .res{margin-top:16px;}
+  .resgroup{margin-bottom:14px;}
+  .resgroup h4{font-size:.78rem; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid var(--line);}
+  .ri{display:flex; gap:10px; align-items:flex-start; padding:7px 0; font-size:.9rem;}
+  .ri .ic{flex:0 0 20px; font-weight:800; font-size:1rem; line-height:1.3;}
+  .ri.pass .ic{color:var(--green);} .ri.fail .ic{color:var(--red);}
+  .ri.fail .why{color:var(--red); font-size:.86rem; display:block; margin-top:2px;}
+  .banner{display:none; margin-top:16px; background:linear-gradient(120deg,#1a7f4e,#2fa36b); color:#fff; border-radius:12px; padding:18px 20px; text-align:center;}
+  .banner.on{display:block;}
+  .banner h3{color:#fff; font-size:1.25rem; margin:0 0 4px;}
+  .scorebar{font-family:var(--mono); font-weight:700; color:var(--purple); margin-bottom:10px;}
+  footer{text-align:center; color:var(--muted); font-size:.82rem; padding:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#127918; Turtle Arcade &mdash; Target Practice</h1>
+  <p>Leave the browser. Open VS Code. Build something that actually plays.</p>
+  <span class="team">Built for the Video Game Design team &mdash; and everyone else</span>
+</header>
+
+<nav id="nav">
+  <button data-sec="setup" class="active">1. Set Up VS Code</button>
+  <button data-sec="goal">2. The Goal</button>
+  <button data-sec="levels">3. The Five Levels</button>
+  <button data-sec="boss">4. Boss Level</button>
+  <button data-sec="check">5. Pre-Flight Check</button>
+</nav>
+
+<main>
+
+<!-- ================= SETUP ================= -->
+<section id="setup" class="visible">
+  <div class="card">
+    <span class="tag">Read this before you type anything</span>
+    <h2>Getting VS Code ready for Python turtle</h2>
+    <p>Everything you have written so far lived inside a web page that cleaned up after you.
+       VS Code does not. It will run exactly what you typed, in the file you named, with the
+       interpreter you picked &mdash; and it will tell you, in its own words, when one of those is wrong.
+       Learning to read those words <i>is</i> the skill.</p>
+
+    <div class="danger">
+      <b>The one mistake that wastes the whole period.</b> Do <u>not</u> name your file
+      <code class="inline">turtle.py</code>. Python will import <i>your file</i> instead of the real turtle
+      library and you will get <code class="inline">AttributeError: module 'turtle' has no attribute 'Turtle'</code>,
+      which looks like the library is broken when the problem is the name on your own file.
+      Call it <code class="inline">turtle_arcade.py</code>. Also delete any
+      <code class="inline">turtle.pyc</code> or <code class="inline">__pycache__</code> folder if you already made this mistake.
+    </div>
+
+    <h3>Checklist</h3>
+    <div id="setupList"></div>
+
+    <div class="warn" style="margin-top:16px">
+      <b>Where does <code class="inline">input()</code> show up?</b> In the <b>terminal panel at the bottom of VS Code</b>,
+      not in the turtle window. If your program seems frozen, look down there &mdash; it is waiting for you to type and press Enter.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>&#128295; Four errors you will probably see, and what they actually mean</h3>
+    <table class="ref">
+      <tr><th>What VS Code says</th><th>What it means</th><th>Fix</th></tr>
+      <tr><td class="m">ModuleNotFoundError:<br>No module named 'turtle'</td>
+          <td>Python cannot find the library, usually because no interpreter is selected.</td>
+          <td>Ctrl+Shift+P &rarr; "Python: Select Interpreter" &rarr; pick the 3.x one.</td></tr>
+      <tr><td class="m">SyntaxError:<br>invalid character '&#8220;'</td>
+          <td>You pasted from Docs or Word and got curly quotes.</td>
+          <td>Retype the quotes in VS Code. Straight <code class="inline">"</code> only.</td></tr>
+      <tr><td class="m">IndentationError:<br>unexpected indent</td>
+          <td>You mixed tabs and spaces, or indented a line that should not be.</td>
+          <td>Pick spaces and stay with them. VS Code: bottom-right &rarr; "Spaces: 4".</td></tr>
+      <tr><td class="m">The window opens<br>and vanishes instantly</td>
+          <td>The program finished, so Python closed the window.</td>
+          <td>Last line must be <code class="inline">turtle.done()</code>.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ================= GOAL ================= -->
+<section id="goal">
+  <div class="card">
+    <span class="tag">What you are building</span>
+    <h2>A game someone can actually play</h2>
+    <div class="goal">
+      <div>
+        <p>Not a drawing. A <b>game</b>: it asks the player who they are, builds an arena around a target,
+           and then <i>waits</i> &mdash; and every time the player clicks, it works out how close they got,
+           scores it, and updates the screen.</p>
+        <p>That last part is the whole reason this task exists. A click comes in with an x and a y,
+           you measure the distance to the centre, and you turn that distance into points. Change
+           two words and that is <b>hit detection</b>. Change two more and it is collision.
+           Every game you have played is doing some version of it.</p>
+        <p>You already know almost all of the pieces:</p>
+        <ul>
+          <li><code class="inline">input()</code> and <code class="inline">int()</code> &mdash; Activity 1.1.2</li>
+          <li><code class="inline">circle(radius, extent, steps)</code> for the arena walls &mdash; the Arc Lab</li>
+          <li><code class="inline">fillcolor</code> / <code class="inline">begin_fill</code> / <code class="inline">end_fill</code> for the rings</li>
+          <li><code class="inline">penup</code>, <code class="inline">pendown</code>, <code class="inline">goto</code> to move without drawing</li>
+          <li>objects and methods &mdash; every single line is <code class="inline">object.method(parameter)</code></li>
+        </ul>
+        <p>Exactly <b>one</b> idea is new, and it arrives in Level 5. It is flagged when you get there.</p>
+      </div>
+      <div>
+        <div class="screen">
+          <svg viewBox="0 0 300 330" role="img" aria-label="Target output: a hexagonal arena around a three-ring target on a dark blue screen">
+            <rect width="300" height="330" fill="#191970"/>
+            <text x="150" y="34" fill="#fff" font-family="Arial" font-size="19" font-weight="bold" text-anchor="middle">TURTLE ARCADE</text>
+            <text x="150" y="54" fill="#cfd4ff" font-family="Arial" font-size="10" text-anchor="middle">Player: JorMi   Shots: 5</text>
+            <polygon points="150,80 216,118 216,194 150,232 84,194 84,118" fill="#000080" stroke="#00bfff" stroke-width="3"/>
+            <circle cx="150" cy="156" r="46" fill="#fff"/>
+            <circle cx="150" cy="156" r="31" fill="#e03131"/>
+            <circle cx="150" cy="156" r="15" fill="#ffd43b"/>
+            <circle cx="141" cy="147" r="4" fill="#111"/>
+            <circle cx="166" cy="171" r="4" fill="#111"/>
+            <circle cx="150" cy="120" r="4" fill="#111"/>
+            <text x="150" y="300" fill="#fff" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">Score: 21    Shots left: 2</text>
+          </svg>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:8px;text-align:center">
+          Your colours and wall count will differ &mdash; they come from what the player types.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>&#127919; Scoring rings</h3>
+    <table class="ref">
+      <tr><th>Ring</th><th>Radius</th><th>Colour</th><th>Points</th></tr>
+      <tr><td>Bullseye</td><td class="m">40</td><td>gold</td><td class="m">10</td></tr>
+      <tr><td>Middle</td><td class="m">80</td><td>red</td><td class="m">5</td></tr>
+      <tr><td>Outer</td><td class="m">120</td><td>white</td><td class="m">1</td></tr>
+      <tr><td>Anywhere else</td><td class="m">&mdash;</td><td>&mdash;</td><td class="m">0</td></tr>
+    </table>
+    <div class="note">
+      Draw the rings <b>largest first</b>. Each one you draw covers the middle of the one before it,
+      which is exactly how you get a bullseye instead of three separate circles.
+    </div>
+  </div>
+</section>
+
+<!-- ================= LEVELS ================= -->
+<section id="levels">
+
+  <div class="card">
+    <span class="tag lvl">Level 1</span>
+    <h2>Boot the cabinet</h2>
+    <p>Make the window, name it, colour it, and put the title on the screen.</p>
+    <h3>You must have</h3>
+    <ul>
+      <li><code class="inline">import turtle</code> as the first real line</li>
+      <li>A screen object from <code class="inline">turtle.Screen()</code>, with <code class="inline">.title()</code> and <code class="inline">.bgcolor()</code> set</li>
+      <li>A turtle that writes the game name near the top using <code class="inline">.write()</code></li>
+      <li><code class="inline">turtle.done()</code> as the very last line of the whole program</li>
+    </ul>
+    <div class="codebox"><span class="c"># Turtle Arcade - your name here</span>
+<span class="k">import</span> turtle
+
+screen = turtle.Screen()
+screen.title(<span class="s">"Turtle Arcade"</span>)
+screen.bgcolor(<span class="s">"midnightblue"</span>)
+
+pen = turtle.Turtle()
+pen.hideturtle()
+pen.color(<span class="s">"white"</span>)
+pen.penup()
+pen.goto(<span class="n">0</span>, <span class="n">250</span>)
+pen.write(<span class="s">"TURTLE ARCADE"</span>, align=<span class="s">"center"</span>, font=(<span class="s">"Arial"</span>, <span class="n">28</span>, <span class="s">"bold"</span>))</div>
+    <div class="note"><b>Name every part.</b> <code class="inline">pen</code> is the object you made.
+      <code class="inline">.write</code> is a method. Everything in the parentheses is a parameter.
+      That is the same sentence you labelled in the review game.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag lvl">Level 2</span>
+    <h2>Player card</h2>
+    <p>Ask the player three things and put two of them on the screen.</p>
+    <h3>You must have</h3>
+    <ul>
+      <li>A gamertag from <code class="inline">input()</code> &mdash; stays a <b>string</b></li>
+      <li>A number of shots from <code class="inline">int(input(...))</code> &mdash; must become a <b>number</b></li>
+      <li>A number of arena walls, also converted with <code class="inline">int()</code> (use 3 to 8)</li>
+      <li>A second <code class="inline">.write()</code> showing the gamertag and the shot count</li>
+    </ul>
+    <div class="danger">
+      <b>The trap you already met.</b> <code class="inline">"Shots: " + shots</code> crashes with a
+      <code class="inline">TypeError</code>, because <code class="inline">shots</code> is now a number and you
+      cannot glue a number onto text. Wrap it: <code class="inline">"Shots: " + str(shots)</code>.
+      <br>You converted <i>to</i> a number with <code class="inline">int()</code> and now you convert
+      <i>back</i> to text with <code class="inline">str()</code>. Both directions, same idea.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag lvl">Level 3</span>
+    <h2>Build the arena</h2>
+    <p>One filled polygon, with the number of walls coming from what the player typed.</p>
+    <h3>You must have</h3>
+    <ul>
+      <li>A new turtle for the arena, moved to <code class="inline">(0, -200)</code> with the pen <b>up</b></li>
+      <li>A <code class="inline">fillcolor</code>, then <code class="inline">begin_fill()</code></li>
+      <li><code class="inline">arena.circle(200, 360, sides)</code> &mdash; all the way around, cut into <code class="inline">sides</code> straight walls</li>
+      <li><code class="inline">end_fill()</code></li>
+    </ul>
+    <div class="note">
+      <b>Why start at (0, &minus;200)?</b> The centre of a turtle circle sits one radius to the turtle's
+      <b>left</b>. Facing east at <code class="inline">(0, -200)</code>, left is straight up &mdash; so the centre
+      lands on <code class="inline">(0, 0)</code> and your arena wraps the target instead of sitting beside it.
+      That is the same rule the Arc Lab was built on.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag lvl">Level 4</span>
+    <h2>Draw the target</h2>
+    <p>Three filled circles, largest first, all centred on <code class="inline">(0, 0)</code>.</p>
+    <h3>You must have</h3>
+    <ul>
+      <li>For each ring: pen up, <code class="inline">goto(0, -radius)</code>, pen down, set the fill colour,
+          <code class="inline">begin_fill()</code>, <code class="inline">circle(radius)</code>, <code class="inline">end_fill()</code>, pen up again</li>
+      <li>Radii 120, then 80, then 40 &mdash; in that order</li>
+    </ul>
+    <div class="codebox"><span class="c"># Outer ring - 1 point</span>
+target.goto(<span class="n">0</span>, <span class="n">-120</span>)
+target.pendown()
+target.fillcolor(<span class="s">"white"</span>)
+target.begin_fill()
+target.circle(<span class="n">120</span>)
+target.end_fill()
+target.penup()
+
+<span class="c"># now do the same thing for 80 (red) and 40 (gold)</span></div>
+    <div class="warn">
+      Yes, you are writing nearly the same eight lines three times. Notice how annoying that is &mdash;
+      it is the exact itch that functions were invented to scratch, and you are about to write your first one.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="tag lvl">Level 5</span>
+    <h2>Make it playable &mdash; the one new idea</h2>
+    <p>Up to now every line ran once, top to bottom, and then the program was done.
+       Now you write a block of code that does <b>not</b> run yet &mdash; it sits there, and the screen runs it
+       every single time the player clicks.</p>
+    <div class="note">
+      <b>A function</b> is a named block of instructions that waits until something calls it.
+      <code class="inline">def shoot(x, y):</code> creates one called <code class="inline">shoot</code>.
+      The <code class="inline">x</code> and <code class="inline">y</code> are parameters &mdash; the same word you
+      labelled in <code class="inline">circle(50)</code> &mdash; and the screen fills them in with wherever the
+      player clicked. <code class="inline">screen.onscreenclick(shoot)</code> hands your function to the screen.
+      Notice there are no parentheses after <code class="inline">shoot</code> there: you are handing over the
+      function itself, not running it.
+    </div>
+    <h3>You must have</h3>
+    <ul>
+      <li>A <code class="inline">marker</code> turtle and a <code class="inline">hud</code> turtle</li>
+      <li><code class="inline">score = 0</code> and <code class="inline">shots_left = shots</code> before the function</li>
+      <li><code class="inline">def shoot(x, y):</code> containing:
+        <ul>
+          <li><code class="inline">global score, shots_left</code> &mdash; so it changes the real ones, not copies</li>
+          <li><code class="inline">marker.goto(x, y)</code> and a <code class="inline">marker.dot(10, "black")</code></li>
+          <li><code class="inline">distance = marker.distance(0, 0)</code></li>
+          <li>an <code class="inline">if</code> / <code class="inline">elif</code> / <code class="inline">else</code> chain turning that distance into points</li>
+          <li>updates to <code class="inline">score</code> and <code class="inline">shots_left</code>, then <code class="inline">hud.clear()</code> and a fresh <code class="inline">hud.write(...)</code></li>
+        </ul>
+      </li>
+      <li><code class="inline">screen.onscreenclick(shoot)</code> just before <code class="inline">turtle.done()</code></li>
+    </ul>
+    <div class="codebox"><span class="k">def</span> shoot(x, y):
+    <span class="k">global</span> score, shots_left
+
+    marker.goto(x, y)
+    marker.dot(<span class="n">10</span>, <span class="s">"black"</span>)
+    distance = marker.distance(<span class="n">0</span>, <span class="n">0</span>)
+
+    <span class="k">if</span> distance &lt;= <span class="n">40</span>:
+        points = <span class="n">10</span>
+    <span class="k">elif</span> distance &lt;= <span class="n">80</span>:
+        points = <span class="n">5</span>
+    <span class="c"># ... you finish the rest</span></div>
+    <div class="warn">
+      <b>Indentation is not decoration in Python.</b> Every line that belongs inside
+      <code class="inline">shoot</code> is indented four spaces. The moment a line goes back to the left margin,
+      Python decides the function is over.
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOSS ================= -->
+<section id="boss">
+  <div class="card">
+    <span class="tag lvl">Boss Level</span>
+    <h2>Make it end properly</h2>
+    <p>Right now the player can click forever. A game has to know when it is over.</p>
+    <h3>Requirements</h3>
+    <ol>
+      <li>The number of shots comes from the player (Level 2) and counts down with each click.</li>
+      <li>When <code class="inline">shots_left</code> reaches 0, the HUD stops showing the score line and
+          shows a final message that includes <b>the player's gamertag</b> and their score.</li>
+      <li>Extra clicks after that do nothing at all. No negative shot counts, no extra points.</li>
+    </ol>
+    <div class="note">
+      <b>How to stop the extra clicks.</b> The first thing inside <code class="inline">shoot</code> checks
+      whether the game is already over, and leaves immediately if it is:
+      <div class="codebox" style="margin-top:8px"><span class="k">if</span> shots_left &lt;= <span class="n">0</span>:
+        <span class="k">return</span></div>
+      <code class="inline">return</code> means "stop running this function right now." Every game has a
+      version of this guard. Without it, a player can keep firing after they are dead.
+    </div>
+    <h3>&#127942; If you finish early</h3>
+    <ul>
+      <li>Make a miss cost a shot but also flash the HUD a different colour.</li>
+      <li>Let the player choose the bullseye radius, and scale the other two rings from it.</li>
+      <li>Move the target to a new random spot after every hit. (Look up <code class="inline">import random</code> and <code class="inline">random.randint</code>.)</li>
+      <li>Add a second player and alternate turns.</li>
+    </ul>
+    <div class="warn">
+      <b>Video Game Design team:</b> the guard clause, the distance check, and the score update are
+      three of the four things in every game loop you will build this year. The fourth is drawing a frame,
+      and you have been doing that since Activity 1.1.1.
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHECK ================= -->
+<section id="check">
+  <div class="card">
+    <span class="tag">Before you turn it in</span>
+    <h2>Pre-Flight Check</h2>
+    <p>Paste your <b>whole</b> program below and run the check. It reads your code the way Python does &mdash;
+       comments and text inside quotes are ignored, so you cannot pass by writing
+       <code class="inline"># begin_fill</code> in a comment.</p>
+    <p style="font-size:.9rem;color:var(--muted)">This checks that the pieces are there. It cannot tell you
+       whether the game is fun. Run it in VS Code and actually play it before you submit.</p>
+    <textarea id="src" spellcheck="false" aria-label="Paste your Python program here" placeholder="# paste your whole turtle_arcade.py here"></textarea>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" onclick="runCheck()">&#128640; Run the check</button>
+      <button class="btn secondary" onclick="document.getElementById('src').value='';document.getElementById('res').innerHTML='';document.getElementById('banner').classList.remove('on');document.getElementById('scorebar').textContent='';">Clear</button>
+    </div>
+    <div class="scorebar" id="scorebar"></div>
+    <div class="res" id="res"></div>
+    <div class="banner" id="banner">
+      <h3>&#9989; All checks passed</h3>
+      <p style="margin:0">Every piece is in place. Screenshot the game window with your score on it and
+         submit that together with your <code style="color:#d6ffe8">turtle_arcade.py</code> file.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>Mr. Babb &bull; Computer Science Principles &bull; This page does not save your work.</footer>
+
+<script>
+/* ---------- nav ---------- */
+const SECS=['setup','goal','levels','boss','check'];
+function show(s){
+  SECS.forEach(x=>document.getElementById(x).classList.toggle('visible',x===s));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.sec===s));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
+
+/* ---------- setup checklist ---------- */
+const SETUP=[
+ ['Open the <b>folder</b>, not the file.','File &rarr; Open Folder &rarr; make a new folder called <code class="inline">turtle_arcade</code> on your Desktop. Opening a single file leaves VS Code half blind &mdash; it cannot find anything next to it.'],
+ ['No spaces in the folder name.','<code class="inline">my turtle game</code> will bite you later. Use underscores.'],
+ ['Install the Python extension.','Extensions icon in the left bar &rarr; search <b>Python</b> &rarr; the one by Microsoft &rarr; Install.'],
+ ['Select an interpreter.','Ctrl+Shift+P (Cmd+Shift+P on Mac) &rarr; type "Python: Select Interpreter" &rarr; choose the Python 3 one. Skip this and nothing will run.'],
+ ['Make the file and name it carefully.','New file &rarr; <code class="inline">turtle_arcade.py</code>. The <code class="inline">.py</code> matters. The name matters more &mdash; never <code class="inline">turtle.py</code>.'],
+ ['Set indentation to spaces.','Bottom right of the VS Code window &rarr; click where it says Tab Size or Spaces &rarr; "Indent Using Spaces" &rarr; 4.'],
+ ['Type, do not paste.','Code copied out of a browser, Docs or Word brings curly quotes and invisible characters with it. Typing it is also how it gets into your head.'],
+ ['Run it with the &#9654; button, top right.','Output and any <code class="inline">input()</code> prompts appear in the <b>terminal at the bottom</b>, not in the turtle window.']
+];
+(function(){
+  const box=document.getElementById('setupList');
+  SETUP.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='chk';
+    const b=document.createElement('div'); b.className='box'; b.setAttribute('role','checkbox');
+    b.setAttribute('tabindex','0'); b.setAttribute('aria-label',s[0].replace(/<[^>]+>/g,''));
+    const toggle=()=>{b.classList.toggle('on'); b.setAttribute('aria-checked',b.classList.contains('on'));};
+    b.onclick=toggle;
+    b.onkeydown=e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } };
+    const t=document.createElement('div'); t.className='txt';
+    t.innerHTML='<b>'+(i+1)+'. '+s[0]+'</b> '+s[1];
+    d.appendChild(b); d.appendChild(t); box.appendChild(d);
+  });
+})();
+
+/* ---------- pre-flight check ---------- */
+function strip(src){
+  // strings first (so a # inside a string goes with it), then comments
+  let s=src.replace(/"""[\s\S]*?"""/g,'""').replace(/'''[\s\S]*?'''/g,"''");
+  s=s.replace(/"(?:[^"\\\n]|\\.)*"/g,'""').replace(/'(?:[^'\\\n]|\\.)*'/g,"''");
+  s=s.replace(/#[^\n]*/g,'');
+  return s;
+}
+function count(s,re){ return (s.match(re)||[]).length; }
+
+const GROUPS=[
+ {name:'Level 1 · The cabinet', checks:[
+   {t:'imports the turtle library', f:s=>/^\s*import\s+turtle\b/m.test(s),
+    w:'No <code class="inline">import turtle</code> on a line of its own. Nothing else can work without it.'},
+   {t:'creates a screen object', f:s=>/=\s*turtle\.Screen\s*\(/.test(s),
+    w:'Nothing is storing <code class="inline">turtle.Screen()</code>. You need <code class="inline">screen = turtle.Screen()</code> so you have something to call <code class="inline">.title()</code> and <code class="inline">.onscreenclick()</code> on.'},
+   {t:'sets a window title', f:s=>/\.title\s*\(/.test(s),
+    w:'No <code class="inline">.title(...)</code> call. Level 1 asks for the window to be named.'},
+   {t:'sets a background colour', f:s=>/\.bgcolor\s*\(/.test(s),
+    w:'No <code class="inline">.bgcolor(...)</code> call.'},
+   {t:'ends with turtle.done()', f:s=>/turtle\.done\s*\(|\bmainloop\s*\(/.test(s),
+    w:'Missing <code class="inline">turtle.done()</code> at the end. Without it the window flashes open and shuts before anyone can click.'}
+ ]},
+ {name:'Level 2 · Input and data types', checks:[
+   {t:'asks the player at least three questions', f:s=>count(s,/\binput\s*\(/g)>=3,
+    w:'Level 2 needs three <code class="inline">input()</code> calls: gamertag, shots, and number of walls.'},
+   {t:'converts numbers with int(input(...))', f:s=>count(s,/\bint\s*\(\s*input\s*\(/g)>=2,
+    w:'Found fewer than two <code class="inline">int(input(...))</code> calls. Shots and walls must both become numbers &mdash; you cannot count down with a string.'},
+   {t:'converts a number back to text with str()', f:s=>/\bstr\s*\(/.test(s),
+    w:'No <code class="inline">str(...)</code> anywhere. The moment you join a number onto text you need it, or Python raises a TypeError.'},
+   {t:'writes text on the screen', f:s=>count(s,/\.write\s*\(/g)>=2,
+    w:'Fewer than two <code class="inline">.write(...)</code> calls. You need the title and the player card at minimum.'}
+ ]},
+ {name:'Levels 3 and 4 · Shapes and fill', checks:[
+   {t:'sets a fill colour', f:s=>count(s,/\.fillcolor\s*\(/g)>=4,
+    w:'Fewer than four <code class="inline">.fillcolor(...)</code> calls. The arena and all three rings each need their own.'},
+   {t:'opens and closes every fill', f:s=>{const b=count(s,/\bbegin_fill\s*\(/g), e=count(s,/\bend_fill\s*\(/g); return b>=4&&b===e;},
+    w:'Your <code class="inline">begin_fill()</code> and <code class="inline">end_fill()</code> counts do not match, or there are fewer than four of each. Every fill you open has to be closed or the shape comes out hollow.'},
+   {t:'draws a polygon with circle(radius, extent, steps)', f:s=>/\.circle\s*\(\s*[^(),]+,[^(),]+,[^(),]+\)/.test(s),
+    w:'No <code class="inline">circle()</code> call with all three parameters. The arena wall is <code class="inline">circle(200, 360, sides)</code> &mdash; the third number is what makes it a polygon instead of a curve.'},
+   {t:'draws the arena and all three rings', f:s=>count(s,/\.circle\s*\(/g)>=4,
+    w:'Fewer than four <code class="inline">circle()</code> calls. You need one arena and three scoring rings.'},
+   {t:'lifts and lowers the pen', f:s=>/\bpenup\s*\(/.test(s)&&/\bpendown\s*\(/.test(s),
+    w:'Missing <code class="inline">penup()</code> or <code class="inline">pendown()</code>. Without both, the turtle drags a line between every ring and the target looks like a scribble.'},
+   {t:'moves to a position with goto()', f:s=>count(s,/\.goto\s*\(/g)>=3,
+    w:'Fewer than three <code class="inline">.goto(...)</code> calls. Each ring has to start at <code class="inline">(0, -radius)</code> so they all share a centre.'}
+ ]},
+ {name:'Level 5 and Boss · Making it playable', checks:[
+   {t:'defines a function', f:s=>/^[ \t]*def\s+\w+\s*\(/m.test(s),
+    w:'No <code class="inline">def</code> anywhere. Level 5 needs <code class="inline">def shoot(x, y):</code>.'},
+   {t:'hands the function to the screen', f:s=>/\.onscreenclick\s*\(\s*\w+\s*\)/.test(s),
+    w:'No <code class="inline">onscreenclick(shoot)</code>. Also check you did not write <code class="inline">onscreenclick(shoot())</code> &mdash; with parentheses you run it once immediately instead of handing it over.'},
+   {t:'measures the distance from the bullseye', f:s=>/\.distance\s*\(/.test(s),
+    w:'No <code class="inline">.distance(0, 0)</code>. That measurement is what turns a click into a score.'},
+   {t:'scores with an if / elif chain', f:s=>/\belif\b/.test(s)&&/\belse\b/.test(s),
+    w:'Missing <code class="inline">elif</code> or <code class="inline">else</code>. Four outcomes &mdash; 10, 5, 1, 0 &mdash; need the full chain.'},
+   {t:'updates the real score, not a copy', f:s=>/\bglobal\s+\w+/.test(s),
+    w:'No <code class="inline">global</code> line inside the function. Without it Python makes a fresh copy of <code class="inline">score</code> every click and your score is always the same number.'},
+   {t:'guards against clicks after the game ends', f:s=>/\breturn\b/.test(s)&&/shots_left\s*<=?\s*0|shots_left\s*==\s*0/.test(s),
+    w:'No guard clause. The Boss Level needs <code class="inline">if shots_left &lt;= 0:</code> then <code class="inline">return</code> at the top of the function, or the player can fire forever.'},
+   {t:'redraws the HUD after every shot', f:s=>/\.clear\s*\(/.test(s),
+    w:'No <code class="inline">.clear()</code> call. Without it each new score line is drawn on top of the last one and the text turns into mush.'}
+ ]}
+];
+
+const TRAPS=[
+ {t:'no curly quotes', f:raw=>!/[“”‘’]/.test(raw),
+  w:'Curly quotes found (“ ” or ‘ ’). Python only accepts straight quotes. This is what pasting from Docs does &mdash; retype them in VS Code.'},
+ {t:'indentation is consistent', f:raw=>{
+    const lines=raw.split('\n');
+    const tabs=lines.some(l=>/^\t+\S/.test(l));
+    const spaces=lines.some(l=>/^ +\S/.test(l));
+    return !(tabs&&spaces);
+  },
+  w:'Some lines are indented with tabs and others with spaces. Python counts them differently and will raise an IndentationError. Pick spaces and convert the rest.'}
+];
+
+function runCheck(){
+  const raw=document.getElementById('src').value;
+  const res=document.getElementById('res');
+  const banner=document.getElementById('banner');
+  const bar=document.getElementById('scorebar');
+  banner.classList.remove('on');
+  if(raw.trim().length<40){
+    res.innerHTML='<div class="ri fail"><span class="ic">✖</span><span>Paste your whole program first — all of it, from <code class="inline">import turtle</code> to <code class="inline">turtle.done()</code>.</span></div>';
+    bar.textContent=''; return;
+  }
+  const s=strip(raw);
+  let pass=0, total=0, html='';
+
+  // traps run on the raw source
+  html+='<div class="resgroup"><h4>Things that stop Python cold</h4>';
+  TRAPS.slice(0,2).forEach(t=>{
+    total++; const ok=t.f(raw); if(ok)pass++;
+    html+='<div class="ri '+(ok?'pass':'fail')+'"><span class="ic">'+(ok?'✔':'✖')+'</span><span>'+t.t+
+      (ok?'':'<span class="why">'+t.w+'</span>')+'</span></div>';
+  });
+  html+='</div>';
+
+  GROUPS.forEach(g=>{
+    html+='<div class="resgroup"><h4>'+g.name+'</h4>';
+    g.checks.forEach(c=>{
+      total++; let ok=false;
+      try{ ok=c.f(s); }catch(e){ ok=false; }
+      if(ok)pass++;
+      html+='<div class="ri '+(ok?'pass':'fail')+'"><span class="ic">'+(ok?'✔':'✖')+'</span><span>'+c.t+
+        (ok?'':'<span class="why">'+c.w+'</span>')+'</span></div>';
+    });
+    html+='</div>';
+  });
+
+  res.innerHTML=html;
+  bar.textContent=pass+' of '+total+' checks passed';
+  if(pass===total) banner.classList.add('on');
+}
+</script>
+</body>
+</html>

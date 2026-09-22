@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do Now — Turtle Arcade Day (CSP)</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#f7f6fa; --card:#fff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:22px 20px 18px;}
+  .hwrap{max-width:860px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;}
+  header .eyebrow{font-size:.74rem; font-weight:800; letter-spacing:2px; opacity:.85;}
+  header h1{font-size:1.5rem; letter-spacing:.3px;}
+  header p{opacity:.85; font-size:.92rem;}
+  .clockbox{text-align:center; background:rgba(255,255,255,.12); border-radius:12px; padding:8px 16px;}
+  .clockbox .t{font-family:var(--mono); font-size:1.7rem; font-weight:700; line-height:1.1;}
+  .clockbox .t.low{color:#ffd479;}
+  .clockbox button{margin-top:4px; background:rgba(255,255,255,.2); color:#fff; border:none; border-radius:999px; padding:3px 12px; font-size:.75rem; font-weight:700; cursor:pointer; font-family:inherit;}
+  .progress{position:sticky; top:0; z-index:40; background:var(--navy); color:#fff; padding:8px 16px; font-size:.84rem;}
+  .progress .in{max-width:860px; margin:0 auto; display:flex; align-items:center; gap:12px;}
+  .bar{flex:1; height:8px; background:rgba(255,255,255,.18); border-radius:999px; overflow:hidden;}
+  .bar i{display:block; height:100%; width:0; background:#7be0a8; transition:width .3s;}
+  main{max-width:860px; margin:0 auto; padding:22px 16px 70px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:16px; box-shadow:0 1px 3px rgba(27,42,74,.06);}
+  .part{font-size:.78rem; font-weight:800; letter-spacing:1.4px; color:var(--purple); text-transform:uppercase; margin:6px 0 10px;}
+  .part span{color:var(--muted); font-weight:600; letter-spacing:0; text-transform:none; font-size:.85rem; margin-left:6px;}
+  h2{font-size:1.02rem; color:var(--navy); margin-bottom:8px;}
+  h2 .n{margin-right:6px;}
+  h2 .n{color:var(--purple); font-weight:800;}
+  h2 .done{margin-left:8px; color:var(--green); font-size:.85rem; display:none; white-space:nowrap;}
+  .card.solved h2 .done{display:inline;}
+  p{margin-bottom:8px;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.9rem; border-radius:10px; padding:12px 15px; overflow-x:auto; margin:8px 0; white-space:pre;}
+  .codebox .s{color:#8fd6a8;} .codebox .n{color:#ffd479;}
+  /* checklist */
+  .chk{display:flex; gap:12px; align-items:flex-start; padding:10px 4px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .chk:last-child{border-bottom:none;}
+  .chk .box{flex:0 0 24px; height:24px; border:2px solid #c9c3d8; border-radius:6px; margin-top:1px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; transition:.15s;}
+  .chk.on .box{background:var(--green); border-color:var(--green);}
+  .chk.on .box::after{content:'\2713';}
+  .chk .txt{font-size:.93rem;}
+  .chk .how{display:block; font-size:.82rem; color:var(--muted);}
+  .chk:focus{outline:2px solid var(--purple); outline-offset:2px; border-radius:8px;}
+  .field{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px;}
+  .field label{font-size:.9rem; font-weight:600; color:var(--navy);}
+  input[type=text], select{font-family:var(--mono); font-size:.9rem; border:2px solid var(--line); border-radius:9px; padding:8px 11px; background:#fff; color:var(--ink);}
+  input[type=text]:focus, select:focus{outline:none; border-color:var(--purple);}
+  input.wide{flex:1; min-width:220px;}
+  input.num{width:90px;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:9px 16px; border-radius:9px; font-size:.9rem; font-weight:600; cursor:pointer; font-family:inherit;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .fb{border-radius:9px; padding:10px 13px; margin-top:10px; font-size:.9rem; display:none;}
+  .fb.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .fb.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .fb.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+  .shake{animation:shake .3s ease;}
+  /* order builder */
+  .zone-label{font-size:.72rem; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin:10px 0 4px;}
+  .steps{display:flex; flex-direction:column; gap:7px; min-height:44px; padding:8px; background:#faf9fc; border:2px dashed var(--line); border-radius:10px;}
+  .step{display:flex; gap:10px; align-items:center; background:#fff; border:2px solid var(--purple); border-radius:9px; padding:8px 11px; font-family:var(--mono); font-size:.88rem; cursor:pointer; text-align:left; color:var(--ink);}
+  .step:hover{background:var(--purple-lt);}
+  .step .num{flex:0 0 22px; height:22px; border-radius:50%; background:var(--purple); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.74rem; font-weight:700; font-family:'Segoe UI',sans-serif;}
+  #built1 .step{border-color:var(--green);}
+  #built1 .step .num{background:var(--green);}
+  #built1 .step.bad{border-color:var(--red); background:#fdecea;}
+  #built1 .step.bad .num{background:var(--red);}
+  .empty{color:var(--muted); font-size:.85rem; padding:4px 6px;}
+  /* choices */
+  .choices{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px;}
+  @media(max-width:640px){.choices{grid-template-columns:1fr 1fr;}}
+  .choices.col{grid-template-columns:1fr;}
+  .choices button{background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer; text-align:left; font-family:inherit; color:var(--ink);}
+  .choices button.mono{font-family:var(--mono); text-align:center;}
+  .choices button:hover:not(:disabled){border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea; opacity:.7;}
+  .choices button:disabled{cursor:default;}
+  /* finish */
+  .finish{text-align:center;}
+  .finish .big{font-size:1.9rem; font-weight:800; color:var(--purple);}
+  textarea#out{position:absolute; left:-9999px;}
+  footer{text-align:center; color:var(--muted); font-size:.8rem; padding:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <div>
+      <div class="eyebrow">DO NOW &bull; CSP UNIT 1</div>
+      <h1>&#129520; Game Day: Get Ready to Build</h1>
+      <p>Laptop first, then five questions. Today you build Turtle Arcade in VS Code.</p>
+    </div>
+    <div class="clockbox">
+      <div class="t" id="clock">8:00</div>
+      <button type="button" id="clockBtn" onclick="toggleClock()">Start timer</button>
+    </div>
+  </div>
+</header>
+
+<div class="progress"><div class="in">
+  <span id="progTxt">0 of 7 done</span><div class="bar"><i id="progBar"></i></div>
+</div></div>
+
+<main>
+
+<!-- ================= PART A ================= -->
+<div class="part">Part A &middot; Laptop check <span>Do this first. Click each box once it actually works on your laptop.</span></div>
+
+<div class="card" id="cA">
+  <h2><span class="n">A.</span> Is VS Code ready? <span class="done">&#10003; Ready</span></h2>
+  <div id="checklist"></div>
+
+  <div class="field">
+    <label for="ver">In the VS Code terminal type <code class="inline">python --version</code>
+      (Mac: <code class="inline">python3 --version</code>) and copy what it says:</label>
+    <input type="text" id="ver" class="wide" placeholder="e.g. Python 3.12.4" aria-label="Python version output">
+    <button type="button" class="btn" onclick="checkVer()">Check</button>
+  </div>
+  <div class="fb" id="fbVer"></div>
+
+  <div class="field">
+    <label for="stuck">Stuck on anything?</label>
+    <select id="stuck" onchange="stuckHelp()" aria-label="Which step are you stuck on">
+      <option value="">No &mdash; everything works</option>
+      <option value="0">VS Code will not open</option>
+      <option value="1">Making or opening the folder</option>
+      <option value="2">Installing the Python extension</option>
+      <option value="3">Selecting an interpreter</option>
+      <option value="4">Making the file</option>
+      <option value="5">print("ready") will not run</option>
+    </select>
+  </div>
+  <div class="fb" id="fbStuck"></div>
+</div>
+
+<!-- ================= PART B ================= -->
+<div class="part" style="margin-top:22px">Part B &middot; Five questions <span>The five places people get stuck today.</span></div>
+
+<!-- Q1 -->
+<div class="card" id="c1">
+  <h2><span class="n">1.</span> Click these into order so they draw a <b>solid red ring centred on (0, 0)</b>. <span class="done">&#10003;</span></h2>
+  <div class="zone-label">Statements</div>
+  <div class="steps" id="pool1"></div>
+  <div class="zone-label">Your program &mdash; click a line to send it back</div>
+  <div class="steps" id="built1"></div>
+  <div style="margin-top:10px"><button type="button" class="btn" onclick="check1()">Check my order</button></div>
+  <div class="fb" id="fb1"></div>
+</div>
+
+<!-- Q2 -->
+<div class="card" id="c2">
+  <h2><span class="n">2.</span> You are about to save. Which ONE file name breaks your program before a single line runs? <span class="done">&#10003;</span></h2>
+  <div class="choices" id="ch2"></div>
+  <div class="fb" id="fb2"></div>
+</div>
+
+<!-- Q3 -->
+<div class="card" id="c3">
+  <h2><span class="n">3.</span> This crashes. Rewrite line 2 so it works. <span class="done">&#10003;</span></h2>
+  <div class="codebox">shots = int(input(<span class="s">"How many shots? "</span>))
+pen.write(<span class="s">"Shots: "</span> + shots)</div>
+  <div class="field">
+    <input type="text" id="a3" class="wide" placeholder='pen.write(...)' aria-label="Your fixed line 2" spellcheck="false">
+    <button type="button" class="btn" onclick="check3()">Check</button>
+  </div>
+  <div class="fb" id="fb3"></div>
+</div>
+
+<!-- Q4 -->
+<div class="card" id="c4">
+  <h2><span class="n">4.</span> In question 1, why does the turtle go to <code class="inline">(0, -80)</code> instead of <code class="inline">(0, 0)</code> before drawing a ring that should be centred on (0, 0)? <span class="done">&#10003;</span></h2>
+  <div class="choices col" id="ch4"></div>
+  <div class="fb" id="fb4"></div>
+</div>
+
+<!-- Q5 -->
+<div class="card" id="c5">
+  <h2><span class="n">5.</span> The bullseye is at (0, 0). A player clicks at <code class="inline">(30, 40)</code>. <span class="done">&#10003;</span></h2>
+  <p style="font-size:.92rem">Rings: inside 40 = <b>10 pts</b> &bull; inside 80 = <b>5 pts</b> &bull; inside 120 = <b>1 pt</b> &bull; outside = 0.</p>
+  <div class="field">
+    <label for="a5d">How far from the bullseye?</label><input type="text" id="a5d" class="num" inputmode="decimal" aria-label="Distance">
+    <label for="a5p">Points?</label><input type="text" id="a5p" class="num" inputmode="numeric" aria-label="Points">
+    <button type="button" class="btn" onclick="check5()">Check</button>
+  </div>
+  <div class="fb" id="fb5"></div>
+  <p style="font-size:.84rem;color:var(--muted);margin-top:8px">Not sure? Good &mdash; working this out is exactly what your game will do every time someone clicks. Commit to a guess anyway.</p>
+</div>
+
+<!-- FINISH -->
+<div class="card finish" id="finish">
+  <div class="big" id="finScore">0 of 7</div>
+  <p id="finMsg">Finish Part A and all five questions.</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <button type="button" class="btn" onclick="copyAnswers()">&#128203; Copy my answers</button>
+    <a class="btn secondary" href="csp-vscode-turtle-arcade.html" style="text-decoration:none">Open Turtle Arcade &rarr;</a>
+  </div>
+  <div class="fb" id="fbCopy"></div>
+  <textarea id="out" aria-label="Copied answers" tabindex="-1"></textarea>
+</div>
+
+</main>
+<footer>Mr. Babb &bull; Computer Science Principles &bull; This page does not save your work. Copy your answers before you close it.</footer>
+
+<script>
+/* ---------- state ---------- */
+const solved={A:false,1:false,2:false,3:false,4:false,5:false};
+let verOK=false;
+const log={ver:'',stuck:'',q1:'',q2:'',q3:'',q4:'',q5:''};
+function fb(id,cls,html){ const f=document.getElementById(id); f.className='fb '+cls; f.innerHTML=html;
+  if(cls==='no'){ f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); } }
+function mark(k){ solved[k]=true; document.getElementById(k==='A'?'cA':'c'+k).classList.add('solved'); progress(); }
+function progress(){
+  // Part A counts as 2 (checklist+version); questions 1 each = 7
+  const n=(solved.A?1:0)+(verOK?1:0)+[1,2,3,4,5].filter(k=>solved[k]).length;
+  document.getElementById('progTxt').textContent=n+' of 7 done';
+  document.getElementById('progBar').style.width=(n/7*100)+'%';
+  document.getElementById('finScore').textContent=n+' of 7';
+  document.getElementById('finMsg').innerHTML = n===7
+    ? 'Laptop ready and all five answered. Copy your answers, then open Turtle Arcade and start Level 1.'
+    : 'Finish Part A and all five questions.';
+}
+
+/* ---------- timer (for the projector) ---------- */
+let left=480, tid=null;
+function drawClock(){ const c=document.getElementById('clock'); c.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0'); c.classList.toggle('low',left<=60); }
+function toggleClock(){
+  const b=document.getElementById('clockBtn');
+  if(tid){ clearInterval(tid); tid=null; b.textContent='Resume'; return; }
+  if(left<=0){ left=480; }
+  b.textContent='Pause';
+  tid=setInterval(()=>{ left--; drawClock(); if(left<=0){ clearInterval(tid); tid=null; b.textContent='Restart'; } },1000);
+}
+
+/* ---------- PART A ---------- */
+const CHECKS=[
+ ['VS Code opens on my laptop.','If it is not installed, raise your hand now — do not wait until Level 1.'],
+ ['I made a folder called turtle_arcade (no spaces) and opened it with File → Open Folder.','Open the folder, not a single file.'],
+ ['The Python extension by Microsoft is installed.','Extensions icon on the left bar → search Python → Install.'],
+ ['I selected a Python 3 interpreter.','Ctrl+Shift+P (Mac: Cmd+Shift+P) → "Python: Select Interpreter".'],
+ ['I made a file named turtle_arcade.py — NOT turtle.py.','Question 2 explains why this matters so much.'],
+ ['I typed print("ready"), pressed ▶, and the word ready showed up in the terminal.','This is the real test. If this works, everything above it works.']
+];
+const on=new Array(CHECKS.length).fill(false);
+(function(){
+  const box=document.getElementById('checklist');
+  CHECKS.forEach((c,i)=>{
+    const d=document.createElement('div'); d.className='chk'; d.tabIndex=0;
+    d.setAttribute('role','checkbox'); d.setAttribute('aria-checked','false');
+    d.innerHTML='<div class="box"></div><div class="txt">'+c[0]+'<span class="how">'+c[1]+'</span></div>';
+    const t=()=>{ on[i]=!on[i]; d.classList.toggle('on',on[i]); d.setAttribute('aria-checked',on[i]); partA(); };
+    d.onclick=t; d.onkeydown=e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); t(); } };
+    box.appendChild(d);
+  });
+})();
+function partA(){
+  const all=on.every(Boolean);
+  if(all && !solved.A){ solved.A=true; }
+  if(!all && solved.A){ solved.A=false; document.getElementById('cA').classList.remove('solved'); }
+  document.getElementById('cA').classList.toggle('solved', all && verOK);
+  progress();
+}
+function checkVer(){
+  const v=document.getElementById('ver').value.trim(); log.ver=v;
+  if(!v){ fb('fbVer','hint','Run the command in the VS Code terminal and paste exactly what comes back.'); return; }
+  const low=v.toLowerCase();
+  if(/^python\s+3\.\d+/.test(low)){
+    verOK=true; fb('fbVer','ok','Python 3 is installed and VS Code can find it. You are ready for Level 1.');
+  } else if(/^python\s+2\./.test(low)){
+    verOK=false; fb('fbVer','no','That is Python 2, which is too old for this task. On a Mac try <code class="inline">python3 --version</code> instead. Then select the Python 3 interpreter (Ctrl+Shift+P → "Python: Select Interpreter").');
+  } else if(/not recognized|not found|no such file|cannot find/.test(low)){
+    verOK=false; fb('fbVer','no','Your terminal cannot find Python at all. On a Mac, try <code class="inline">python3 --version</code>. If that fails too, Python is not installed on this laptop — raise your hand.');
+  } else if(/microsoft store|app execution alias/.test(low)){
+    verOK=false; fb('fbVer','no','Windows opened the Microsoft Store instead of Python. That means Python is not really installed yet — raise your hand.');
+  } else {
+    verOK=false; fb('fbVer','hint','That does not look like a version number. It should start with the word Python and then a number, like <code class="inline">Python 3.12.4</code>. Type the command into the terminal at the bottom of VS Code, not into the file.');
+  }
+  partA();
+}
+const STUCK=[
+ 'Raise your hand. Nothing else on this page can work without VS Code.',
+ 'File → Open Folder, make a new folder on the Desktop called <code class="inline">turtle_arcade</code>, and click Open. Use an underscore, never a space.',
+ 'Click the Extensions icon (four squares) on the far left, search <b>Python</b>, choose the one published by <b>Microsoft</b>, and click Install.',
+ 'Press Ctrl+Shift+P (Mac: Cmd+Shift+P), type <b>Select Interpreter</b>, and pick one that says Python 3. If the list is empty, Python is not installed — raise your hand.',
+ 'In the Explorer panel, hover over your folder name and click the New File icon. Name it <code class="inline">turtle_arcade.py</code> exactly.',
+ 'Check three things: the file ends in <code class="inline">.py</code>, the quotes are straight <code class="inline">"</code> not curly, and you are looking at the <b>terminal at the bottom</b>, not the file. Still nothing? Raise your hand.'
+];
+function stuckHelp(){
+  const v=document.getElementById('stuck').value;
+  log.stuck=v===''?'':document.getElementById('stuck').selectedOptions[0].text;
+  if(v===''){ document.getElementById('fbStuck').className='fb'; return; }
+  fb('fbStuck','hint',STUCK[+v]);
+}
+
+/* ---------- Q1 ---------- */
+const S1=['target.circle(80)','target.goto(0, -80)','target.end_fill()','target.fillcolor("red")','target.begin_fill()'];
+// indices: 0 circle, 1 goto, 2 end, 3 fillcolor, 4 begin
+let order1=[];
+function draw1(){
+  const pool=document.getElementById('pool1'), built=document.getElementById('built1');
+  pool.innerHTML=''; built.innerHTML='';
+  S1.forEach((t,i)=>{ if(order1.includes(i)) return;
+    const b=document.createElement('button'); b.type='button'; b.className='step';
+    b.innerHTML='<span class="num">?</span><span>'+t+'</span>';
+    b.onclick=()=>{ if(solved[1])return; order1.push(i); draw1(); };
+    pool.appendChild(b); });
+  order1.forEach((i,pos)=>{
+    const b=document.createElement('button'); b.type='button'; b.className='step';
+    b.innerHTML='<span class="num">'+(pos+1)+'</span><span>'+S1[i]+'</span>';
+    b.onclick=()=>{ if(solved[1])return; order1.splice(pos,1); draw1(); };
+    built.appendChild(b); });
+  if(!pool.children.length) pool.innerHTML='<div class="empty">All placed.</div>';
+  if(!built.children.length) built.innerHTML='<div class="empty">Click the statements above in order.</div>';
+}
+function check1(){
+  if(order1.length<5){ fb('fb1','hint','Place all five statements first.'); return; }
+  log.q1=order1.map(i=>S1[i]).join(' → ');
+  const pos=i=>order1.indexOf(i);
+  const probs=[];
+  if(pos(1)>pos(4)) probs.push('The turtle moves to <code class="inline">(0, -80)</code> <b>after</b> the fill has opened, so the trip there becomes part of the filled shape. Move first, then open the fill.');
+  if(pos(3)>pos(4)) probs.push('The colour is chosen after <code class="inline">begin_fill()</code>. Name the colour before you open the fill — that is the order from the lesson.');
+  if(!(pos(4)<pos(0) && pos(0)<pos(2))) probs.push('The ring has to be drawn <b>between</b> <code class="inline">begin_fill()</code> and <code class="inline">end_fill()</code>, or it comes out hollow.');
+  const els=document.querySelectorAll('#built1 .step');
+  if(!probs.length){
+    els.forEach(e=>e.classList.remove('bad'));
+    fb('fb1','ok','Solid red ring. Move into position, name the colour, open the fill, draw, close the fill. <span style="color:var(--muted)">(Swapping the first two lines also works — the colour and the position do not depend on each other.)</span>');
+    mark(1);
+  } else {
+    fb('fb1','no',probs.join('<br>')+'<br>Click a line in your program to send it back, then try again.');
+  }
+}
+draw1();
+
+/* ---------- Q2 ---------- */
+const C2=[
+ {t:'turtle_arcade.py', w:'That is the name we want you to use. It is safe — think about which name clashes with something Python already has.'},
+ {t:'my_game.py', w:'A boring name, but a safe one. Which of these names is already taken by a library you import?'},
+ {t:'turtle.py', ok:true},
+ {t:'arcade2.py', w:'Numbers at the end are fine. Look for the one that has the same name as something you <code class="inline">import</code>.'}
+];
+(function(){
+  const box=document.getElementById('ch2');
+  C2.forEach(c=>{ const b=document.createElement('button'); b.type='button'; b.className='mono'; b.textContent=c.t;
+    b.onclick=()=>{ if(solved[2])return; log.q2=c.t;
+      if(c.ok){ b.classList.add('ok');
+        fb('fb2','ok','Right. <code class="inline">import turtle</code> looks in your own folder first. If your file is called <code class="inline">turtle.py</code>, Python imports <i>your file</i> instead of the real library, and you get <code class="inline">AttributeError: module \'turtle\' has no attribute \'Turtle\'</code> — which looks like the library is broken when it is only the name.');
+        mark(2);
+      } else { b.classList.add('no'); b.disabled=true; fb('fb2','no',c.w); } };
+    box.appendChild(b); });
+})();
+
+/* ---------- Q3 ---------- */
+function check3(){
+  const raw=document.getElementById('a3').value; log.q3=raw;
+  const v=raw.replace(/\s+/g,'');
+  if(!v){ fb('fb3','hint','Type your fixed version of line 2.'); return; }
+  if(/[“”‘’]/.test(raw)){ fb('fb3','no','Those are curly quotes. Python only accepts straight quotes — this is exactly the paste-from-Docs problem from the laptop check.'); return; }
+  const fstr=/^pen\.write\(f(["'])Shots:\{shots\}\1\)$/.test(v);
+  const conv=/^pen\.write\((["'])Shots:\1\+str\(shots\)\)$/.test(v);
+  if(conv||fstr){
+    fb('fb3','ok','Fixed. <code class="inline">shots</code> is a number because of <code class="inline">int()</code>, and you cannot glue a number onto text. <code class="inline">str()</code> turns it back into text for the screen. You went text → number with <code class="inline">int()</code>, then number → text with <code class="inline">str()</code>.');
+    mark(3); return;
+  }
+  if(/int\(shots\)/.test(v)) fb('fb3','no','<code class="inline">shots</code> is already a number — that is the problem. Which function turns a number <i>into text</i>?');
+  else if(/\+["']?shots["']?\)$/.test(v) && !/str\(/.test(v)) fb('fb3','no','You still have text + a number. Python cannot add those. Wrap <code class="inline">shots</code> in the function that converts a number to text.');
+  else if(/str\(shots\)/.test(v)) fb('fb3','hint','<code class="inline">str(shots)</code> is the right idea. Check the rest of the line: it should still start with <code class="inline">pen.write(</code>, keep <code class="inline">"Shots: " +</code>, and close every parenthesis.');
+  else if(/^shots=/.test(v)) fb('fb3','no','Line 1 is fine — you need <code class="inline">int()</code> there so you can count down later. Fix line 2 instead.');
+  else fb('fb3','no','Not quite. Keep the line the same, but change how <code class="inline">shots</code> is joined onto the text.');
+}
+document.getElementById('a3').addEventListener('keydown',e=>{ if(e.key==='Enter') check3(); });
+
+/* ---------- Q4 ---------- */
+const C4=[
+ {t:'Because the centre of a turtle circle is one radius to the turtle’s LEFT. Facing east at (0, -80), left is straight up, so the centre lands on (0, 0).', ok:true},
+ {t:'Because circle() always draws from the centre outward, so the turtle has to start at the bottom edge.', w:'circle() does not start at the centre — the turtle is <i>on the edge</i> of the circle it draws. Where is the centre compared to the turtle?'},
+ {t:'Because (0, 0) is off the screen in turtle graphics.', w:'(0, 0) is the middle of the screen — that is exactly where we want the bullseye. So why not start there?'},
+ {t:'It makes no difference; (0, 0) would draw the same ring.', w:'Try it in your head: start at (0, 0) facing east and draw a circle of radius 80. The centre ends up 80 units to the turtle’s left — at (0, 80). Is that centred on the bullseye?'}
+];
+(function(){
+  const box=document.getElementById('ch4');
+  C4.forEach(c=>{ const b=document.createElement('button'); b.type='button'; b.textContent=c.t;
+    b.onclick=()=>{ if(solved[4])return; log.q4=c.t;
+      if(c.ok){ b.classList.add('ok'); fb('fb4','ok','Exactly — the same rule the Arc Lab was built on. Every ring in the game starts at <code class="inline">(0, -radius)</code> for this reason.'); mark(4); }
+      else { b.classList.add('no'); b.disabled=true; fb('fb4','no',c.w); } };
+    box.appendChild(b); });
+})();
+
+/* ---------- Q5 ---------- */
+function check5(){
+  const d=parseFloat(document.getElementById('a5d').value), p=parseFloat(document.getElementById('a5p').value);
+  log.q5='distance '+document.getElementById('a5d').value+', points '+document.getElementById('a5p').value;
+  if(isNaN(d)||isNaN(p)){ fb('fb5','hint','Put a number in both boxes — even a guess.'); return; }
+  const pts=x=>x<=40?10:x<=80?5:x<=120?1:0;
+  if(Math.abs(d-50)<0.01 && p===5){
+    fb('fb5','ok','50 units, 5 points. (30, 40) is the corner of a 30-40-50 right triangle, so the straight-line distance is 50 — past the bullseye, inside the middle ring. In your game, <code class="inline">marker.distance(0, 0)</code> does this maths for you on every click. That is hit detection.');
+    mark(5); return;
+  }
+  if(Math.abs(d-70)<0.01) fb('fb5','no','You added 30 + 40. But the click is not 30 across <i>and then</i> 40 up — it is one straight line from the centre, cutting diagonally. Picture the right triangle with sides 30 and 40. How long is the slanted side?');
+  else if(Math.abs(d-50)<0.01) fb('fb5','no','The distance is right. Now check it against the rings: is 50 inside 40? Inside 80?');
+  else if(p===pts(d)) fb('fb5','no','Your points match your distance — but the distance is off. Think of a right triangle with sides 30 and 40. How long is the diagonal?');
+  else fb('fb5','no','Start with the distance. The click is 30 across and 40 up — draw that as a right triangle. The distance is the diagonal side.');
+}
+
+/* ---------- copy ---------- */
+function copyAnswers(){
+  const lines=[
+    'CSP Do Now - Game Day',
+    'Laptop checklist: '+on.filter(Boolean).length+' of 6 checked',
+    'Python version: '+(log.ver||'(blank)')+(verOK?' [OK]':''),
+    'Stuck on: '+(log.stuck||'nothing'),
+    '1. '+(log.q1||'(blank)')+(solved[1]?' [correct]':''),
+    '2. '+(log.q2||'(blank)')+(solved[2]?' [correct]':''),
+    '3. '+(log.q3||'(blank)')+(solved[3]?' [correct]':''),
+    '4. '+(log.q4||'(blank)')+(solved[4]?' [correct]':''),
+    '5. '+(log.q5||'(blank)')+(solved[5]?' [correct]':'')
+  ];
+  const text=lines.join('\n');
+  const done=()=>fb('fbCopy','ok','Copied. Paste it into the Do Now assignment.');
+  const fallback=()=>{ const t=document.getElementById('out'); t.value=text; t.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ fb('fbCopy','hint','Your browser blocked copying. Screenshot this page instead.'); } };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,fallback); }
+  else fallback();
+}
+progress();
+</script>
+</body>
+</html>
