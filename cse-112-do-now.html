@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Do Now · CSE 1.1.2 — Which Way Does Y Go?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+  :root{
+    --plum:#6b2f7a; --teal:#0f7b6c; --navy:#0d1b34;
+    --bg:#0d1b34; --card:#16264a; --card2:#1d3054; --line:#2b3f66;
+    --ink:#eaf0fb; --muted:#a9b6d3; --gold:#ffd23f; --ok:#3ddc97; --bad:#ff7a7a;
+    --pick:#b98cff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;max-width:100%;overflow-x:clip}
+  body{
+    font-family:"Public Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%, #16264a 0%, var(--bg) 60%);
+    color:var(--ink); line-height:1.5; padding-top:env(safe-area-inset-top,0px);
+    min-height:100vh;
+  }
+  .disp{font-family:"Sora",system-ui,sans-serif}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+  header{position:sticky;top:0;z-index:30;background:rgba(13,27,52,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-top,0px))}
+  .hrow{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .badge{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.12em;background:var(--plum);color:#fff;padding:4px 9px;border-radius:6px;white-space:nowrap}
+  .htitle{font-family:"Sora";font-weight:800;font-size:1rem;flex:1;min-width:120px}
+  .timer{font-family:"JetBrains Mono";font-weight:700;font-size:1.1rem;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:5px 12px;color:var(--gold)}
+  .timer.warn{color:var(--bad);border-color:var(--bad)}
+  .pbar{max-width:760px;margin:8px auto 0;height:7px;background:var(--card2);border-radius:99px;overflow:hidden}
+  .pbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--plum));transition:width .4s}
+  .pcount{max-width:760px;margin:5px auto 0;font-family:"JetBrains Mono";font-size:.72rem;color:var(--muted)}
+  main{max-width:760px;margin:0 auto;padding:16px 14px 60px}
+  .lead{color:var(--muted);font-size:.95rem;margin:6px 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:16px 0;box-shadow:0 8px 24px rgba(0,0,0,.25);display:none}
+  .card.on{display:block;animation:pop .35s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .step{font-family:"JetBrains Mono";font-size:.72rem;color:var(--teal);letter-spacing:.1em;text-transform:uppercase}
+  h2{font-family:"Sora";font-weight:700;font-size:1.22rem;margin:.2em 0 .1em}
+  .q{font-size:1.02rem;margin:.4em 0 .6em}
+  canvas{background:#0a142b;border:1px solid var(--line);border-radius:12px;max-width:100%;height:auto;display:block;margin:8px auto;touch-action:none;cursor:crosshair}
+  .readout{font-family:"JetBrains Mono";font-size:.9rem;background:#0a142b;border:1px solid var(--line);color:var(--ok);padding:7px 12px;border-radius:8px;display:inline-block}
+  .prompt{background:var(--card2);border-left:4px solid var(--gold);border-radius:8px;padding:10px 13px;margin:10px 0;font-weight:600}
+  .opt{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin:8px 0;color:var(--ink);font:inherit;cursor:pointer;transition:.15s}
+  .opt:hover{border-color:var(--plum)}
+  .opt.sel{border-color:var(--pick);background:#25204a}
+  .opt.ok{border-color:var(--ok);background:#123a30}
+  .opt.no{border-color:var(--bad);background:#3a1620}
+  .opt.pick{border-color:var(--pick);background:#241a44}
+  .opt:disabled{cursor:default;opacity:.85}
+  .fb{margin-top:10px;font-size:.92rem;padding:10px 12px;border-radius:9px;display:none}
+  .fb.show{display:block}
+  .fb.good{background:#123a30;color:var(--ok)}
+  .fb.bad{background:#3a1620;color:var(--bad)}
+  .fb.neutral{background:#241a44;color:var(--pick)}
+  .pad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);gap:6px;justify-content:center;margin:12px auto}
+  .pad button{border:1px solid var(--line);background:var(--card2);border-radius:10px;font-size:1.1rem;color:var(--ink);cursor:pointer}
+  .pad button:active{background:var(--plum)}
+  .blk{display:block;background:#0a142b;border:1px solid var(--line);border-left:5px solid var(--plum);border-radius:8px;padding:8px 11px;margin:5px 0;font-family:"JetBrains Mono";font-size:.82rem;white-space:normal;overflow-wrap:anywhere}
+  .blk.evt{border-left-color:var(--teal)}
+  .btn{background:var(--plum);color:#fff;border:0;border-radius:11px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;font-family:"Sora"}
+  .btn:disabled{opacity:.4;cursor:default}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;min-width:0}
+  .row>*{min-width:0;max-width:100%}
+  .rounds{display:flex;gap:6px;justify-content:center;margin:6px 0}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--card2);border:1px solid var(--line)}
+  .dot.on{background:var(--gold);border-color:var(--gold)}
+  textarea.hunch{width:100%;background:#0a142b;border:1px solid var(--line);border-radius:10px;color:var(--ink);font:inherit;padding:10px;min-height:60px;resize:vertical}
+  .logbox{width:100%;background:#0a142b;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:"JetBrains Mono";font-size:.8rem;padding:10px;min-height:130px}
+  .foot{color:var(--muted);font-size:.8rem;text-align:center;padding:24px 0}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+  @media(max-width:430px){.htitle{font-size:.9rem}.timer{font-size:1rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <span class="badge">DO NOW · CSE 1.1.2</span>
+    <span class="htitle disp">Which Way Does Y Go?</span>
+    <span class="timer" id="timer">9:00</span>
+  </div>
+  <div class="pbar"><i id="pfill"></i></div>
+  <div class="pcount" id="pcount">0 of 5 complete</div>
+</header>
+
+<main>
+  <p class="lead">Tap through the challenges. Some you'll <b>figure out by doing</b> — you haven't built this yet, and that's the point. Aim for 7–10 minutes.</p>
+
+  <!-- CARD 1: Coordinate target game -->
+  <section class="card on" id="c1">
+    <div class="step">Challenge 1 · Coordinate Hunt</div>
+    <h2>Tap the screen to hit the target</h2>
+    <p class="q" id="c1prompt">Target: tap the corner where <b>(0, 0)</b> lives.</p>
+    <div class="rounds" id="c1dots"></div>
+    <canvas id="cvGrid" width="320" height="320" aria-label="Coordinate grid. Tap to hit the described target."></canvas>
+    <p style="text-align:center"><span class="readout" id="c1read">tap the grid…</span></p>
+    <div class="fb" id="c1fb"></div>
+  </section>
+
+  <!-- CARD 2: Tilt predictor -->
+  <section class="card" id="c2">
+    <div class="step">Challenge 2 · Tilt the Phone</div>
+    <h2>Feel the accelerometer</h2>
+    <p class="q">Tap the arrows to tilt. Watch the two numbers change — that's what the sensor "feels."</p>
+    <div class="row" style="justify-content:center;align-items:flex-start">
+      <canvas id="cvTilt" width="180" height="200" aria-label="A phone that tilts as you press the arrows."></canvas>
+      <div>
+        <div class="pad">
+          <span></span><button type="button" id="tU" aria-label="tilt away">▲</button><span></span>
+          <button type="button" id="tL" aria-label="tilt left">◀</button>
+          <button type="button" id="tO" aria-label="flat">•</button>
+          <button type="button" id="tR" aria-label="tilt right">▶</button>
+          <span></span><button type="button" id="tD" aria-label="tilt toward">▼</button><span></span>
+        </div>
+        <p><span class="readout" id="tRead">xAccel: 0.0<br>yAccel: 0.0</span></p>
+      </div>
+    </div>
+    <div class="prompt">Now tilt hard to the <b>RIGHT</b>, then answer:</div>
+    <p class="q">Which value changed the most?</p>
+    <div id="c2opts"></div>
+    <div class="fb" id="c2fb"></div>
+  </section>
+
+  <!-- CARD 3: Predict the code -->
+  <section class="card" id="c3">
+    <div class="step">Challenge 3 · Predict the Code</div>
+    <h2>What will the face do?</h2>
+    <p class="q">These blocks run every time the sensor changes. Make your best <b>prediction</b> — no wrong answers here.</p>
+    <div>
+      <span class="blk evt">when AccelerometerSensor1 . AccelerationChanged</span>
+      <span class="blk">set Happy . X to ( Happy.X − xAccel × 3 )</span>
+      <span class="blk">set Happy . Y to ( Happy.Y + yAccel × 3 )</span>
+    </div>
+    <div id="c3opts"></div>
+    <div class="fb" id="c3fb"></div>
+  </section>
+
+  <!-- CARD 4: Initialize hunch -->
+  <section class="card" id="c4">
+    <div class="step">Challenge 4 · Word Hunch</div>
+    <h2>What does "initialize" mean?</h2>
+    <p class="q">You'll see this word a lot today. In your own words, take a guess:</p>
+    <textarea class="hunch" id="c4text" placeholder="I think initialize means…" aria-label="Your guess for what initialize means"></textarea>
+    <p class="q" style="margin-top:12px">Or tap the closest hunch:</p>
+    <div id="c4opts"></div>
+    <div class="fb" id="c4fb"></div>
+  </section>
+
+  <!-- CARD 5: Finish -->
+  <section class="card" id="c5">
+    <div class="step">Done!</div>
+    <h2>Nice — brain warmed up. 🧠⚡</h2>
+    <p class="q">Here's your answer log. Copy it and drop it where Mr. Babb asks, then start the lesson.</p>
+    <textarea class="logbox mono" id="logOut" readonly aria-label="Your Do Now answer log"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button type="button" class="btn" id="copyLog">Copy my answers</button>
+      <a class="btn ghost" id="toLesson" href="cse-112-happy-accelerometer.html">Start the lesson →</a>
+    </div>
+    <p class="lead" style="margin-top:14px">Watch for: on a screen <b>Y grows downward</b>, tilting sideways moves <b>xAccel</b>, and you'll learn exactly what <b>initialize</b> means in Section 4.</p>
+  </section>
+
+  <div class="row" style="justify-content:flex-end;margin-top:8px">
+    <button type="button" class="btn" id="nextBtn" disabled>Next →</button>
+  </div>
+</main>
+
+<canvas class="confetti" id="confetti" width="10" height="10" aria-hidden="true"></canvas>
+<p class="foot">This page does not save your work. Finish in one sitting. · classwithmrbabb.com</p>
+
+<script>
+"use strict";
+/* ---------------- state + flow ---------------- */
+const CARDS=["c1","c2","c3","c4","c5"];
+const complete={c1:false,c2:false,c3:false,c4:false};   // c5 is the finish
+let idx=0;
+const log={coord:"",tilt:"",predict:"",hunch:""};
+
+const nextBtn=document.getElementById("nextBtn");
+const pfill=document.getElementById("pfill");
+const pcount=document.getElementById("pcount");
+
+function refreshProgress(){
+  const n=Object.values(complete).filter(Boolean).length;
+  pfill.style.width=(n/4*100)+"%";
+  pcount.textContent=n+" of 5 complete";
+}
+function showCard(i){
+  idx=i;
+  CARDS.forEach((id,k)=>document.getElementById(id).classList.toggle("on",k===i));
+  // Next enabled only if this card is complete (or it's the finish card)
+  const cur=CARDS[i];
+  nextBtn.style.display = (cur==="c5")?"none":"inline-block";
+  nextBtn.disabled = !(complete[cur]);
+  nextBtn.textContent = (i===3)?"Finish →":"Next →";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+nextBtn.onclick=()=>{ if(idx<CARDS.length-1) showCard(idx+1); };
+function markComplete(card){
+  complete[card]=true; refreshProgress();
+  if(CARDS[idx]===card){ nextBtn.disabled=false; }
+}
+
+/* ---------------- timer (9:00 count down; keeps going, just visual) ---------------- */
+(function(){
+  let secs=9*60; const el=document.getElementById("timer");
+  const tick=()=>{
+    const m=Math.floor(secs/60), s=secs%60;
+    el.textContent=m+":"+String(s).padStart(2,"0");
+    if(secs<=60) el.classList.add("warn");
+    if(secs>0){secs--;}
+    else{ el.textContent="time"; return; }
+  };
+  tick(); setInterval(tick,1000);
+})();
+
+/* ---------------- shared face drawer ---------------- */
+function face(ctx,x,y,r){
+  ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle="#ffd23f";ctx.fill();
+  ctx.lineWidth=2;ctx.strokeStyle="#b26a00";ctx.stroke();
+  ctx.fillStyle="#0d1b34";
+  ctx.beginPath();ctx.arc(x-r*0.35,y-r*0.18,r*0.13,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(x+r*0.35,y-r*0.18,r*0.13,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(x,y+r*0.08,r*0.5,0.15*Math.PI,0.85*Math.PI);ctx.strokeStyle="#0d1b34";ctx.stroke();
+}
+
+/* ================= CARD 1: coordinate hunt ================= */
+(function(){
+  const c=document.getElementById("cvGrid"), ctx=c.getContext("2d");
+  const read=document.getElementById("c1read"), fb=document.getElementById("c1fb");
+  const prompt=document.getElementById("c1prompt"), dotsEl=document.getElementById("c1dots");
+  const S=320;
+  const rounds=[
+    {label:'Target: tap the corner where <b>(0, 0)</b> lives.',
+     test:(x,y)=>x<90&&y<90, coach:'Not there. Remember: <b>(0,0)</b> is the TOP-LEFT — X=0 is the left edge, Y=0 is the very top.'},
+    {label:'Target: tap where <b>BOTH X and Y are big</b>.',
+     test:(x,y)=>x>230&&y>230, coach:'Big X means far right; big Y means far DOWN (not up!). Aim for the bottom-right.'},
+    {label:'Target: tap where <b>X is big but Y = 0</b>.',
+     test:(x,y)=>x>230&&y<90, coach:'X big = far right. Y = 0 = the TOP edge. So… the top-right corner.'},
+  ];
+  let r=0, hit=[false,false,false];
+  function drawDots(){ dotsEl.innerHTML=rounds.map((_,i)=>'<span class="dot'+(hit[i]?' on':'')+'"></span>').join(""); }
+  function grid(){
+    ctx.clearRect(0,0,S,S);
+    ctx.strokeStyle="#1c2f57";ctx.lineWidth=1;
+    for(let i=0;i<=S;i+=32){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,S);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(S,i);ctx.stroke();}
+    ctx.fillStyle="#3ddc97";ctx.font='12px "JetBrains Mono",monospace';
+    ctx.fillText("(0,0)",5,15); ctx.fillText("X →",270,15);
+    ctx.save();ctx.translate(13,300);ctx.rotate(-Math.PI/2);ctx.fillText("Y →",0,0);ctx.restore();
+  }
+  grid(); drawDots(); prompt.innerHTML=rounds[0].label;
+  function tap(e){
+    if(r>=rounds.length) return;
+    const rect=c.getBoundingClientRect(), sx=c.width/rect.width, sy=c.height/rect.height;
+    const t=(e.touches&&e.touches[0])||e;
+    const x=(t.clientX-rect.left)*sx, y=(t.clientY-rect.top)*sy;
+    grid();
+    ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fillStyle="#b98cff";ctx.fill();
+    face(ctx,x,y,14);
+    read.innerHTML="X: "+Math.round(x)+" &nbsp; Y: "+Math.round(y);
+    if(rounds[r].test(x,y)){
+      hit[r]=true; drawDots();
+      fb.className="fb show good"; fb.textContent="Nailed it! ✓";
+      r++;
+      if(r<rounds.length){
+        setTimeout(()=>{ prompt.innerHTML=rounds[r].label; fb.className="fb"; grid(); read.innerHTML="tap the grid…"; },700);
+      }else{
+        log.coord="hit all 3 coordinate targets";
+        fb.className="fb show good"; fb.textContent="All three! You just used screen coordinates. ✓ Tap Next.";
+        markComplete("c1");
+      }
+    }else{
+      fb.className="fb show bad"; fb.innerHTML=rounds[r].coach;
+    }
+  }
+  c.addEventListener("click",tap);
+  c.addEventListener("touchstart",e=>{e.preventDefault();tap(e);},{passive:false});
+})();
+
+/* ================= CARD 2: tilt + question ================= */
+(function(){
+  const c=document.getElementById("cvTilt"), ctx=c.getContext("2d");
+  const read=document.getElementById("tRead");
+  let ax=0,ay=0,tiltedRight=false;
+  function draw(){
+    ctx.clearRect(0,0,180,200);
+    ctx.save();ctx.translate(90,100);ctx.rotate(ax*0.03);
+    ctx.fillStyle="#1d3054";ctx.strokeStyle="#3ddc97";ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(-38,-70+ay*2,76,140,12);ctx.fill();ctx.stroke();
+    ctx.fillStyle="#3ddc97";ctx.beginPath();ctx.arc(0,52+ay*2,4,0,7);ctx.fill();
+    ctx.restore();
+    read.innerHTML="xAccel: "+ax.toFixed(1)+"<br>yAccel: "+ay.toFixed(1);
+  }
+  const set=(dx,dy)=>{ax=Math.max(-10,Math.min(10,ax+dx));ay=Math.max(-10,Math.min(10,ay+dy));if(ax>=6)tiltedRight=true;draw();};
+  document.getElementById("tR").onclick=()=>set(2,0);
+  document.getElementById("tL").onclick=()=>set(-2,0);
+  document.getElementById("tU").onclick=()=>set(0,-2);
+  document.getElementById("tD").onclick=()=>set(0,2);
+  document.getElementById("tO").onclick=()=>{ax=0;ay=0;draw();};
+  draw();
+  // question
+  const host=document.getElementById("c2opts"), fb=document.getElementById("c2fb");
+  const opts=["xAccel","yAccel","zAccel"];
+  let tries=0, done=false;
+  shuffle(opts).forEach(txt=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=txt;
+    b.onclick=()=>{
+      if(done) return;
+      host.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));b.classList.add("sel");
+      if(txt==="xAccel"){
+        b.classList.add("ok");done=true;host.querySelectorAll(".opt").forEach(o=>o.disabled=true);
+        fb.className="fb show good";
+        fb.textContent = tiltedRight ? "Yes! Left/right tilt lives on xAccel. ✓" : "Correct — xAccel is the left/right axis. (Try tilting right to see it move!) ✓";
+        log.tilt="xAccel (correct)";
+        markComplete("c2");
+      }else{
+        tries++;b.classList.add("no");b.disabled=true;
+        fb.className="fb show bad";
+        fb.textContent = txt==="yAccel" ? "yAccel is the toward/away (up-down) tilt. Try tilting right and watch which number moves." : "zAccel is about lying flat vs. face-up. Which number moved when you tilted sideways?";
+        log.tilt="needed "+(tries+1)+" tries";
+      }
+    };
+    host.appendChild(b);
+  });
+})();
+
+/* ================= CARD 3: prediction (ungraded, neutral lock) ================= */
+(function(){
+  const host=document.getElementById("c3opts"), fb=document.getElementById("c3fb");
+  const opts=[
+    "The face moves as you tilt the phone",
+    "The face spins in circles",
+    "The face changes color",
+    "Nothing happens until you tap it",
+  ];
+  let done=false;
+  shuffle(opts).forEach(txt=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=txt;
+    b.onclick=()=>{
+      if(done) return; done=true;
+      host.querySelectorAll(".opt").forEach(o=>{o.disabled=true;});
+      b.classList.add("pick");
+      fb.className="fb show neutral";
+      fb.textContent="Locked in! No peeking at the answer — you'll find out for real in Section 3 of the lesson. 🔒";
+      log.predict="predicted: "+txt;
+      markComplete("c3");
+    };
+    host.appendChild(b);
+  });
+})();
+
+/* ================= CARD 4: hunch (ungraded) ================= */
+(function(){
+  const host=document.getElementById("c4opts"), fb=document.getElementById("c4fb"), ta=document.getElementById("c4text");
+  const opts=[
+    "To set something up for the first time / give it a starting value",
+    "To delete something",
+    "To make something go faster",
+    "To tilt the phone",
+  ];
+  let done=false;
+  function finish(src){
+    if(done) return; done=true;
+    host.querySelectorAll(".opt").forEach(o=>o.disabled=true);
+    ta.disabled=true;
+    fb.className="fb show neutral";
+    fb.textContent="Good hunch! Hold onto it — Section 4 shows exactly what initialize does. 🔒";
+    log.hunch = (ta.value.trim()? ("typed: "+ta.value.trim().slice(0,60)) : "picked: "+src);
+    markComplete("c4");
+  }
+  shuffle(opts).forEach(txt=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=txt;
+    b.onclick=()=>{ host.querySelectorAll(".opt").forEach(o=>o.classList.remove("pick")); b.classList.add("pick"); finish(txt); };
+    host.appendChild(b);
+  });
+  // typing at least a few chars also completes (on blur or after typing)
+  ta.addEventListener("input",()=>{ if(ta.value.trim().length>=8 && !done){ /* allow finishing via a pick or auto after pause */ } });
+  ta.addEventListener("blur",()=>{ if(ta.value.trim().length>=8) finish("(typed)"); });
+})();
+
+/* ================= FINISH: build + copy log ================= */
+function buildLog(){
+  const out=document.getElementById("logOut");
+  out.value =
+"CSE 1.1.2 Do Now — Which Way Does Y Go?\n"+
+"Name: ______________   Period: ____\n"+
+"1) Coordinate hunt: "+(log.coord||"—")+"\n"+
+"2) Tilt question: "+(log.tilt||"—")+"\n"+
+"3) Code prediction: "+(log.predict||"—")+"\n"+
+"4) 'Initialize' hunch: "+(log.hunch||"—");
+}
+document.getElementById("copyLog").onclick=()=>{
+  const out=document.getElementById("logOut");
+  const done=()=>{document.getElementById("copyLog").textContent="Copied! ✓";};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(out.value).then(done,()=>{out.focus();out.select();try{document.execCommand("copy");done();}catch(e){}});}
+  else{out.focus();out.select();try{document.execCommand("copy");done();}catch(e){}}
+};
+
+/* rebuild log whenever we land on finish card */
+const _show=showCard;
+showCard=function(i){ _show(i); if(CARDS[i]==="c5") buildLog(); };
+
+/* ---------------- confetti on finish ---------------- */
+function confetti(){
+  const cv=document.getElementById("confetti");cv.width=innerWidth;cv.height=innerHeight;
+  const cx=cv.getContext("2d");const cols=["#ffd23f","#3ddc97","#b98cff","#0f7b6c","#ff7a7a"];
+  const P=Array.from({length:90},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*0.4,s:4+Math.random()*6,v:2+Math.random()*3,c:cols[Math.floor(Math.random()*cols.length)],a:Math.random()*7}));
+  let t=0;(function run(){t++;cx.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.y+=p.v;p.x+=Math.sin(p.a+p.y/40);cx.fillStyle=p.c;cx.fillRect(p.x,p.y,p.s,p.s);});if(t<120)requestAnimationFrame(run);else cx.clearRect(0,0,cv.width,cv.height);})();
+}
+
+/* when all 4 complete AND user reaches finish, celebrate once */
+let celebrated=false;
+const _mark=markComplete;
+markComplete=function(card){ _mark(card); if(Object.values(complete).every(Boolean)&&!celebrated){celebrated=true;} };
+document.getElementById("nextBtn").addEventListener("click",()=>{ if(CARDS[idx]==="c5"&&!window.__c){} });
+// celebrate when finish card shown
+(function(){
+  const obs=new MutationObserver(()=>{ if(document.getElementById("c5").classList.contains("on")&&!window.__cel){window.__cel=true;confetti();} });
+  obs.observe(document.getElementById("c5"),{attributes:true,attributeFilter:["class"]});
+})();
+
+/* ---------------- helpers ---------------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* boot */
+refreshProgress(); showCard(0);
+</script>
+</body>
+</html>
