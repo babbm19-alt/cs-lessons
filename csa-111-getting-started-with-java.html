@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started with Java — Interactive Lesson (Activity 1.1.1)</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#f7f6fa; --card:#ffffff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:26px 20px 20px; text-align:center;}
+  header h1{font-size:1.55rem; letter-spacing:.3px;}
+  header p{opacity:.85; font-size:.95rem; margin-top:4px;}
+  nav{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; background:var(--navy); padding:10px 8px; position:sticky; top:0; z-index:50;}
+  nav button{border:none; background:rgba(255,255,255,.12); color:#fff; padding:8px 14px; border-radius:999px; cursor:pointer; font-size:.85rem; font-weight:600; transition:.15s;}
+  nav button:hover{background:rgba(255,255,255,.28);}
+  nav button.active{background:#fff; color:var(--navy);}
+  nav button .check{color:#7be0a8; margin-left:4px; display:none;}
+  nav button.done .check{display:inline;}
+  main{max-width:880px; margin:0 auto; padding:24px 16px 80px;}
+  section{display:none; animation:fade .25s ease;}
+  section.visible{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 1px 3px rgba(27,42,74,.06);}
+  h2{color:var(--purple); font-size:1.35rem; margin-bottom:10px;}
+  h3{color:var(--navy); font-size:1.05rem; margin:14px 0 8px;}
+  p{margin-bottom:10px;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .codebox .k{color:#7fb4ff;} .codebox .s{color:#8fd6a8;} .codebox .c{color:#8a93a6;}
+  .console{background:#101010; color:#c9f7c9; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; min-height:64px; white-space:pre; overflow-x:auto; margin:10px 0; border:1px solid #2c2c2c;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:10px 18px; border-radius:9px; font-size:.92rem; font-weight:600; cursor:pointer; transition:.15s;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .btn.small{padding:6px 12px; font-size:.82rem;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .feedback{border-radius:9px; padding:10px 14px; margin-top:10px; font-size:.92rem; display:none;}
+  .feedback.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .feedback.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .feedback.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  .pill-score{background:var(--purple-lt); color:var(--purple); font-weight:700; padding:4px 12px; border-radius:999px; font-size:.85rem;}
+  /* flashcards */
+  .deck{display:flex; flex-direction:column; align-items:center; gap:12px;}
+  .flashcard{width:min(480px,100%); height:210px; perspective:1000px; cursor:pointer;}
+  .fc-inner{position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d;}
+  .flashcard.flipped .fc-inner{transform:rotateY(180deg);}
+  .fc-face{position:absolute; inset:0; backface-visibility:hidden; border-radius:14px; display:flex; align-items:center; justify-content:center; padding:20px; text-align:center;}
+  .fc-front{background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; font-size:1.35rem; font-weight:700;}
+  .fc-back{background:#fff; border:2px solid var(--purple); color:var(--ink); transform:rotateY(180deg); font-size:.98rem;}
+  /* matching */
+  .match-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:640px){.match-grid{grid-template-columns:1fr;}}
+  .match-item{border:2px solid var(--line); background:#fff; border-radius:10px; padding:10px 12px; cursor:pointer; font-size:.9rem; transition:.15s;}
+  .match-item.term{font-weight:700; color:var(--purple);}
+  .match-item.selected{border-color:var(--purple); background:var(--purple-lt);}
+  .match-item.matched{border-color:var(--green); background:#e6f6ed; color:var(--green); cursor:default; opacity:.85;}
+  .match-item.wrong{border-color:var(--red); background:#fdecea;}
+  /* anatomy */
+  .ana-line{cursor:pointer; border-radius:6px; padding:1px 6px; transition:.15s;}
+  .ana-line:hover{background:rgba(127,180,255,.18); outline:1px dashed #7fb4ff;}
+  .ana-line.revealed{background:rgba(143,214,168,.15);}
+  .ana-info{border-left:4px solid var(--purple); background:var(--purple-lt); border-radius:0 10px 10px 0; padding:10px 14px; margin-top:10px; display:none; font-size:.93rem;}
+  /* debug */
+  .dbg-line{display:block; cursor:pointer; border-radius:6px; padding:1px 6px;}
+  .dbg-line:hover{background:rgba(255,255,255,.10); outline:1px dashed #556;}
+  .dbg-line.picked-ok{background:rgba(143,214,168,.25);}
+  .dbg-line.picked-no{background:rgba(255,120,110,.25);}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .choices button{text-align:left; background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer; font-family:var(--mono);}
+  .choices button.plain{font-family:inherit;}
+  .choices button:hover{border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea;}
+  .stepdots{display:flex; gap:6px; margin:8px 0 4px;}
+  .stepdots span{width:12px; height:12px; border-radius:50%; background:var(--line);}
+  .stepdots span.on{background:var(--purple);}
+  .stepdots span.done{background:var(--green);}
+  /* builder */
+  .builder-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px;}
+  .builder-row select,.builder-row input{padding:9px 10px; border:2px solid var(--line); border-radius:8px; font-size:.9rem; font-family:var(--mono);}
+  .builder-row input{flex:1; min-width:220px;}
+  .prog-list{font-family:var(--mono); font-size:.88rem; background:#0f1626; color:#e8ecf4; border-radius:10px; padding:12px 14px; margin:10px 0;}
+  .prog-list .pl-row{display:flex; align-items:center; gap:8px; padding:2px 0;}
+  .prog-list .pl-row button{background:none; border:none; color:#ff8f85; cursor:pointer; font-size:.9rem;}
+  .goalbox{font-family:var(--mono); background:#fff; border:2px dashed var(--purple); border-radius:10px; padding:12px 14px; white-space:pre; overflow-x:auto; font-size:.9rem;}
+  /* quiz */
+  .qcard{border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; background:#fff;}
+  .qcard h4{font-size:.98rem; margin-bottom:10px; color:var(--navy);}
+  .qcard h4 code{font-family:var(--mono); background:var(--purple-lt); padding:1px 5px; border-radius:5px;}
+  .qopts label{display:block; border:2px solid var(--line); border-radius:9px; padding:9px 12px; margin-bottom:8px; cursor:pointer; font-size:.9rem;}
+  .qopts label:hover{border-color:var(--purple);}
+  .qopts label.sel{border-color:var(--purple); background:var(--purple-lt);}
+  .qopts label.right{border-color:var(--green); background:#e6f6ed;}
+  .qopts label.wrongpick{border-color:var(--red); background:#fdecea;}
+  .qopts input{margin-right:8px;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em;}
+  .bigscore{font-size:2.2rem; font-weight:800; color:var(--purple); text-align:center; margin:8px 0;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9749; Getting Started with Java</h1>
+  <p>AP Computer Science A &bull; Unit 1 &bull; Activity 1.1.1 &bull; Mr. Babb</p>
+</header>
+
+<nav id="nav">
+  <button data-sec="intro" class="active">1. Why Java<span class="check">&#10003;</span></button>
+  <button data-sec="vocab">2. Vocabulary<span class="check">&#10003;</span></button>
+  <button data-sec="anatomy">3. Anatomy<span class="check">&#10003;</span></button>
+  <button data-sec="debug">4. Debug It!<span class="check">&#10003;</span></button>
+  <button data-sec="printer">5. Print Lab<span class="check">&#10003;</span></button>
+  <button data-sec="quiz">6. Exit Ticket<span class="check">&#10003;</span></button>
+</nav>
+
+<main>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" class="visible">
+  <div class="card">
+    <span class="tag">Warm-up</span>
+    <h2>Why learn Java?</h2>
+    <p>Java is a widely used, <b>platform-independent</b> programming language. Thanks to the <b>Java Virtual Machine (JVM)</b>, the <i>same</i> Java program can run on websites, phones, and video game consoles. People use Java to build mobile apps, music-mixing software, money management systems, and games.</p>
+    <h3>Your first Java program</h3>
+    <div class="codebox"><span class="k">public class</span> Welcome
+{
+    <span class="k">public static void</span> main(String[] args)
+    {
+        System.out.println(<span class="s">"Welcome to PLTW Computer Science A."</span>);
+        System.out.println(<span class="s">"Hope you have fun learning Java!"</span>);
+    }
+}</div>
+    <p>The lines beginning with <code class="inline">public</code> define the <b>structure</b> of the program. The two lines beginning with <code class="inline">System</code> are the <b>sequence</b> of steps the program completes — one at a time, in order. That's called <b>sequencing</b>.</p>
+    <button class="btn" onclick="runWelcome()">&#9654; Run this program</button>
+    <div class="console" id="welcomeOut">(click Run to see the output)</div>
+  </div>
+  <div class="card">
+    <h3>&#129504; Quick check</h3>
+    <p>Before a Java program can run, a <b>compiler</b> translates the code into machine code and checks it for errors. What do you think happens if the compiler finds a mistake?</p>
+    <div class="choices">
+      <button class="plain" onclick="introCheck(this,false)">The program runs anyway and skips the bad line</button>
+      <button class="plain" onclick="introCheck(this,true)">The program won't run until the error is fixed</button>
+      <button class="plain" onclick="introCheck(this,false)">The computer fixes the mistake automatically</button>
+    </div>
+    <div class="feedback" id="introFb"></div>
+    <div style="margin-top:14px"><button class="btn secondary" onclick="completeAndGo('intro','vocab')">Next: Vocabulary &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= VOCAB ================= -->
+<section id="vocab">
+  <div class="card">
+    <span class="tag">Learn the words</span>
+    <h2>Vocabulary flashcards</h2>
+    <p>Click a card to flip it. Use the arrows to move through the deck — say the definition out loud <i>before</i> you flip!</p>
+    <div class="deck">
+      <div class="flashcard" id="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="fc-inner">
+          <div class="fc-face fc-front" id="fcFront"></div>
+          <div class="fc-face fc-back" id="fcBack"></div>
+        </div>
+      </div>
+      <div>
+        <button class="btn small secondary" onclick="fcMove(-1)">&larr; Back</button>
+        <span id="fcCount" style="margin:0 10px; color:var(--muted); font-size:.9rem;"></span>
+        <button class="btn small secondary" onclick="fcMove(1)">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <span class="tag">Prove it</span>
+    <div class="topbar">
+      <h2>Matching challenge</h2>
+      <span class="pill-score" id="matchScore">0 / 8 matched</span>
+    </div>
+    <p>Click a <b>term</b>, then click its <b>definition</b>. Match all 8 to unlock the next section.</p>
+    <div class="match-grid" id="matchGrid"></div>
+    <div class="feedback" id="matchFb"></div>
+    <div style="margin-top:14px">
+      <button class="btn small secondary" onclick="buildMatch()">&#8635; Shuffle / restart</button>
+      <button class="btn" id="vocabNext" disabled onclick="completeAndGo('vocab','anatomy')">Next: Anatomy &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANATOMY ================= -->
+<section id="anatomy">
+  <div class="card">
+    <span class="tag">Explore</span>
+    <h2>Anatomy of a Java program</h2>
+    <p>This program has <b>5 important parts</b>. Click each highlighted line or symbol in the code to reveal what it does. Find all 5!</p>
+    <div class="codebox" id="anaCode"></div>
+    <div class="ana-info" id="anaInfo"></div>
+    <p style="margin-top:8px"><span class="pill-score" id="anaScore">0 / 5 discovered</span></p>
+  </div>
+  <div class="card">
+    <h3>&#128273; The rules you just discovered</h3>
+    <ul style="padding-left:20px">
+      <li>The <b>class name must match the file name</b>: <code class="inline">public class Welcome</code> &rarr; <code class="inline">Welcome.java</code></li>
+      <li><code class="inline">public static void main(String[] args)</code> is the <b>main method</b> — the entry point. The JVM finds it and starts there.</li>
+      <li>Curly braces <code class="inline">{ }</code> mark a <b>block of code</b>. Every open brace needs a matching close brace.</li>
+      <li>Every statement ends with a <b>semicolon</b> <code class="inline">;</code></li>
+      <li>A <b>method</b> is a named block of code that only runs when it is <i>called</i>.</li>
+    </ul>
+    <div style="margin-top:14px"><button class="btn" id="anaNext" disabled onclick="completeAndGo('anatomy','debug')">Next: Debug It! &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= DEBUG ================= -->
+<section id="debug">
+  <div class="card">
+    <span class="tag">Detective mode</span>
+    <div class="topbar">
+      <h2>Debug your first Java program</h2>
+      <span class="pill-score" id="dbgScore">Bug 1 of 4</span>
+    </div>
+    <p>Errors in programs are called <b>bugs</b>, and fixing them is called <b>debugging</b>. This program <code class="inline">HelloPLTW.java</code> has <b>4 bugs</b>. Read the compiler error, then <b>click the line that contains the bug</b>.</p>
+    <div class="stepdots" id="dbgDots"><span class="on"></span><span></span><span></span><span></span></div>
+    <div class="codebox" id="dbgCode"></div>
+    <div class="console" id="dbgConsole"></div>
+    <div id="dbgFixWrap" style="display:none">
+      <h3>How do we fix it?</h3>
+      <div class="choices" id="dbgChoices"></div>
+    </div>
+    <div class="feedback" id="dbgFb"></div>
+    <div style="margin-top:14px">
+      <button class="btn" id="dbgNextBtn" style="display:none" onclick="dbgAdvance()">Recompile &amp; run &#9654;</button>
+      <button class="btn" id="dbgDoneBtn" style="display:none" onclick="completeAndGo('debug','printer')">Next: Print Lab &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRINT LAB ================= -->
+<section id="printer">
+  <div class="card">
+    <span class="tag">Experiment</span>
+    <h2>print vs. println</h2>
+    <p><code class="inline">System.out.println</code> moves the cursor to a <b>new line</b> after printing. <code class="inline">System.out.print</code> <b>stays on the same line</b>. And inside quotes, escape sequences <code class="inline">\n</code> (new line), <code class="inline">\"</code> (double quote), and <code class="inline">\\</code> (backslash) have special meanings.</p>
+    <h3>&#128300; Predict the output</h3>
+    <div class="codebox">System.out.print(<span class="s">"Java "</span>);
+System.out.println(<span class="s">"is"</span>);
+System.out.println(<span class="s">"fun!"</span>);</div>
+    <p>How many <b>lines</b> of output will this print?</p>
+    <div class="choices">
+      <button class="plain" onclick="predictCheck(this,false)">1 line</button>
+      <button class="plain" onclick="predictCheck(this,true)">2 lines</button>
+      <button class="plain" onclick="predictCheck(this,false)">3 lines</button>
+    </div>
+    <div class="feedback" id="predictFb"></div>
+    <div class="console" id="predictOut" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Build a program</span>
+    <h2>Print Lab: make the smiley</h2>
+    <p>Build a program line-by-line to produce <b>exactly</b> this output (this is the real Activity 1.1.1 challenge!):</p>
+    <div class="goalbox" id="goalBox"></div>
+    <p style="margin-top:10px">Rules: use <code class="inline">print</code> at least twice, <code class="inline">println</code> at least twice, and all three escape sequences (<code class="inline">\n</code>, <code class="inline">\"</code>, <code class="inline">\\</code>).</p>
+    <div class="builder-row">
+      <select id="plMethod">
+        <option value="print">System.out.print</option>
+        <option value="println">System.out.println</option>
+      </select>
+      <input id="plText" placeholder='type the text for inside the quotes, e.g. --\_______/--\n' onkeydown="if(event.key==='Enter')plAdd()">
+      <button class="btn small" onclick="plAdd()">+ Add line</button>
+    </div>
+    <div class="prog-list" id="plProgram"><span style="color:#8a93a6">(your program is empty — add a statement above)</span></div>
+    <button class="btn" onclick="plRun()">&#9654; Run my program</button>
+    <button class="btn small secondary" onclick="plClear()">Clear</button>
+    <div class="console" id="plOut">(output console)</div>
+    <div class="feedback" id="plFb"></div>
+    <div style="margin-top:14px"><button class="btn" id="plNext" onclick="completeAndGo('printer','quiz')">Next: Exit Ticket &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+  <div class="card">
+    <span class="tag">Exit ticket</span>
+    <h2>Show what you know</h2>
+    <p>Answer all 8 questions, then click <b>Grade my exit ticket</b>. You can retry once to improve your score.</p>
+    <div id="quizWrap"></div>
+    <button class="btn" onclick="gradeQuiz()">&#10003; Grade my exit ticket</button>
+    <div class="bigscore" id="quizScore"></div>
+    <div class="feedback" id="quizFb"></div>
+  </div>
+  <div class="card">
+    <h3>&#128221; Computer Science Notebook</h3>
+    <p>Before you leave, add these to your notebook — you'll use them all year:</p>
+    <ul style="padding-left:20px">
+      <li>Sequencing defines an order for when steps in a process are completed — one at a time.</li>
+      <li>A compiler checks code for some errors; those errors must be fixed before the program can run.</li>
+      <li>A syntax error breaks the rules of the language and is detected by the compiler.</li>
+      <li>A method is a named block of code that only runs when it is called; a block of code is any code in braces.</li>
+      <li>A string literal is characters in double quotes; a literal is the code representation of a fixed value.</li>
+      <li>Escape sequences <code class="inline">\"</code>, <code class="inline">\\</code>, and <code class="inline">\n</code> start with <code class="inline">\</code> and have special meaning in Java.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============ navigation ============ */
+const sections = ['intro','vocab','anatomy','debug','printer','quiz'];
+function show(sec){
+  sections.forEach(s=>{
+    document.getElementById(s).classList.toggle('visible', s===sec);
+  });
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.sec===sec));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
+function markDone(sec){
+  const btn=document.querySelector(`#nav button[data-sec="${sec}"]`);
+  if(btn) btn.classList.add('done');
+}
+function completeAndGo(from,to){ markDone(from); show(to); }
+
+/* ============ intro ============ */
+function runWelcome(){
+  document.getElementById('welcomeOut').textContent="Welcome to PLTW Computer Science A.\nHope you have fun learning Java!";
+}
+function introCheck(btn,right){
+  document.querySelectorAll('#intro .choices .plain').forEach(b=>b.classList.remove('ok','no'));
+  const fb=document.getElementById('introFb');
+  if(right){ btn.classList.add('ok'); fb.className='feedback ok'; fb.textContent="Correct! Errors the compiler detects must be fixed before the program can run."; }
+  else { btn.classList.add('no'); fb.className='feedback no'; fb.textContent="Not quite — the compiler stops everything. The error has to be fixed before the program will run."; }
+}
+
+/* ============ vocab data ============ */
+const VOCAB=[
+ ["Java Virtual Machine (JVM)","Software that lets the same Java program run on many platforms — websites, phones, game consoles. It finds the main method and begins execution."],
+ ["compiler","Translates Java instructions into machine code and checks the code for some errors before the program can run."],
+ ["bug","An error in a program."],
+ ["debugging","Finding and fixing errors (bugs) in a program."],
+ ["syntax error","A mistake where the rules of the programming language are not followed — detected by the compiler."],
+ ["runtime error","An error that happens while the program is running and makes it crash."],
+ ["method","A named block of code that only runs when it is called."],
+ ["main method","The entry point of a program: public static void main(String[] args). It runs when you run the program."],
+ ["block of code","Any section of code enclosed in curly braces { }."],
+ ["literal","The code representation of a fixed value."],
+ ["string literal","A sequence of characters enclosed in double quotes."],
+ ["escape sequence","Special characters in a string that start with \\ and have special meaning: \\\" , \\\\ , \\n"],
+ ["sequencing","An order for when steps are completed — steps run one at a time."],
+ ["procedural abstraction","Using a method by knowing what it does even if you don't know how it was written."]
+];
+
+/* flashcards */
+let fcIdx=0;
+function fcRender(){
+  const [t,d]=VOCAB[fcIdx];
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fcFront').textContent=t;
+  document.getElementById('fcBack').textContent=d;
+  document.getElementById('fcCount').textContent=(fcIdx+1)+" of "+VOCAB.length;
+}
+function fcMove(dir){ fcIdx=(fcIdx+dir+VOCAB.length)%VOCAB.length; fcRender(); }
+fcRender();
+
+/* matching game: pick 8 core terms */
+const MATCH_TERMS=[0,1,4,5,6,8,10,11]; // indices into VOCAB
+let mSelTerm=null, mMatched=0;
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(i*2654435761 + a.length*97 + mMatched*13)% (i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let shuffleSeed=0;
+function shuffled(arr){
+  const a=arr.slice();
+  // simple LCG so we avoid Math.random-free environments issues
+  let s=(++shuffleSeed)*48271 % 2147483647;
+  for(let i=a.length-1;i>0;i--){ s=(s*48271)%2147483647; const j=s%(i+1); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function buildMatch(){
+  mSelTerm=null; mMatched=0;
+  document.getElementById('matchScore').textContent="0 / 8 matched";
+  document.getElementById('vocabNext').disabled=true;
+  const fb=document.getElementById('matchFb'); fb.className='feedback'; fb.textContent='';
+  const grid=document.getElementById('matchGrid'); grid.innerHTML='';
+  const terms=shuffled(MATCH_TERMS), defs=shuffled(MATCH_TERMS);
+  const rows=Math.max(terms.length,defs.length);
+  for(let i=0;i<rows;i++){
+    const t=document.createElement('div');
+    t.className='match-item term'; t.dataset.v=terms[i]; t.textContent=VOCAB[terms[i]][0];
+    t.onclick=()=>pickTerm(t);
+    grid.appendChild(t);
+    const d=document.createElement('div');
+    d.className='match-item def'; d.dataset.v=defs[i]; d.textContent=VOCAB[defs[i]][1];
+    d.onclick=()=>pickDef(d);
+    grid.appendChild(d);
+  }
+}
+function pickTerm(el){
+  if(el.classList.contains('matched'))return;
+  document.querySelectorAll('.match-item.term').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected'); mSelTerm=el;
+}
+function pickDef(el){
+  if(el.classList.contains('matched')||!mSelTerm)return;
+  const fb=document.getElementById('matchFb');
+  if(el.dataset.v===mSelTerm.dataset.v){
+    el.classList.add('matched'); mSelTerm.classList.add('matched');
+    mSelTerm.classList.remove('selected'); mSelTerm=null; mMatched++;
+    document.getElementById('matchScore').textContent=mMatched+" / 8 matched";
+    if(mMatched===8){ fb.className='feedback ok'; fb.textContent="🎉 All 8 matched! You're ready to look inside a program."; document.getElementById('vocabNext').disabled=false; }
+    else { fb.className='feedback ok'; fb.textContent="Match! Keep going."; }
+  } else {
+    el.classList.add('wrong');
+    fb.className='feedback no'; fb.textContent="Not a match — read the definition again and think about the key words.";
+    setTimeout(()=>el.classList.remove('wrong'),700);
+  }
+}
+buildMatch();
+
+/* ============ anatomy ============ */
+const ANA=[
+ {label:'public class Welcome', code:'<span class="k">public class</span> Welcome',
+  info:'<b>public class Welcome</b> — begins the Java program. Important: the class name has to be the SAME as the file name, so this file is <b>Welcome.java</b>.'},
+ {label:'{', code:'{', info:'<b>Curly braces { }</b> — signify a block of code. Every open brace must have a matching close brace at the end.'},
+ {label:'main', code:'    <span class="k">public static void</span> main(String[] args)',
+  info:'<b>public static void main(String[] args)</b> — the main method: the entry point of the program. The JVM finds main and begins execution there.'},
+ {label:'body', code:'    {\n        System.out.println(<span class="s">"Welcome to PLTW Computer Science A."</span>);\n        System.out.println(<span class="s">"Hope you have fun learning Java!"</span>);\n    }',
+  info:'<b>The statements</b> — the sequence of steps the program completes, one at a time (sequencing). Each statement ends with a <b>semicolon ;</b> just like sentences end with periods.'},
+ {label:'}', code:'}', info:'<b>Closing brace</b> — ends the class block. If it\'s missing, the compiler says "reached end of file while parsing."'}
+];
+let anaFound=new Set();
+function buildAna(){
+  const box=document.getElementById('anaCode'); box.innerHTML='';
+  ANA.forEach((part,i)=>{
+    const el=document.createElement('span');
+    el.className='ana-line'; el.style.display='block'; el.innerHTML=part.code;
+    el.onclick=()=>{
+      anaFound.add(i); el.classList.add('revealed');
+      const info=document.getElementById('anaInfo');
+      info.style.display='block'; info.innerHTML=part.info;
+      document.getElementById('anaScore').textContent=anaFound.size+" / 5 discovered";
+      if(anaFound.size===5){ document.getElementById('anaNext').disabled=false;
+        document.getElementById('anaScore').textContent="5 / 5 discovered — nice work! 🎉"; }
+    };
+    box.appendChild(el);
+  });
+}
+buildAna();
+
+/* ============ debug game ============ */
+const DBG=[
+ { code:[ 'public class HelloPLTW','{','    public static void main(String[] args)','    {','        System.out.println("Hello PLTW")','    }'],
+   bugLine:4,
+   consoleMsg:"HelloPLTW.java:5: error: ';' expected\n        System.out.println(\"Hello PLTW\")\n                                         ^\n1 error",
+   why:"Every Java statement must end with a semicolon.",
+   choices:[
+     {t:'System.out.println("Hello PLTW");', ok:true, fb:"Yes! All Java statements end with a semicolon ;"},
+     {t:'system.out.println("Hello PLTW")', ok:false, fb:"Careful — that changes capitalization (which matters!) and still has no semicolon."},
+     {t:'System.out.println["Hello PLTW"]', ok:false, fb:"Methods use parentheses ( ), not square brackets — and we still need the semicolon."}
+   ]},
+ { code:[ 'public class HelloPLTW','{','    public static void main(String[] args)','    {','        System.out.println("Hello PLTW");','    }'],
+   bugLine:5,
+   consoleMsg:"HelloPLTW.java:6: error: reached end of file while parsing\n    }\n     ^\n1 error",
+   why:"\"Reached end of file while parsing\" means a close curly brace } is missing at the end.",
+   choices:[
+     {t:'Add another } after the last line', ok:true, fb:"Right! Every open { needs a matching close } — the class block was never closed."},
+     {t:'Delete the } on the last line', ok:false, fb:"That removes the main method's close brace — now TWO braces are missing."},
+     {t:'Add a ; after the last }', ok:false, fb:"Braces don't need semicolons — the problem is a missing close brace for the class."}
+   ]},
+ { code:[ 'public class Hello','{','    public static void main(String[] args)','    {','        System.out.println("Hello PLTW");','    }','}'],
+   bugLine:0,
+   consoleMsg:"HelloPLTW.java:1: error: class Hello is public, should be\ndeclared in a file named Hello.java\npublic class Hello\n       ^\n1 error",
+   why:"The class name must be the same as the file name (HelloPLTW.java).",
+   choices:[
+     {t:'public class HelloPLTW', ok:true, fb:"Exactly — the class name has to match the file name HelloPLTW.java."},
+     {t:'Rename System to Hello', ok:false, fb:"System is a built-in Java class — the mismatch is between OUR class name and the file name."},
+     {t:'public class hellopltw', ok:false, fb:"Capitalization matters! hellopltw does not match HelloPLTW."}
+   ]},
+ { code:[ 'public class HelloPLTW','{','    public static void Main(String[] args)','    {','        System.out.println("Hello PLTW");','    }','}'],
+   bugLine:2,
+   consoleMsg:"Error: Main method not found in class HelloPLTW,\nplease define the main method as:\n   public static void main(String[] args)",
+   why:"Java is case-sensitive. The method must be named main, not Main.",
+   choices:[
+     {t:'public static void main(String[] args)', ok:true, fb:"Yes! Java is case-sensitive — the JVM looks for lowercase main as the entry point."},
+     {t:'public static void MAIN(String[] args)', ok:false, fb:"Still the wrong capitalization — it must be all-lowercase main."},
+     {t:'Public Static Void main(String[] args)', ok:false, fb:"Now the keywords are capitalized wrong. Only fix the one word: Main → main."}
+   ]}
+];
+let dbgIdx=0, dbgPhase='find';
+function dbgRender(){
+  const st=DBG[dbgIdx];
+  document.getElementById('dbgScore').textContent="Bug "+(dbgIdx+1)+" of 4";
+  const dots=document.getElementById('dbgDots').children;
+  for(let i=0;i<4;i++){ dots[i].className = i<dbgIdx?'done':(i===dbgIdx?'on':''); }
+  const box=document.getElementById('dbgCode'); box.innerHTML='';
+  st.code.forEach((ln,i)=>{
+    const el=document.createElement('span');
+    el.className='dbg-line'; el.textContent=(i+1)+"  "+ln;
+    el.onclick=()=>dbgPick(i,el);
+    box.appendChild(el);
+  });
+  document.getElementById('dbgConsole').textContent=st.consoleMsg;
+  document.getElementById('dbgFixWrap').style.display='none';
+  const fb=document.getElementById('dbgFb'); fb.className='feedback hint';
+  fb.textContent="🔎 Read the compiler error above, then click the line in the code where the bug lives.";
+  document.getElementById('dbgNextBtn').style.display='none';
+  dbgPhase='find';
+}
+function dbgPick(i,el){
+  if(dbgPhase!=='find')return;
+  const st=DBG[dbgIdx]; const fb=document.getElementById('dbgFb');
+  document.querySelectorAll('.dbg-line').forEach(x=>x.classList.remove('picked-ok','picked-no'));
+  if(i===st.bugLine){
+    el.classList.add('picked-ok'); dbgPhase='fix';
+    fb.className='feedback ok'; fb.textContent="Found it! "+st.why;
+    const wrap=document.getElementById('dbgFixWrap'); wrap.style.display='block';
+    const ch=document.getElementById('dbgChoices'); ch.innerHTML='';
+    st.choices.forEach(c=>{
+      const b=document.createElement('button'); b.textContent=c.t;
+      b.onclick=()=>{
+        if(dbgPhase!=='fix')return;
+        document.querySelectorAll('#dbgChoices button').forEach(x=>x.classList.remove('ok','no'));
+        if(c.ok){ b.classList.add('ok'); dbgPhase='done';
+          fb.className='feedback ok'; fb.textContent="✅ "+c.fb;
+          if(dbgIdx<3) document.getElementById('dbgNextBtn').style.display='inline-block';
+          else { fb.textContent="✅ "+c.fb+"  🏆 All four bugs squashed — you debugged your first Java program!";
+                 document.getElementById('dbgDoneBtn').style.display='inline-block'; markDone('debug'); }
+        } else { b.classList.add('no'); fb.className='feedback no'; fb.textContent="❌ "+c.fb; }
+      };
+      ch.appendChild(b);
+    });
+  } else {
+    el.classList.add('picked-no');
+    fb.className='feedback no';
+    fb.textContent="Not that line — the compiler message usually tells you the line number where it noticed the problem. Look again!";
+  }
+}
+function dbgAdvance(){ dbgIdx++; dbgRender(); }
+dbgRender();
+
+/* ============ print lab ============ */
+function predictCheck(btn,right){
+  document.querySelectorAll('#printer .choices .plain').forEach(b=>b.classList.remove('ok','no'));
+  const fb=document.getElementById('predictFb'); const out=document.getElementById('predictOut');
+  out.style.display='block';
+  out.textContent="Java is\nfun!";
+  if(right){ btn.classList.add('ok'); fb.className='feedback ok';
+    fb.textContent='Correct — 2 lines! print("Java ") stays on the same line, so "is" lands right beside it. Each println then ends its line.'; }
+  else { btn.classList.add('no'); fb.className='feedback no';
+    fb.textContent='Look at the real output → print("Java ") does NOT move to a new line, so "Java is" share line 1, and "fun!" is line 2.'; }
+}
+
+const GOAL = "--------------\n--0--------0--\n------/\\------\n--\\________/--\n--------------\n    \"Smile!\"";
+document.getElementById('goalBox').textContent=GOAL;
+let plLines=[];
+function plEscape(raw){
+  let out='', i=0, err=null;
+  while(i<raw.length){
+    const c=raw[i];
+    if(c==='\\'){
+      const n=raw[i+1];
+      if(n==='n'){ out+='\n'; i+=2; }
+      else if(n==='"'){ out+='"'; i+=2; }
+      else if(n==='\\'){ out+='\\'; i+=2; }
+      else { err="illegal escape character: \\"+(n===undefined?'':n); break; }
+    } else if(c==='"'){ err='unclosed string literal — use \\" to print a quote'; break; }
+    else { out+=c; i++; }
+  }
+  return {out,err};
+}
+function plRenderProgram(){
+  const box=document.getElementById('plProgram');
+  if(!plLines.length){ box.innerHTML='<span style="color:#8a93a6">(your program is empty — add a statement above)</span>'; return; }
+  box.innerHTML='';
+  plLines.forEach((l,i)=>{
+    const row=document.createElement('div'); row.className='pl-row';
+    const del=document.createElement('button'); del.textContent='✕'; del.title='delete line';
+    del.onclick=()=>{ plLines.splice(i,1); plRenderProgram(); };
+    const txt=document.createElement('span');
+    txt.textContent='System.out.'+l.m+'("'+l.raw+'");';
+    row.appendChild(del); row.appendChild(txt); box.appendChild(row);
+  });
+}
+function plAdd(){
+  const m=document.getElementById('plMethod').value;
+  const raw=document.getElementById('plText').value;
+  plLines.push({m,raw});
+  document.getElementById('plText').value='';
+  plRenderProgram();
+}
+function plClear(){ plLines=[]; plRenderProgram();
+  document.getElementById('plOut').textContent='(output console)';
+  const fb=document.getElementById('plFb'); fb.className='feedback'; fb.textContent=''; }
+function plRun(){
+  const fb=document.getElementById('plFb'); const con=document.getElementById('plOut');
+  if(!plLines.length){ fb.className='feedback hint'; fb.textContent="Add at least one statement first!"; return; }
+  let out='';
+  for(const l of plLines){
+    const r=plEscape(l.raw);
+    if(r.err){ con.textContent="error: "+r.err; fb.className='feedback no';
+      fb.textContent="Compiler error! "+r.err; return; }
+    out+=r.out+(l.m==='println'?'\n':'');
+  }
+  con.textContent=out.length?out:'(no output)';
+  const trimmed=out.replace(/\n+$/,'');
+  const nPrint=plLines.filter(l=>l.m==='print').length;
+  const nPrintln=plLines.filter(l=>l.m==='println').length;
+  const usedN=plLines.some(l=>l.raw.includes('\\n'));
+  const usedQ=plLines.some(l=>l.raw.includes('\\"'));
+  const usedB=plLines.some(l=>l.raw.includes('\\\\'));
+  if(trimmed===GOAL){
+    const reqs=[];
+    if(nPrint<2)reqs.push("use print at least 2×");
+    if(nPrintln<2)reqs.push("use println at least 2×");
+    if(!usedN)reqs.push("use \\n");
+    if(!usedQ)reqs.push('use \\"');
+    if(!usedB)reqs.push("use \\\\");
+    if(reqs.length){ fb.className='feedback hint';
+      fb.textContent="😃 Output matches! But check the rules — still need to: "+reqs.join(', ')+"."; }
+    else { fb.className='feedback ok';
+      fb.textContent="🏆 PERFECT! Output matches AND you used print 2×, println 2×, and all three escape sequences. Screenshot this for your notebook!";
+      markDone('printer'); }
+  } else {
+    fb.className='feedback hint';
+    fb.textContent="Not matching yet — compare your console with the goal character-by-character. Hints: the backslash in the face is \\\\, the quotes around Smile! are \\\", and remember print stays on the same line.";
+  }
+}
+plRenderProgram();
+
+/* ============ quiz ============ */
+const QUIZ=[
+ {q:'How are <code>System.out.print</code> and <code>System.out.println</code> different?',
+  o:["println moves the cursor to a new line after printing; print does not",
+     "print moves the cursor to a new line after printing; println does not",
+     "println can only print numbers"], a:0},
+ {q:'Which error is a mistake where the rules of the language are not followed, and is detected by the <b>compiler</b>?',
+  o:["runtime error","syntax error","logic error"], a:1},
+ {q:'A program crashes <i>while it is running</i> because it tried to do something unexpected. What kind of error is this?',
+  o:["syntax error","compiler error","runtime error"], a:2},
+ {q:'What will <code>System.out.print("A\\nB");</code> output?',
+  o:["A\\nB on one line","A on one line, then B on the next line","An error — \\n is illegal"], a:1},
+ {q:'Which of these is a <b>string literal</b>?',
+  o:['"Hello, world"','Hello, world','main(String[] args)'], a:0},
+ {q:'The file is named <code>Welcome.java</code>. Which line must begin the program?',
+  o:["public class welcome","public class Welcome","public class WELCOME"], a:1},
+ {q:'What is a <b>method</b>?',
+  o:["A named block of code that only runs when it is called",
+     "Any line that ends with a semicolon",
+     "A fixed value written in code"], a:0},
+ {q:'Why can the same Java program run on phones, websites, and game consoles?',
+  o:["Because Java has no compiler",
+     "Because of the Java Virtual Machine (JVM)",
+     "Because Java programs never have bugs"], a:1}
+];
+let quizAttempts=0;
+function buildQuiz(){
+  const wrap=document.getElementById('quizWrap'); wrap.innerHTML='';
+  QUIZ.forEach((item,qi)=>{
+    const card=document.createElement('div'); card.className='qcard';
+    card.innerHTML='<h4>'+(qi+1)+'. '+item.q+'</h4>';
+    const opts=document.createElement('div'); opts.className='qopts';
+    item.o.forEach((opt,oi)=>{
+      const lab=document.createElement('label');
+      const inp=document.createElement('input');
+      inp.type='radio'; inp.name='q'+qi; inp.value=oi;
+      inp.onchange=()=>{ opts.querySelectorAll('label').forEach(l=>l.classList.remove('sel')); lab.classList.add('sel'); };
+      lab.appendChild(inp);
+      const span=document.createElement('span'); span.textContent=opt; lab.appendChild(span);
+      opts.appendChild(lab);
+    });
+    card.appendChild(opts); wrap.appendChild(card);
+  });
+}
+function gradeQuiz(){
+  let right=0, answered=0;
+  QUIZ.forEach((item,qi)=>{
+    const sel=document.querySelector('input[name="q'+qi+'"]:checked');
+    const labs=document.querySelectorAll('input[name="q'+qi+'"]');
+    labs.forEach((inp,oi)=>{
+      const lab=inp.parentElement; lab.classList.remove('right','wrongpick');
+      if(oi===item.a) lab.classList.add('right');
+    });
+    if(sel){ answered++;
+      if(+sel.value===item.a) right++;
+      else sel.parentElement.classList.add('wrongpick');
+    }
+  });
+  const fb=document.getElementById('quizFb'); const sc=document.getElementById('quizScore');
+  if(answered<QUIZ.length){ fb.className='feedback hint';
+    fb.textContent="You've answered "+answered+" of "+QUIZ.length+" — finish the rest, then grade again."; return; }
+  quizAttempts++;
+  sc.textContent=right+" / "+QUIZ.length;
+  if(right===QUIZ.length){ fb.className='feedback ok';
+    fb.textContent="🏆 Perfect score! You've mastered Activity 1.1.1 — correct answers are highlighted in green.";
+    markDone('quiz'); }
+  else if(right>=6){ fb.className='feedback ok';
+    fb.textContent="Strong work! Review the green highlights for the ones you missed"+(quizAttempts<2?", then you may retry once.":"."); markDone('quiz'); }
+  else { fb.className='feedback no';
+    fb.textContent="Keep going — revisit the Vocabulary and Debug sections, review the green answers"+(quizAttempts<2?", and retry once.":"."); }
+}
+buildQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithmic Thinking — Interactive Lesson (Activity 1.1.1)</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#f7f6fa; --card:#ffffff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:26px 20px 20px; text-align:center;}
+  header h1{font-size:1.55rem; letter-spacing:.3px;}
+  header p{opacity:.85; font-size:.95rem; margin-top:4px;}
+  nav{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; background:var(--navy); padding:10px 8px; position:sticky; top:0; z-index:50;}
+  nav button{border:none; background:rgba(255,255,255,.12); color:#fff; padding:8px 14px; border-radius:999px; cursor:pointer; font-size:.85rem; font-weight:600; transition:.15s;}
+  nav button:hover{background:rgba(255,255,255,.28);}
+  nav button.active{background:#fff; color:var(--navy);}
+  nav button .check{color:#7be0a8; margin-left:4px; display:none;}
+  nav button.done .check{display:inline;}
+  main{max-width:920px; margin:0 auto; padding:24px 16px 80px;}
+  section{display:none; animation:fade .25s ease;}
+  section.visible{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .shake{animation:shake .3s ease;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 1px 3px rgba(27,42,74,.06);}
+  h2{color:var(--purple); font-size:1.35rem; margin-bottom:10px;}
+  h3{color:var(--navy); font-size:1.05rem; margin:14px 0 8px;}
+  p{margin-bottom:10px;}
+  ul,ol{padding-left:22px; margin-bottom:10px;}
+  li{margin-bottom:4px;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .codebox .k{color:#7fb4ff;} .codebox .s{color:#8fd6a8;} .codebox .n{color:#ffd479;} .codebox .c{color:#8a93a6;}
+  .console{background:#101010; color:#c9f7c9; font-family:var(--mono); font-size:.88rem; border-radius:10px; padding:12px 14px; min-height:48px; white-space:pre-wrap; overflow-x:auto; margin:10px 0; border:1px solid #2c2c2c;}
+  .console .err{color:#ff9d94;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:10px 18px; border-radius:9px; font-size:.92rem; font-weight:600; cursor:pointer; transition:.15s;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .btn.small{padding:6px 12px; font-size:.82rem;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .feedback{border-radius:9px; padding:10px 14px; margin-top:10px; font-size:.92rem; display:none;}
+  .feedback.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .feedback.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .feedback.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  .pill-score{background:var(--purple-lt); color:var(--purple); font-weight:700; padding:4px 12px; border-radius:999px; font-size:.85rem;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .choices button{text-align:left; background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer;}
+  .choices button.mono{font-family:var(--mono);}
+  .choices button:hover{border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em;}
+  /* sequencer */
+  .steplist{display:flex; flex-direction:column; gap:8px; margin:12px 0; padding:10px; background:#faf9fc; border:2px dashed var(--line); border-radius:10px; min-height:56px;}
+  .step{display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--purple); border-radius:10px; padding:9px 12px; cursor:pointer; font-size:.92rem; transition:.15s;}
+  .step:hover{background:var(--purple-lt);}
+  .step .num{flex:0 0 26px; height:26px; border-radius:50%; background:var(--purple); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.82rem;}
+  .built .step{border-color:var(--green); background:#f2fbf6; cursor:default;}
+  .built .step .num{background:var(--green);}
+  .built .step.bad{border-color:var(--red); background:#fdecea;}
+  .built .step.bad .num{background:var(--red);}
+  /* representation match */
+  .repgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:10px;}
+  @media(max-width:640px){.repgrid{grid-template-columns:1fr;}}
+  .repcard{border:2px solid var(--line); border-radius:12px; padding:12px; cursor:pointer; transition:.15s; background:#fff;}
+  .repcard:hover{border-color:var(--purple);}
+  .repcard.sel{border-color:var(--purple); background:var(--purple-lt);}
+  .repcard.ok{border-color:var(--green); background:#e6f6ed; cursor:default;}
+  .repcard h4{font-size:.95rem; color:var(--navy); margin-bottom:4px;}
+  .repcard p{font-size:.84rem; color:var(--muted); margin:0;}
+  .repslot{border:2px dashed var(--line); border-radius:12px; padding:12px; min-height:74px;}
+  .repslot h4{font-size:.95rem; color:var(--purple); margin-bottom:4px;}
+  .repslot .filled{font-size:.86rem; font-weight:700; color:var(--green);}
+  /* turtle */
+  .turtlewrap{display:grid; grid-template-columns:1fr 380px; gap:14px;}
+  @media(max-width:840px){.turtlewrap{grid-template-columns:1fr;}}
+  textarea.code{width:100%; min-height:230px; background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.9rem; border:none; border-radius:10px; padding:14px; line-height:1.5; resize:vertical; tab-size:4;}
+  textarea.code:focus{outline:2px solid var(--purple);}
+  canvas{background:#fff; border:1px solid var(--line); border-radius:10px; display:block; width:100%; max-width:380px; height:auto; touch-action:none;}
+  .methods{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:8px;}
+  .methods th{background:var(--navy); color:#fff; text-align:left; padding:7px 10px;}
+  .methods td{border-bottom:1px solid var(--line); padding:6px 10px; vertical-align:top;}
+  .methods td:first-child{font-family:var(--mono); color:var(--purple); white-space:nowrap;}
+  .snip{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0;}
+  .snip button{font-family:var(--mono); font-size:.78rem; background:#fff; border:1px solid var(--line); border-radius:7px; padding:4px 9px; cursor:pointer;}
+  .snip button:hover{border-color:var(--purple); background:var(--purple-lt);}
+  /* missions */
+  .misstabs{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+  .misstabs button{border:2px solid var(--line); background:#fff; border-radius:999px; padding:6px 13px; font-size:.82rem; font-weight:600; cursor:pointer;}
+  .misstabs button.active{border-color:var(--purple); background:var(--purple); color:#fff;}
+  .misstabs button.solved{border-color:var(--green); background:#e6f6ed; color:var(--green);}
+  .misstabs button.active.solved{background:var(--green); color:#fff;}
+  .stepdots{display:flex; gap:6px; margin:8px 0 4px;}
+  .stepdots span{width:12px; height:12px; border-radius:50%; background:var(--line);}
+  .stepdots span.on{background:var(--purple);}
+  .stepdots span.done{background:var(--green);}
+  /* quiz */
+  .qcard{border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; background:#fff;}
+  .qcard h4{font-size:.98rem; margin-bottom:10px; color:var(--navy);}
+  .qcard h4 code{font-family:var(--mono); background:var(--purple-lt); padding:1px 5px; border-radius:5px;}
+  .qopts label{display:block; border:2px solid var(--line); border-radius:9px; padding:9px 12px; margin-bottom:8px; cursor:pointer; font-size:.9rem;}
+  .qopts label:hover{border-color:var(--purple);}
+  .qopts label.sel{border-color:var(--purple); background:var(--purple-lt);}
+  .qopts label.right{border-color:var(--green); background:#e6f6ed;}
+  .qopts label.wrongpick{border-color:var(--red); background:#fdecea;}
+  .qopts input{margin-right:8px;}
+  .bigscore{font-size:2.2rem; font-weight:800; color:var(--purple); text-align:center; margin:8px 0;}
+  .flow{font-family:var(--mono); font-size:.8rem; white-space:pre; background:#f4f7fb; border:1px solid var(--line); border-radius:8px; padding:10px; overflow-x:auto;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#129302; Algorithmic Thinking</h1>
+  <p>PLTW Computer Science Principles &bull; Unit 1 &bull; Activity 1.1.1 &bull; Mr. Babb</p>
+</header>
+
+<nav id="nav">
+  <button data-sec="intro" class="active">1. Algorithms<span class="check">&#10003;</span></button>
+  <button data-sec="seq">2. Robot Chef<span class="check">&#10003;</span></button>
+  <button data-sec="rep">3. Four Ways<span class="check">&#10003;</span></button>
+  <button data-sec="turtle">4. Turtle Trainer<span class="check">&#10003;</span></button>
+  <button data-sec="mission">5. Shape Missions<span class="check">&#10003;</span></button>
+  <button data-sec="quiz">6. Exit Ticket<span class="check">&#10003;</span></button>
+</nav>
+
+<main>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" class="visible">
+  <div class="card">
+    <span class="tag">Learn</span>
+    <h2>What is an algorithm?</h2>
+    <p>In the trifold Instant Challenge you wrote instructions and a partner tried to redraw your picture. Those instructions were an <b>algorithm</b>: a <b>finite set of instructions that accomplish a specific task</b>.</p>
+    <p><b>Algorithmic thinking</b> is the process of solving a problem by identifying the tasks required and using algorithms to clearly describe each task. It is a skill — it takes practice and repetition, and it is used far outside of computer science.</p>
+    <p>Whether it is folding a shirt, parallel parking, or solving a math problem, the expression of any task as a sequence of detailed steps is an algorithm. <b>Algorithms are everywhere.</b></p>
+    <div class="codebox"><span class="c"># An algorithm becomes a PROGRAM when a computer can run it.</span>
+<span class="c"># A program is a collection of program statements that</span>
+<span class="c"># performs a specific task when run by a computer.</span></div>
+  </div>
+  <div class="card">
+    <h3>&#129504; Quick check</h3>
+    <p>Two students followed the exact same written instructions and produced two <b>different</b> drawings. What is the best explanation?</p>
+    <div class="choices">
+      <button onclick="introCheck(this,false)">Computers and people cannot follow instructions.</button>
+      <button onclick="introCheck(this,true)">The instructions were not precise enough — steps could be interpreted in more than one way.</button>
+      <button onclick="introCheck(this,false)">One student is better at drawing than the other.</button>
+      <button onclick="introCheck(this,false)">An algorithm can only be written in a programming language.</button>
+    </div>
+    <div class="feedback" id="introFb"></div>
+    <p style="margin-top:12px">A computer will never guess what you meant. Every step has to be <b>clearly defined</b> and in the <b>right order</b>.</p>
+    <div style="margin-top:14px"><button class="btn secondary" onclick="completeAndGo('intro','seq')">Next: Robot Chef &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= SEQUENCING GAME ================= -->
+<section id="seq">
+  <div class="card">
+    <span class="tag">Game</span>
+    <div class="topbar">
+      <h2>Robot Chef &mdash; put the steps in order</h2>
+      <span class="pill-score" id="seqScore">Round 1 of 3</span>
+    </div>
+    <p>Your robot executes <b>sequential statements in the order they appear</b> — no skipping, no guessing. Click the steps in the correct order to build the algorithm, then run the robot.</p>
+    <div class="stepdots" id="seqDots"><span class="on"></span><span></span><span></span></div>
+    <h3 id="seqTask"></h3>
+    <p style="font-size:.88rem;color:var(--muted)">Available steps (click to add):</p>
+    <div class="steplist" id="seqPool"></div>
+    <p style="font-size:.88rem;color:var(--muted)">Your algorithm:</p>
+    <div class="steplist built" id="seqBuilt"></div>
+    <button class="btn" id="seqRunBtn" onclick="seqRun()">&#9654; Run the robot</button>
+    <button class="btn small secondary" onclick="seqBuild()">&#8635; Reset</button>
+    <div class="console" id="seqOut" style="display:none"></div>
+    <div class="feedback" id="seqFb"></div>
+    <div style="margin-top:14px">
+      <button class="btn" id="seqNextBtn" style="display:none" onclick="seqAdvance()">Next round &#9654;</button>
+      <button class="btn" id="seqDoneBtn" style="display:none" onclick="completeAndGo('seq','rep')">Next: Four Ways &rarr;</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>&#128273; Remember</h3>
+    <p>Sequential statements execute <b>in the order they appear</b> in the code segment. Reordering two lines can change the result completely — or break the program.</p>
+  </div>
+</section>
+
+<!-- ================= REPRESENTATION ================= -->
+<section id="rep">
+  <div class="card">
+    <span class="tag">Match it</span>
+    <div class="topbar">
+      <h2>Four Ways to Represent an Algorithm</h2>
+      <span class="pill-score" id="repScore">0 / 4 matched</span>
+    </div>
+    <p>An algorithm can be represented in multiple ways. Click a <b>description</b>, then click the <b>method</b> it describes.</p>
+    <h3>Descriptions</h3>
+    <div class="repgrid" id="repCards"></div>
+    <h3>Methods</h3>
+    <div class="repgrid" id="repSlots"></div>
+    <div class="feedback" id="repFb"></div>
+    <div style="margin-top:12px"><button class="btn small secondary" onclick="buildRep()">&#8635; Restart</button></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Name that method</span>
+    <div class="topbar">
+      <h3 style="margin:0">Which representation is this?</h3>
+      <span class="pill-score" id="idScore">Example 1 of 4</span>
+    </div>
+    <div id="idBody"></div>
+    <div class="choices" id="idChoices"></div>
+    <div class="feedback" id="idFb"></div>
+    <div style="margin-top:14px">
+      <button class="btn" id="idNextBtn" style="display:none" onclick="idAdvance()">Next example &#9654;</button>
+      <button class="btn" id="idDoneBtn" style="display:none" onclick="completeAndGo('rep','turtle')">Next: Turtle Trainer &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TURTLE TRAINER ================= -->
+<section id="turtle">
+  <div class="card">
+    <span class="tag">Explore</span>
+    <h2>Turtle Trainer</h2>
+    <p>Time to turn algorithms into a <b>program</b>. Python's <code class="inline">turtle</code> module is predefined, reusable code you <b>import</b> to draw on the screen. The turtle starts at the origin <b>(0, 0)</b> facing <b>east</b> (heading 0) and can turn a full 360 degrees.</p>
+    <p>Edit the code below and click <b>Run</b>. This simulator runs your code one line at a time, exactly like Python does — and it will complain just like Python does if you make a mistake.</p>
+    <div class="turtlewrap">
+      <div>
+        <textarea class="code" id="tCode" spellcheck="false"></textarea>
+        <div class="snip">
+          <span style="font-size:.78rem;color:var(--muted);align-self:center">Insert:</span>
+          <button onclick="insertSnip('painter.forward(100)')">forward</button>
+          <button onclick="insertSnip('painter.right(90)')">right</button>
+          <button onclick="insertSnip('painter.left(90)')">left</button>
+          <button onclick="insertSnip('painter.circle(40)')">circle</button>
+          <button onclick="insertSnip('painter.penup()')">penup</button>
+          <button onclick="insertSnip('painter.pendown()')">pendown</button>
+          <button onclick="insertSnip('painter.pencolor("red")')">pencolor</button>
+          <button onclick="insertSnip('painter.pensize(5)')">pensize</button>
+          <button onclick="insertSnip('painter.goto(0, 0)')">goto</button>
+          <button onclick="insertSnip('painter.setheading(90)')">setheading</button>
+        </div>
+        <button class="btn" onclick="tRun()">&#9654; Run the program</button>
+        <button class="btn small secondary" onclick="tReset()">&#8635; Reset code</button>
+        <div class="console" id="tOut">(click Run to execute your program)</div>
+      </div>
+      <div>
+        <canvas id="tCanvas" width="380" height="380"></canvas>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:6px">Canvas center = (0, 0). Right is +x, up is +y.</p>
+        <div class="feedback hint" style="display:block;font-size:.84rem">
+          <b>Tip:</b> the <code class="inline">.</code> is the <b>dot operator</b> — it calls a <b>method</b> on your turtle object. The number inside the parentheses is a <b>parameter</b>.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>&#128218; Turtle methods</h3>
+    <table class="methods">
+      <tr><th>Method</th><th>What it does</th></tr>
+      <tr><td>.forward(d)</td><td>Moves the turtle in the direction it is facing for a distance of <b>d</b> pixels</td></tr>
+      <tr><td>.backward(d)</td><td>Moves the turtle backward from the direction it is facing for <b>d</b> pixels</td></tr>
+      <tr><td>.right(a)</td><td>Turns the turtle to the right (clockwise) by <b>a</b> degrees</td></tr>
+      <tr><td>.left(a)</td><td>Turns the turtle to the left (counterclockwise) by <b>a</b> degrees</td></tr>
+      <tr><td>.circle(r)</td><td>Draws a circle with radius <b>r</b></td></tr>
+      <tr><td>.goto(x, y)</td><td>Moves the turtle to location <b>x, y</b></td></tr>
+      <tr><td>.setheading(h)</td><td>Sets the direction the turtle is facing, where <b>h</b> is between 0 and 360</td></tr>
+      <tr><td>.pencolor(c)</td><td>Changes the pen color, where <b>c</b> is a color name such as "red"</td></tr>
+      <tr><td>.penup()</td><td>Lifts the pen off the canvas so the turtle moves without drawing</td></tr>
+      <tr><td>.pendown()</td><td>Places the pen back on the canvas so you can resume drawing</td></tr>
+      <tr><td>.pensize(s)</td><td>Sets the pen size to <b>s</b></td></tr>
+      <tr><td>.turtlesize(s)</td><td>Sets the size of the turtle to <b>s</b></td></tr>
+    </table>
+    <div style="margin-top:14px"><button class="btn" onclick="completeAndGo('turtle','mission')">Next: Shape Missions &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= MISSIONS ================= -->
+<section id="mission">
+  <div class="card">
+    <span class="tag">Challenge</span>
+    <div class="topbar">
+      <h2>Shape Missions</h2>
+      <span class="pill-score" id="mScore">0 / 5 solved</span>
+    </div>
+    <p>Write the algorithm, then run it. Your drawing is compared to the target automatically — the shape has to match in <b>size and form</b>, but you can start it any way you like.</p>
+    <div class="misstabs" id="mTabs"></div>
+    <h3 id="mTitle"></h3>
+    <p id="mDesc" style="font-size:.92rem"></p>
+    <div class="turtlewrap">
+      <div>
+        <textarea class="code" id="mCode" spellcheck="false"></textarea>
+        <button class="btn" onclick="mRun()">&#9654; Run &amp; check</button>
+        <button class="btn small secondary" onclick="mHint()">&#128161; Hint</button>
+        <button class="btn small secondary" onclick="mResetCode()">&#8635; Clear</button>
+        <div class="console" id="mOut">(write your algorithm, then click Run &amp; check)</div>
+        <div class="feedback" id="mFb"></div>
+      </div>
+      <div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:4px"><b>Your drawing</b></p>
+        <canvas id="mCanvas" width="380" height="380"></canvas>
+        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 4px"><b>Target</b></p>
+        <canvas id="mTarget" width="380" height="380" style="max-width:190px"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>&#127912; Final task &mdash; recreate your trifold drawing</h3>
+    <p>Open the <b>Turtle Trainer</b> tab (or the PLTW code editor) and write a program that draws the picture you made on section 1 of your trifold. Use at least <b>three different turtle methods</b> and <b>one color change</b>. Share your work as directed.</p>
+    <div class="feedback hint" style="display:block">
+      <b>Computer Science Notebook &mdash; Reflection:</b> How does the program you just created relate to what you have learned about algorithms? How does your program compare to the instructions you wrote in the trifold?
+    </div>
+    <div style="margin-top:14px"><button class="btn" onclick="completeAndGo('mission','quiz')">Next: Exit Ticket &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+  <div class="card">
+    <span class="tag">Exit ticket</span>
+    <h2>Show what you know</h2>
+    <p>Answer all 8 questions, then click <b>Grade my exit ticket</b>. One retry allowed.</p>
+    <div id="quizWrap"></div>
+    <button class="btn" onclick="gradeQuiz()">&#10003; Grade my exit ticket</button>
+    <div class="bigscore" id="quizScore"></div>
+    <div class="feedback" id="quizFb"></div>
+  </div>
+  <div class="card">
+    <h3>&#128221; Computer Science Notebook</h3>
+    <p>Add these to your notebook before you leave:</p>
+    <ul>
+      <li>An <b>algorithm</b> is a finite set of instructions that accomplish a specific task.</li>
+      <li><b>Algorithmic thinking</b> is identifying the tasks needed to solve a problem and describing each one clearly.</li>
+      <li>Algorithms can be represented four ways: <b>natural language</b>, <b>flowcharts</b>, <b>pseudocode</b>, and a <b>programming language</b>.</li>
+      <li>Only a programming language can actually be executed by a computer. Pseudocode looks structured but a computer cannot run it.</li>
+      <li><b>Sequential statements execute in the order they appear</b> in the code segment.</li>
+      <li>A <b>program</b> is a collection of program statements that performs a specific task when run by a computer.</li>
+      <li>A turtle starts at <b>(0, 0)</b> with a heading of <b>0 degrees</b> (facing east). <code class="inline">.right()</code> turns clockwise, <code class="inline">.left()</code> turns counterclockwise.</li>
+      <li>The <b>dot operator</b> calls a <b>method</b> on an object; the value in the parentheses is a <b>parameter</b>.</li>
+    </ul>
+    <h3>&#129300; Conclusion questions</h3>
+    <ol>
+      <li>Do you think programmers always write code exactly the same way? Why would it be an advantage for programmers to look at solutions from different perspectives?</li>
+      <li>What are the consequences of a poorly written algorithm?</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============ navigation ============ */
+const sections=['intro','seq','rep','turtle','mission','quiz'];
+function show(sec){
+  sections.forEach(s=>document.getElementById(s).classList.toggle('visible', s===sec));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.sec===sec));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
+function markDone(sec){ const btn=document.querySelector('#nav button[data-sec="'+sec+'"]'); if(btn)btn.classList.add('done'); }
+function completeAndGo(from,to){ markDone(from); show(to); }
+
+/* ============ intro ============ */
+function introCheck(btn,right){
+  document.querySelectorAll('#intro .choices button').forEach(b=>b.classList.remove('ok','no'));
+  const fb=document.getElementById('introFb');
+  if(right){ btn.classList.add('ok'); fb.className='feedback ok';
+    fb.textContent="Exactly. An algorithm has to be clearly defined. If a step can be read two ways, you get two different results."; markDone('intro'); }
+  else { btn.classList.add('no'); fb.className='feedback no';
+    fb.textContent="Not quite — think about the instructions themselves, not the people following them."; }
+}
+
+/* ============ ROBOT CHEF (sequencing) ============ */
+const SEQ=[
+ {task:'Algorithm: "Draw a square with a turtle"',
+  steps:[
+    'Import the turtle module',
+    'Create a turtle object named painter',
+    'Move painter forward 100 pixels',
+    'Turn painter right 90 degrees',
+    'Repeat the move-and-turn 3 more times',
+    'Keep the screen open with mainloop()'
+  ],
+  fails:[
+    'RobotChef: I tried to create a turtle... but nobody imported the turtle module. NameError.',
+    'RobotChef: You told me to move painter, but painter does not exist yet. NameError: name \'painter\' is not defined.',
+    'RobotChef: I turned before I moved. Your square is missing a side.',
+    'RobotChef: The screen closed before you could see anything. mainloop() has to be last.'
+  ],
+  win:'RobotChef: Imported... turtle created... forward, turn, forward, turn... a perfect square. Screen is still open!'},
+ {task:'Algorithm: "Troubleshoot a TV that shows no picture"',
+  steps:[
+    'Check which TV source (input) is selected',
+    'On the back of the TV, check the input ports',
+    'If the cable box is not plugged in, plug it into an input port',
+    'Make sure the TV source matches the port used by the cable box',
+    'If the TV still does not work, call customer support'
+  ],
+  fails:[
+    'RobotChef: I called customer support first. They asked if the cable box was plugged in. I did not know.',
+    'RobotChef: I set the source to match a port before checking whether anything was plugged into it. Still no picture.'
+  ],
+  win:'RobotChef: Source checked, ports checked, cable box plugged in, source matched. Picture is back!'},
+ {task:'Algorithm: "Make a peanut butter sandwich" (the robot is EXTREMELY literal)',
+  steps:[
+    'Take two slices of bread out of the bag',
+    'Place both slices flat on the plate',
+    'Open the jar of peanut butter',
+    'Use the knife to spread peanut butter on one slice',
+    'Place the second slice on top of the peanut butter',
+    'Cut the sandwich in half'
+  ],
+  fails:[
+    'RobotChef: I spread peanut butter on a closed jar. That is what you said.',
+    'RobotChef: I put the second slice down before there was any peanut butter. Dry bread.',
+    'RobotChef: I cut it in half first. Now I have four pieces of bread and nothing else.',
+    'RobotChef: The bread is still in the bag. I cannot spread through plastic.'
+  ],
+  win:'RobotChef: Bread out, laid flat, jar open, peanut butter spread, top slice on, cut in half. Sandwich complete!'}
+];
+let seqIdx=0, seqOrder=[], seqSolved=0;
+function shuffle(a){const c=a.slice(); for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [c[i],c[j]]=[c[j],c[i]];} return c;}
+function seqBuild(){
+  const r=SEQ[seqIdx];
+  seqOrder=[];
+  document.getElementById('seqTask').textContent=r.task;
+  document.getElementById('seqScore').textContent='Round '+(seqIdx+1)+' of '+SEQ.length;
+  const dots=document.getElementById('seqDots').children;
+  for(let i=0;i<SEQ.length;i++) dots[i].className=i<seqIdx?'done':(i===seqIdx?'on':'');
+  const pool=document.getElementById('seqPool'); pool.innerHTML='';
+  const idx=shuffle(r.steps.map((_,i)=>i));
+  // make sure it isn't already in order
+  if(idx.every((v,i)=>v===i)) idx.reverse();
+  idx.forEach(i=>{
+    const d=document.createElement('div'); d.className='step'; d.dataset.i=i;
+    d.innerHTML='<span class="num">?</span><span>'+r.steps[i]+'</span>';
+    d.onclick=()=>{ seqOrder.push(i); d.remove(); seqRender(); };
+    pool.appendChild(d);
+  });
+  seqRender();
+  document.getElementById('seqOut').style.display='none';
+  const fb=document.getElementById('seqFb'); fb.className='feedback'; fb.textContent='';
+  document.getElementById('seqNextBtn').style.display='none';
+  document.getElementById('seqRunBtn').disabled=false;
+}
+function seqRender(){
+  const r=SEQ[seqIdx];
+  const b=document.getElementById('seqBuilt'); b.innerHTML='';
+  seqOrder.forEach((i,pos)=>{
+    const d=document.createElement('div'); d.className='step';
+    d.innerHTML='<span class="num">'+(pos+1)+'</span><span>'+r.steps[i]+'</span>';
+    d.onclick=()=>{ seqOrder.splice(pos,1); seqBuildPool(); };
+    b.appendChild(d);
+  });
+  if(!seqOrder.length) b.innerHTML='<span style="color:var(--muted);font-size:.86rem;padding:6px">Click steps above to add them here, in order.</span>';
+}
+function seqBuildPool(){
+  const r=SEQ[seqIdx];
+  const pool=document.getElementById('seqPool'); pool.innerHTML='';
+  r.steps.forEach((s,i)=>{
+    if(seqOrder.includes(i))return;
+    const d=document.createElement('div'); d.className='step'; d.dataset.i=i;
+    d.innerHTML='<span class="num">?</span><span>'+s+'</span>';
+    d.onclick=()=>{ seqOrder.push(i); seqBuildPool(); };
+    pool.appendChild(d);
+  });
+  seqRender();
+}
+function seqRun(){
+  const r=SEQ[seqIdx];
+  const out=document.getElementById('seqOut'), fb=document.getElementById('seqFb');
+  out.style.display='block';
+  if(seqOrder.length<r.steps.length){
+    out.innerHTML='<span class="err">RobotChef: My algorithm is incomplete. I need every step.</span>';
+    fb.className='feedback hint'; fb.textContent='Use all '+r.steps.length+' steps before running.'; return;
+  }
+  const firstWrong=seqOrder.findIndex((v,i)=>v!==i);
+  document.querySelectorAll('#seqBuilt .step').forEach((el,i)=>el.classList.toggle('bad', seqOrder[i]!==i));
+  if(firstWrong===-1){
+    out.textContent=r.win;
+    fb.className='feedback ok'; fb.textContent='Correct! Sequential statements execute in the order they appear — and your order works.';
+    markDone('seq'); seqSolved++;
+    document.getElementById('seqRunBtn').disabled=true;
+    if(seqIdx<SEQ.length-1) document.getElementById('seqNextBtn').style.display='inline-block';
+    else { document.getElementById('seqDoneBtn').style.display='inline-block';
+      fb.textContent='All three algorithms sequenced correctly. You think in order!'; }
+  } else {
+    out.innerHTML='<span class="err">'+r.fails[Math.min(firstWrong,r.fails.length-1)]+'</span>';
+    fb.className='feedback no'; fb.textContent='Step '+(firstWrong+1)+' is the first one out of place (shown in red). Click a step in your algorithm to remove it.';
+    fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+  }
+}
+function seqAdvance(){ seqIdx++; seqBuild(); }
+seqBuild();
+
+/* ============ REPRESENTATION MATCH ============ */
+const REPS=[
+ {m:'Natural Language', d:'Instructions that are expressed using spoken languages like English or Spanish'},
+ {m:'Flowchart', d:'A diagram that shows the flow of an algorithm using standardized shapes'},
+ {m:'Pseudocode', d:'Instructions that look structured but are not understood by a computer'},
+ {m:'Programming Language', d:'Well-structured instructions that can be understood and executed by a computer'}
+];
+let repSel=null, repMatched=0;
+function buildRep(){
+  repSel=null; repMatched=0;
+  document.getElementById('repScore').textContent='0 / 4 matched';
+  const fb=document.getElementById('repFb'); fb.className='feedback'; fb.textContent='';
+  const cards=document.getElementById('repCards'); cards.innerHTML='';
+  const slots=document.getElementById('repSlots'); slots.innerHTML='';
+  shuffle(REPS.map((_,i)=>i)).forEach(i=>{
+    const c=document.createElement('div'); c.className='repcard'; c.dataset.i=i;
+    c.innerHTML='<p>'+REPS[i].d+'</p>';
+    c.onclick=()=>{ if(c.classList.contains('ok'))return;
+      document.querySelectorAll('#repCards .repcard').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); repSel=c; };
+    cards.appendChild(c);
+  });
+  shuffle(REPS.map((_,i)=>i)).forEach(i=>{
+    const s=document.createElement('div'); s.className='repslot'; s.dataset.i=i;
+    s.innerHTML='<h4>'+REPS[i].m+'</h4><div class="filled"></div>';
+    s.onclick=()=>repDrop(s,i);
+    slots.appendChild(s);
+  });
+}
+function repDrop(slot,i){
+  if(!repSel) return;
+  const fb=document.getElementById('repFb');
+  if(+repSel.dataset.i===i){
+    repSel.classList.remove('sel'); repSel.classList.add('ok');
+    slot.querySelector('.filled').textContent='✓ matched';
+    slot.style.borderStyle='solid'; slot.style.borderColor='var(--green)'; slot.style.background='#e6f6ed';
+    repSel=null; repMatched++;
+    document.getElementById('repScore').textContent=repMatched+' / 4 matched';
+    if(repMatched===4){ fb.className='feedback ok'; fb.textContent='All four matched! Now try naming them from examples below.'; }
+    else { fb.className='feedback ok'; fb.textContent='Matched!'; }
+  } else {
+    fb.className='feedback no'; fb.textContent='Not that one. Ask: can a computer actually run it? Is it a picture, or is it words?';
+    fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+  }
+}
+buildRep();
+
+/* ---- name that method ---- */
+const IDS=[
+ {html:'<div class="codebox"><span class="c">Troubleshoot TV and cable issues:</span>\n1. Check the TV source selected\n2. On the back of the TV, check the input ports\n3. If the cable box is not plugged in, plug it into one of its input ports\n4. Make sure the TV source matches the input port used for your cable box\n5. If the TV still does not work, call customer support</div>',
+  a:0, why:'Natural language — an ordered list of steps written in a spoken language (English).'},
+ {html:'<div class="flow">        Troubleshoot TV\n              |\n        &lt;Is TV working?&gt; --YES--&gt; [ Watch TV! ]\n              | NO\n   &lt;Cable box plugged in?&gt; --NO--&gt; [ Plug into HDMI ]\n              | YES\n   &lt;Source set to same input?&gt; --NO--&gt; [ Check TV ports ]\n              | YES\n     [ Call customer support ]</div>',
+  a:1, why:'Flowchart — a diagram using rectangles for actions, rhombuses (diamonds) for decisions, and arrows for flow.'},
+ {html:'<div class="codebox">Check TV source (input) selected\nOn back of TV, check input ports\nCheck Box: Is cable box plugged into one of TV input ports?\n    If yes then:\n        Is TV source set to same input as cable box?\n            If yes then:\n                Call customer support\n            If no then:\n                Change the TV source to match the cable box port\n    If no then:\n        Plug the cable box into one of the TV input ports\n        Go back to "Check Box"</div>',
+  a:2, why:'Pseudocode — structured and indented like code, but no computer can execute it.'},
+ {html:'<div class="codebox"><span class="k">import</span> turtle <span class="k">as</span> trtl\npainter = trtl.Turtle()\npainter.pensize(<span class="n">5</span>)\npainter.forward(<span class="n">100</span>)\npainter.right(<span class="n">90</span>)\nwn = trtl.Screen()\nwn.mainloop()</div>',
+  a:3, why:'Programming language — Python. Structured, uses keywords, and a computer can execute it.'}
+];
+const ID_OPTS=['Natural language','Flowchart','Pseudocode','Programming language'];
+let idIdx=0, idLocked=false;
+function idRender(){
+  idLocked=false;
+  const it=IDS[idIdx];
+  document.getElementById('idScore').textContent='Example '+(idIdx+1)+' of '+IDS.length;
+  document.getElementById('idBody').innerHTML=it.html;
+  const ch=document.getElementById('idChoices'); ch.innerHTML='';
+  ID_OPTS.forEach((o,i)=>{
+    const b=document.createElement('button'); b.textContent=o;
+    b.onclick=()=>idPick(b,i); ch.appendChild(b);
+  });
+  const fb=document.getElementById('idFb'); fb.className='feedback'; fb.textContent='';
+  document.getElementById('idNextBtn').style.display='none';
+}
+function idPick(btn,i){
+  if(idLocked)return;
+  const it=IDS[idIdx], fb=document.getElementById('idFb');
+  if(i===it.a){
+    idLocked=true; btn.classList.add('ok');
+    fb.className='feedback ok'; fb.textContent='Correct! '+it.why;
+    if(idIdx<IDS.length-1) document.getElementById('idNextBtn').style.display='inline-block';
+    else { document.getElementById('idDoneBtn').style.display='inline-block'; markDone('rep');
+      fb.textContent='Correct! '+it.why+'  You can name all four representations.'; }
+  } else {
+    btn.classList.add('no');
+    fb.className='feedback no'; fb.textContent='Look again — could a computer execute this exactly as written? Is it words, a picture, or code?';
+    fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+  }
+}
+function idAdvance(){ idIdx++; idRender(); }
+idRender();
+
+/* ============================================================
+   TURTLE INTERPRETER
+   ============================================================ */
+const COLORS={red:'#c0392b',blue:'#2b6cb0',green:'#1a7f4e',yellow:'#d69e2e',orange:'#dd6b20',
+  purple:'#6b3fa0',pink:'#d53f8c',black:'#111111',brown:'#7b341e',gray:'#718096',grey:'#718096',
+  cyan:'#0987a0',magenta:'#b83280',white:'#ffffff'};
+const NO_ARG=['penup','pendown','pu','pd','home','begin_fill','end_fill','mainloop','done','clear'];
+const ONE_NUM=['forward','fd','backward','back','bk','right','rt','left','lt','circle','setheading','seth','pensize','width','turtlesize','shapesize','speed'];
+
+function runTurtle(code){
+  const ops=[], errors=[];
+  let names=new Set(), screens=new Set(), modAlias=null;
+  let t={x:0,y:0,h:0,down:true,color:'#6b3fa0',size:2};
+  const lines=code.split('\n');
+  for(let ln=0; ln<lines.length; ln++){
+    let raw=lines[ln];
+    let line=raw.split('#')[0].trim();
+    if(!line) continue;
+    if(/^\s+/.test(raw.split('#')[0]) && !/^\s*$/.test(raw)){
+      // leading whitespace at top level
+      errors.push({ln:ln+1, msg:'IndentationError: unexpected indent'});
+      continue;
+    }
+    let m;
+    if((m=line.match(/^import\s+turtle(?:\s+as\s+([A-Za-z_]\w*))?$/))){ modAlias=m[1]||'turtle'; continue; }
+    if((m=line.match(/^from\s+turtle\s+import\s+\*$/))){ modAlias='turtle'; continue; }
+    if((m=line.match(/^([A-Za-z_]\w*)\s*=\s*(?:([A-Za-z_]\w*)\.)?Turtle\(\s*\)$/))){ names.add(m[1]); continue; }
+    if((m=line.match(/^([A-Za-z_]\w*)\s*=\s*(?:([A-Za-z_]\w*)\.)?Screen\(\s*\)$/))){ screens.add(m[1]); continue; }
+    if((m=line.match(/^([A-Za-z_]\w*)\.([A-Za-z_]\w*)\((.*)\)$/))){
+      const obj=m[1], meth=m[2], argstr=m[3].trim();
+      if(screens.has(obj)) continue;                   // screen calls: mainloop, bgcolor, etc.
+      if(!names.has(obj)){
+        if(names.size===0){
+          errors.push({ln:ln+1,msg:"NameError: name '"+obj+"' is not defined — did you create a turtle first?  painter = trtl.Turtle()"});
+        } else {
+          errors.push({ln:ln+1,msg:"NameError: name '"+obj+"' is not defined. Your turtle is called '"+[...names][0]+"'."});
+        }
+        continue;
+      }
+      const args=splitArgs(argstr);
+      const r=applyMethod(t,meth,args,ops);
+      if(r) errors.push({ln:ln+1,msg:r});
+      continue;
+    }
+    if(/^[A-Za-z_]\w*\.[A-Za-z_]\w*\(.*$/.test(line) && !line.endsWith(')')){
+      errors.push({ln:ln+1,msg:"SyntaxError: '(' was never closed"}); continue;
+    }
+    errors.push({ln:ln+1,msg:"SyntaxError: invalid syntax — \""+line+"\""});
+  }
+  return {ops, errors, turtle:t, hasTurtle:names.size>0};
+}
+function splitArgs(s){
+  if(!s.trim()) return [];
+  const out=[]; let cur='', q=null, depth=0;
+  for(const ch of s){
+    if(q){ if(ch===q)q=null; cur+=ch; continue; }
+    if(ch==='"'||ch==="'"){ q=ch; cur+=ch; continue; }
+    if(ch==='(')depth++; if(ch===')')depth--;
+    if(ch===','&&depth===0){ out.push(cur.trim()); cur=''; continue; }
+    cur+=ch;
+  }
+  if(cur.trim()) out.push(cur.trim());
+  return out;
+}
+function num(a){ const v=Number(a); return isNaN(v)?null:v; }
+function applyMethod(t,meth,args,ops){
+  const M=meth.toLowerCase();
+  const moveTo=(nx,ny)=>{
+    ops.push({type:t.down?'line':'move', x1:t.x, y1:t.y, x2:nx, y2:ny, color:t.color, size:t.size});
+    t.x=nx; t.y=ny;
+  };
+  const fwd=(d)=>{
+    const r=t.h*Math.PI/180;
+    moveTo(t.x+d*Math.cos(r), t.y+d*Math.sin(r));
+  };
+  if(NO_ARG.includes(M)){
+    if(args.length) return "TypeError: "+meth+"() takes no arguments ("+args.length+" given)";
+    if(M==='penup'||M==='pu') t.down=false;
+    else if(M==='pendown'||M==='pd') t.down=true;
+    else if(M==='home'){ moveTo(0,0); t.h=0; }
+    else if(M==='clear'){ ops.length=0; }
+    return null;
+  }
+  if(M==='pencolor'||M==='color'||M==='fillcolor'){
+    if(!args.length) return "TypeError: "+meth+"() needs a color, like "+meth+'("red")';
+    let c=args[0].replace(/^['"]|['"]$/g,'');
+    if(args[0]===c && !/^#/.test(c)) return "NameError: name '"+c+"' is not defined — color names need quotes: "+meth+'("'+c+'")';
+    const hex=COLORS[c.toLowerCase()]||(/^#[0-9a-fA-F]{3,6}$/.test(c)?c:null);
+    if(!hex) return 'turtle.TurtleGraphicsError: bad color string: "'+c+'"';
+    if(M!=='fillcolor') t.color=hex;
+    return null;
+  }
+  if(M==='goto'||M==='setpos'||M==='setposition'){
+    if(args.length!==2) return "TypeError: goto() takes 2 arguments (x, y) — "+args.length+" given";
+    const x=num(args[0]), y=num(args[1]);
+    if(x===null||y===null) return "TypeError: goto() needs numbers, like goto(50, -20)";
+    moveTo(x,y); return null;
+  }
+  if(ONE_NUM.includes(M)){
+    if(args.length<1) return "TypeError: "+meth+"() is missing its parameter — try "+meth+"(100)";
+    const v=num(args[0]);
+    if(v===null) return "TypeError: "+meth+"() needs a number, got "+args[0];
+    switch(M){
+      case 'forward': case 'fd': fwd(v); break;
+      case 'backward': case 'back': case 'bk': fwd(-v); break;
+      case 'right': case 'rt': t.h-=v; break;
+      case 'left': case 'lt': t.h+=v; break;
+      case 'setheading': case 'seth': t.h=v; break;
+      case 'pensize': case 'width': t.size=Math.max(1,v); break;
+      case 'circle': {
+        const steps=48, ext=360/steps, sign=v>=0?1:-1, r=Math.abs(v);
+        for(let i=0;i<steps;i++){
+          const chord=2*r*Math.sin(Math.PI/steps);
+          t.h+=sign*ext/2; fwd(chord); t.h+=sign*ext/2;
+        }
+        break;
+      }
+      default: break; // turtlesize, speed: no geometric effect
+    }
+    return null;
+  }
+  return "AttributeError: 'Turtle' object has no attribute '"+meth+"'";
+}
+
+/* ---- drawing ---- */
+function drawOps(canvas, ops, turtle, animate, done){
+  const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
+  const cx=W/2, cy=H/2;
+  const px=(x)=>cx+x, py=(y)=>cy-y;
+  function grid(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#eef0f5'; ctx.lineWidth=1;
+    for(let g=-Math.floor(cx/20)*20; g<=cx; g+=20){ ctx.beginPath(); ctx.moveTo(px(g),0); ctx.lineTo(px(g),H); ctx.stroke(); }
+    for(let g=-Math.floor(cy/20)*20; g<=cy; g+=20){ ctx.beginPath(); ctx.moveTo(0,py(g)); ctx.lineTo(W,py(g)); ctx.stroke(); }
+    ctx.strokeStyle='#cfd6e4';
+    ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(W,cy); ctx.moveTo(cx,0); ctx.lineTo(cx,H); ctx.stroke();
+  }
+  function seg(o){
+    if(o.type!=='line')return;
+    ctx.strokeStyle=o.color; ctx.lineWidth=o.size; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(px(o.x1),py(o.y1)); ctx.lineTo(px(o.x2),py(o.y2)); ctx.stroke();
+  }
+  function turtleIcon(x,y,h){
+    ctx.save(); ctx.translate(px(x),py(y)); ctx.rotate(-h*Math.PI/180);
+    ctx.fillStyle='#1a7f4e'; ctx.strokeStyle='#0e5c37'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(11,0); ctx.lineTo(-7,7); ctx.lineTo(-3,0); ctx.lineTo(-7,-7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  if(!animate){
+    grid(); ops.forEach(seg); if(turtle) turtleIcon(turtle.x,turtle.y,turtle.h);
+    if(done)done(); return;
+  }
+  let i=0;
+  grid();
+  const timer=setInterval(()=>{
+    const budget=Math.max(1,Math.ceil(ops.length/60));
+    for(let k=0;k<budget&&i<ops.length;k++,i++) seg(ops[i]);
+    grid(); for(let k=0;k<i;k++) seg(ops[k]);
+    const cur = i>0? ops[i-1] : null;
+    if(cur) turtleIcon(cur.x2,cur.y2, Math.atan2(cur.y2-cur.y1,cur.x2-cur.x1)*180/Math.PI);
+    if(i>=ops.length){
+      clearInterval(timer);
+      grid(); ops.forEach(seg); if(turtle) turtleIcon(turtle.x,turtle.y,turtle.h);
+      if(done)done();
+    }
+  }, 16);
+}
+
+/* ---- shape comparison (grid rasterization, translation + mirror tolerant) ---- */
+function cellsOf(ops, mirror){
+  const S=10, set=new Set();
+  ops.filter(o=>o.type==='line').forEach(o=>{
+    const y1=mirror?-o.y1:o.y1, y2=mirror?-o.y2:o.y2;
+    const dx=o.x2-o.x1, dy=y2-y1, len=Math.hypot(dx,dy);
+    const n=Math.max(1,Math.ceil(len/3));
+    for(let i=0;i<=n;i++){
+      const x=o.x1+dx*i/n, y=y1+dy*i/n;
+      set.add(Math.round(x/S)+','+Math.round(y/S));
+    }
+  });
+  return set;
+}
+function normalize(set){
+  if(!set.size) return set;
+  let mnx=Infinity,mny=Infinity;
+  set.forEach(k=>{const[a,b]=k.split(',').map(Number); if(a<mnx)mnx=a; if(b<mny)mny=b;});
+  const out=new Set();
+  set.forEach(k=>{const[a,b]=k.split(',').map(Number); out.add((a-mnx)+','+(b-mny));});
+  return out;
+}
+function similarity(A,B){
+  if(!A.size||!B.size) return 0;
+  let inter=0; A.forEach(k=>{ if(B.has(k))inter++; });
+  return inter/(A.size+B.size-inter);
+}
+function rotateOps(ops,q){ // q = number of 90-degree turns
+  return ops.map(o=>{
+    let a={x:o.x1,y:o.y1}, b={x:o.x2,y:o.y2};
+    for(let i=0;i<q;i++){ a={x:-a.y,y:a.x}; b={x:-b.y,y:b.x}; }
+    return {type:o.type,x1:a.x,y1:a.y,x2:b.x,y2:b.y};
+  });
+}
+function matchesTarget(studentOps, targetOps){
+  const S=normalize(cellsOf(studentOps,false));
+  let best=0;
+  for(let q=0;q<4;q++){
+    const R=rotateOps(targetOps,q);
+    best=Math.max(best, similarity(S,normalize(cellsOf(R,false))), similarity(S,normalize(cellsOf(R,true))));
+  }
+  return best >= 0.88;
+}
+
+/* ============ TURTLE TRAINER ============ */
+const STARTER = 'import turtle as trtl\n\npainter = trtl.Turtle()\npainter.turtlesize(3)\npainter.pensize(5)\n\npainter.forward(100)\npainter.right(90)\n\nwn = trtl.Screen()\nwn.mainloop()\n';
+function tReset(){ document.getElementById('tCode').value=STARTER; tRun(); }
+function insertSnip(txt){
+  const ta=document.getElementById('tCode');
+  const pos=ta.selectionStart;
+  const before=ta.value.slice(0,pos), after=ta.value.slice(pos);
+  const nl = before.endsWith('\n')||before===''?'':'\n';
+  ta.value=before+nl+txt+'\n'+after;
+  ta.focus(); ta.selectionStart=ta.selectionEnd=(before+nl+txt+'\n').length;
+}
+function tRun(){
+  const code=document.getElementById('tCode').value;
+  const res=runTurtle(code);
+  const out=document.getElementById('tOut');
+  if(res.errors.length){
+    out.innerHTML=res.errors.map(e=>'<span class="err">Line '+e.ln+': '+esc(e.msg)+'</span>').join('\n');
+  } else if(!res.hasTurtle){
+    out.innerHTML='<span class="err">Nothing to draw — you never created a turtle object.</span>';
+  } else {
+    const drawn=res.ops.filter(o=>o.type==='line').length;
+    out.textContent='Program finished. '+drawn+' line segment'+(drawn===1?'':'s')+' drawn.\nTurtle is at ('+Math.round(res.turtle.x)+', '+Math.round(res.turtle.y)+') with heading '+(((Math.round(res.turtle.h)%360)+360)%360)+'°.';
+  }
+  drawOps(document.getElementById('tCanvas'), res.ops, res.hasTurtle?res.turtle:null, true);
+  if(tReady && !res.errors.length && res.hasTurtle) markDone('turtle');
+}
+let tReady=false;
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+tReset(); tReady=true;
+
+/* ============ SHAPE MISSIONS ============ */
+const HEAD='import turtle as trtl\n\npainter = trtl.Turtle()\npainter.pensize(4)\n\n';
+const TAIL='\nwn = trtl.Screen()\nwn.mainloop()\n';
+const MISSIONS=[
+ {name:'Square', title:'Mission 1 — Square',
+  desc:'Draw a square with sides of 100 pixels. Four sides, four turns.',
+  target:'painter.forward(100)\npainter.right(90)\npainter.forward(100)\npainter.right(90)\npainter.forward(100)\npainter.right(90)\npainter.forward(100)\npainter.right(90)',
+  hint:'A square has 4 equal sides and 4 turns of 90 degrees. Alternate forward(100) and right(90) four times.',
+  start:'painter.forward(100)\npainter.right(90)\n'},
+ {name:'Rectangle', title:'Mission 2 — Rectangle',
+  desc:'Draw a rectangle that is 150 pixels wide and 80 pixels tall.',
+  target:'painter.forward(150)\npainter.right(90)\npainter.forward(80)\npainter.right(90)\npainter.forward(150)\npainter.right(90)\npainter.forward(80)\npainter.right(90)',
+  hint:'Long side, turn, short side, turn — then repeat. The turns are still 90 degrees.',
+  start:'painter.forward(150)\npainter.right(90)\n'},
+ {name:'Triangle', title:'Mission 3 — Equilateral triangle',
+  desc:'Draw a triangle with three equal sides of 120 pixels. Careful: the turn is NOT 60 degrees.',
+  target:'painter.forward(120)\npainter.left(120)\npainter.forward(120)\npainter.left(120)\npainter.forward(120)\npainter.left(120)',
+  hint:'The turtle turns through the EXTERIOR angle. All the way around is 360 degrees, so 360 / 3 = 120 degrees per turn.',
+  start:'painter.forward(120)\n'},
+ {name:'Staircase', title:'Mission 4 — Staircase',
+  desc:'Draw a staircase going up and to the right: 4 steps, each 40 pixels across and 40 pixels up.',
+  target:'painter.forward(40)\npainter.left(90)\npainter.forward(40)\npainter.right(90)\npainter.forward(40)\npainter.left(90)\npainter.forward(40)\npainter.right(90)\npainter.forward(40)\npainter.left(90)\npainter.forward(40)\npainter.right(90)\npainter.forward(40)\npainter.left(90)\npainter.forward(40)\npainter.right(90)',
+  hint:'One step = forward(40), left(90), forward(40), right(90). Write that pattern four times.',
+  start:'painter.forward(40)\npainter.left(90)\npainter.forward(40)\npainter.right(90)\n'},
+ {name:'Star', title:'Mission 5 — Five-pointed star',
+  desc:'Draw a 5-pointed star with sides of 150 pixels. Each turn is the same angle.',
+  target:'painter.forward(150)\npainter.right(144)\npainter.forward(150)\npainter.right(144)\npainter.forward(150)\npainter.right(144)\npainter.forward(150)\npainter.right(144)\npainter.forward(150)\npainter.right(144)',
+  hint:'The turtle goes around TWICE to close a star: 720 / 5 = 144 degrees per turn.',
+  start:'painter.forward(150)\n'}
+];
+let mIdx=0, mSolved=new Array(MISSIONS.length).fill(false), mCodes=MISSIONS.map(m=>m.start);
+function buildTabs(){
+  const t=document.getElementById('mTabs'); t.innerHTML='';
+  MISSIONS.forEach((m,i)=>{
+    const b=document.createElement('button'); b.textContent=(i+1)+'. '+m.name;
+    b.className=(i===mIdx?'active ':'')+(mSolved[i]?'solved':'');
+    b.onclick=()=>{ mCodes[mIdx]=document.getElementById('mCode').value; mIdx=i; mRender(); };
+    t.appendChild(b);
+  });
+  document.getElementById('mScore').textContent=mSolved.filter(Boolean).length+' / '+MISSIONS.length+' solved';
+}
+function mRender(){
+  const m=MISSIONS[mIdx];
+  buildTabs();
+  document.getElementById('mTitle').textContent=m.title;
+  document.getElementById('mDesc').textContent=m.desc;
+  document.getElementById('mCode').value=mCodes[mIdx];
+  document.getElementById('mOut').textContent='(write your algorithm, then click Run & check)';
+  const fb=document.getElementById('mFb'); fb.className='feedback'; fb.textContent='';
+  const tgt=runTurtle(HEAD+m.target+TAIL);
+  drawOps(document.getElementById('mTarget'), tgt.ops, null, false);
+  drawOps(document.getElementById('mCanvas'), [], null, false);
+}
+function mResetCode(){ mCodes[mIdx]=''; document.getElementById('mCode').value=''; }
+function mHint(){
+  const fb=document.getElementById('mFb');
+  fb.className='feedback hint'; fb.textContent='Hint: '+MISSIONS[mIdx].hint;
+}
+function mRun(){
+  const m=MISSIONS[mIdx];
+  const body=document.getElementById('mCode').value;
+  mCodes[mIdx]=body;
+  const res=runTurtle(HEAD+body+TAIL);
+  const out=document.getElementById('mOut'), fb=document.getElementById('mFb');
+  if(res.errors.length){
+    out.innerHTML=res.errors.map(e=>'<span class="err">'+esc(e.msg)+'</span>').join('\n');
+    fb.className='feedback no'; fb.textContent='Your program did not run. Read the error above — a computer executes exactly what you wrote.';
+    drawOps(document.getElementById('mCanvas'), res.ops, res.turtle, false);
+    return;
+  }
+  const tgt=runTurtle(HEAD+m.target+TAIL);
+  drawOps(document.getElementById('mCanvas'), res.ops, res.turtle, true, ()=>{
+    if(matchesTarget(res.ops, tgt.ops)){
+      out.textContent='Program finished. Comparing your drawing to the target... MATCH!';
+      fb.className='feedback ok';
+      mSolved[mIdx]=true; buildTabs();
+      const n=mSolved.filter(Boolean).length;
+      fb.textContent='Mission complete! '+n+' of '+MISSIONS.length+' solved.';
+      if(n===MISSIONS.length){ fb.textContent='All 5 missions complete — you can turn an algorithm into a working program. Now go recreate your trifold drawing!'; markDone('mission'); }
+    } else {
+      out.textContent='Program finished, but the drawing does not match the target yet.';
+      fb.className='feedback no';
+      fb.textContent=diagnose(res, m);
+      fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+    }
+  });
+}
+function diagnose(res, m){
+  const segs=res.ops.filter(o=>o.type==='line');
+  const tgt=runTurtle(HEAD+m.target+TAIL).ops.filter(o=>o.type==='line');
+  if(!segs.length) return 'Nothing was drawn. Did you add any forward() commands?';
+  const back=Math.hypot(res.turtle.x, res.turtle.y);
+  const lenS=segs.reduce((a,o)=>a+Math.hypot(o.x2-o.x1,o.y2-o.y1),0);
+  const lenT=tgt.reduce((a,o)=>a+Math.hypot(o.x2-o.x1,o.y2-o.y1),0);
+  if(lenS < lenT*0.8) return 'Your shape is not finished — you have drawn less line than the target. Add the remaining sides.';
+  if(lenS > lenT*1.25) return 'You drew more line than the target. Check your distances, or remove an extra side.';
+  if(back > 12) return 'Close! Your turtle did not end up back where it started, so the shape never closed. Check your turn angles.';
+  return 'The total length is right but the shape is off — check the ANGLE of your turns.';
+}
+mRender();
+
+/* ============ QUIZ ============ */
+const QUIZ=[
+ {q:'Which is the best definition of an <b>algorithm</b>?',
+  o:["A finite set of instructions that accomplish a specific task","Any program written in Python","A diagram made of rectangles and diamonds","A mistake a computer makes while running code"], a:0},
+ {q:'Which of these is <b>NOT</b> one of the four ways to represent an algorithm?',
+  o:["Natural language","A flowchart","Pseudocode","A photograph of the finished result"], a:3},
+ {q:'Which representation looks structured but <b>cannot be executed</b> by a computer?',
+  o:["Pseudocode","A programming language","Machine code","Python"], a:0},
+ {q:'In a flowchart, which shape represents a <b>decision</b>?',
+  o:["A rectangle","A rhombus (diamond)","An arrow","An oval"], a:1},
+ {q:'Sequential statements in a code segment execute…',
+  o:["in the order they appear","in alphabetical order","all at the same time","starting from the last line"], a:0},
+ {q:'What does <code>painter.right(90)</code> do?',
+  o:["Moves the turtle 90 pixels to the right","Turns the turtle clockwise 90 degrees","Turns the turtle counterclockwise 90 degrees","Draws a 90-pixel line"], a:1},
+ {q:'When a turtle object is first created, where is it and which way does it face?',
+  o:["At (0, 0) facing east — heading 0","At the bottom-left corner facing north","At (100, 100) facing west","Wherever the last program left it"], a:0},
+ {q:'Which method lifts the pen so the turtle can move <b>without drawing</b>?',
+  o:["painter.pensize(0)","painter.pendown()","painter.penup()","painter.goto(0, 0)"], a:2}
+];
+let quizAttempts=0;
+function buildQuiz(){
+  const wrap=document.getElementById('quizWrap'); wrap.innerHTML='';
+  QUIZ.forEach((item,qi)=>{
+    const card=document.createElement('div'); card.className='qcard';
+    card.innerHTML='<h4>'+(qi+1)+'. '+item.q+'</h4>';
+    const opts=document.createElement('div'); opts.className='qopts';
+    item.o.forEach((opt,oi)=>{
+      const lab=document.createElement('label');
+      const inp=document.createElement('input'); inp.type='radio'; inp.name='q'+qi; inp.value=oi;
+      inp.onchange=()=>{ opts.querySelectorAll('label').forEach(l=>l.classList.remove('sel')); lab.classList.add('sel'); };
+      lab.appendChild(inp);
+      const span=document.createElement('span'); span.innerHTML=opt; lab.appendChild(span);
+      opts.appendChild(lab);
+    });
+    card.appendChild(opts); wrap.appendChild(card);
+  });
+}
+function gradeQuiz(){
+  let right=0, answered=0;
+  QUIZ.forEach((item,qi)=>{
+    const sel=document.querySelector('input[name="q'+qi+'"]:checked');
+    const labs=document.querySelectorAll('input[name="q'+qi+'"]');
+    labs.forEach((inp,oi)=>{
+      const lab=inp.parentElement; lab.classList.remove('right','wrongpick');
+      if(oi===item.a) lab.classList.add('right');
+    });
+    if(sel){ answered++;
+      if(+sel.value===item.a) right++;
+      else sel.parentElement.classList.add('wrongpick');
+    }
+  });
+  const fb=document.getElementById('quizFb'); const sc=document.getElementById('quizScore');
+  if(answered<QUIZ.length){ fb.className='feedback hint';
+    fb.textContent="You've answered "+answered+" of "+QUIZ.length+" — finish the rest, then grade again."; return; }
+  quizAttempts++;
+  sc.textContent=right+" / "+QUIZ.length;
+  if(right===QUIZ.length){ fb.className='feedback ok';
+    fb.textContent="Perfect score! Algorithmic thinking: mastered."; markDone('quiz'); }
+  else if(right>=6){ fb.className='feedback ok';
+    fb.textContent="Strong work! Review the green highlights"+(quizAttempts<2?", then you may retry once.":"."); markDone('quiz'); }
+  else { fb.className='feedback no';
+    fb.textContent="Keep going — revisit Four Ways and the Turtle Trainer, review the green answers"+(quizAttempts<2?", and retry once.":"."); }
+}
+buildQuiz();
+</script>
+</body>
+</html>

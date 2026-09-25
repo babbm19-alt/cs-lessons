@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TSA Prep Board 2026–27</title>
+  <meta name="description" content="Free online competitions TSA students can enter this school year, with deadlines, eligibility caps and direct links.">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    img { max-width: 100%; }
+    [hidden] { display: none !important; }
+  </style>
+  <style>
+  :root{
+    --ground:#EDF0F4;
+    --surface:#FFFFFF;
+    --surface-2:#F4F7F9;
+    --ink:#12161C;
+    --ink-2:#3A4550;
+    --muted:#66717E;
+    --line:#D6DDE4;
+    --line-soft:#E3E9EE;
+    --amber:#E8A013;
+    --amber-text:#8A5A05;
+    --go:#2FA36B;
+    --go-text:#166945;
+    --slate:#7C8794;
+    --btn-bg:#E8A013;
+    --btn-ink:#12161C;
+    --btn-bg-hover:#D18F09;
+    --focus:#1F6FEB;
+    --shadow:0 1px 2px rgba(18,22,28,.05), 0 8px 24px -14px rgba(18,22,28,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0C1116;
+      --surface:#151B22;
+      --surface-2:#1B222B;
+      --ink:#E8EDF2;
+      --ink-2:#B8C2CD;
+      --muted:#8A95A2;
+      --line:#28313B;
+      --line-soft:#212932;
+      --amber:#F0B03A;
+      --amber-text:#F0B03A;
+      --go:#46C089;
+      --go-text:#46C089;
+      --slate:#7A8695;
+      --btn-bg:#F0B03A;
+      --btn-ink:#0C1116;
+      --btn-bg-hover:#FFC55A;
+      --focus:#6AA6FF;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0C1116;
+    --surface:#151B22;
+    --surface-2:#1B222B;
+    --ink:#E8EDF2;
+    --ink-2:#B8C2CD;
+    --muted:#8A95A2;
+    --line:#28313B;
+    --line-soft:#212932;
+    --amber:#F0B03A;
+    --amber-text:#F0B03A;
+    --go:#46C089;
+    --go-text:#46C089;
+    --slate:#7A8695;
+    --btn-bg:#F0B03A;
+    --btn-ink:#0C1116;
+    --btn-bg-hover:#FFC55A;
+    --focus:#6AA6FF;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -14px rgba(0,0,0,.7);
+  }
+
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:40px 20px 72px;}
+
+  /* ---------- header ---------- */
+  .eyebrow{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 14px;
+  }
+  h1{
+    font-family:"Archivo", ui-sans-serif, system-ui, sans-serif;
+    font-weight:800;font-size:clamp(34px,6vw,52px);line-height:1.02;
+    letter-spacing:-.025em;margin:0 0 16px;text-wrap:balance;
+  }
+  .lead{
+    font-size:17px;color:var(--ink-2);max-width:62ch;margin:0 0 28px;
+  }
+  .lead b{color:var(--ink);font-weight:600;}
+
+  .tally{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:4px;overflow:hidden;margin:0 0 36px;
+  }
+  .tally div{background:var(--surface);padding:14px 16px;}
+  .tally dt{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 4px;
+  }
+  .tally dd{
+    margin:0;font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:15px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+  }
+  .tally dd span{color:var(--muted);font-weight:600;font-size:13px;}
+
+  /* ---------- filter ---------- */
+  /* ---------- hard deadlines strip ---------- */
+  .hard{
+    border:1px solid var(--line);border-left:3px solid var(--amber);
+    background:var(--surface);border-radius:4px;
+    padding:18px 22px;margin:0 0 36px;box-shadow:var(--shadow);
+  }
+  .hard h2{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:15px;
+    letter-spacing:-.005em;margin:0 0 4px;
+  }
+  .hard > p{font-size:14px;color:var(--muted);margin:0 0 14px;max-width:62ch;}
+  .hard dl{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:14px 24px;margin:0;
+  }
+  .hard dt{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:13px;font-weight:500;color:var(--amber-text);
+    font-variant-numeric:tabular-nums;
+  }
+  .hard dd{margin:2px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.45;}
+
+  /* ---------- event slate ---------- */
+  .slate{margin:0 0 36px;}
+  .slate > h2{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:22px;
+    letter-spacing:-.018em;margin:0 0 6px;
+  }
+  .slate > p{font-size:15px;color:var(--ink-2);margin:0 0 6px;max-width:62ch;}
+  .slate .sub{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--muted);margin:22px 0 10px;
+  }
+  .evs{
+    display:grid;gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:5px;overflow:hidden;
+  }
+  .ev{
+    background:var(--surface);padding:14px 18px;
+    display:grid;grid-template-columns:1fr auto;gap:4px 18px;align-items:baseline;
+  }
+  .ev.tight{border-left:3px solid var(--amber);padding-left:15px;}
+  .ev-name{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:15.5px;
+    letter-spacing:-.008em;line-height:1.25;
+  }
+  .ev-seats{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12px;color:var(--ink);font-variant-numeric:tabular-nums;
+    text-align:right;white-space:nowrap;
+  }
+  .ev-meta{
+    grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+    font-size:13px;color:var(--muted);
+  }
+  .badge{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    border-radius:3px;padding:2px 6px;border:1px solid var(--line-soft);
+    background:var(--surface-2);color:var(--muted);
+  }
+  .badge.approval{color:var(--go-text);}
+  .badge.renamed{color:var(--amber-text);border-color:var(--amber);}
+
+  /* ---------- in-card pairing callout ---------- */
+  .pair{
+    background:var(--surface-2);border:1px solid var(--line-soft);
+    border-radius:4px;padding:14px 16px;margin:0 0 16px;
+  }
+  .pair p{margin:0;font-size:14px;color:var(--ink-2);}
+  .pair strong{color:var(--ink);}
+  .pair .tag{
+    display:block;font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--go-text);margin-bottom:6px;
+  }
+  .approval{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--go-text);background:var(--surface-2);
+    border:1px solid var(--line-soft);border-radius:3px;padding:3px 7px;
+  }
+
+  .filter{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:16px 0;margin:0 0 40px;
+  }
+  .filter p{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 12px;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font:inherit;font-size:13.5px;font-weight:500;
+    background:var(--surface);color:var(--ink-2);
+    border:1px solid var(--line);border-radius:100px;
+    padding:5px 13px;cursor:pointer;transition:.15s;
+  }
+  .chip:hover{border-color:var(--muted);color:var(--ink);}
+  .chip[aria-pressed="true"]{
+    background:var(--ink);color:var(--ground);border-color:var(--ink);
+  }
+  .chip:focus-visible, a:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+
+  /* ---------- timeline ---------- */
+  .entry{
+    display:grid;grid-template-columns:120px 1fr;gap:0 24px;
+    padding-bottom:32px;position:relative;
+  }
+  .entry.hidden{display:none;}
+  .spine{position:relative;padding-top:22px;}
+  .spine::before{
+    content:"";position:absolute;left:5px;top:34px;bottom:-32px;
+    width:1px;background:var(--line);
+  }
+  .entry:last-of-type .spine::before{display:none;}
+  .light{
+    position:absolute;left:0;top:24px;width:11px;height:11px;border-radius:50%;
+    background:var(--slate);box-shadow:0 0 0 3px var(--ground);
+  }
+  .light.go{background:var(--go);}
+  .light.staged{background:var(--amber);}
+  .when{
+    padding-left:24px;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);line-height:1.5;
+  }
+  .when strong{display:block;color:var(--ink);font-weight:500;letter-spacing:.08em;}
+
+  .card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:22px 24px 20px;box-shadow:var(--shadow);
+  }
+  .card h2{
+    font-family:"Archivo",sans-serif;font-weight:800;
+    font-size:21px;letter-spacing:-.015em;line-height:1.2;margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .feeds{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;}
+  .feed{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--amber-text);background:var(--surface-2);
+    border:1px solid var(--line-soft);border-radius:3px;padding:3px 7px;
+  }
+  .card p{margin:0 0 14px;color:var(--ink-2);font-size:15px;max-width:62ch;}
+  .card p:last-of-type{margin-bottom:16px;}
+
+  .specs{
+    list-style:none;margin:0 0 18px;padding:14px 0 0;
+    border-top:1px solid var(--line-soft);
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:12px 20px;
+  }
+  .specs li{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12px;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.4;
+  }
+  .specs li span{
+    display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:3px;
+  }
+
+  .go-link{
+    display:inline-flex;align-items:baseline;gap:10px;
+    background:var(--btn-bg);color:var(--btn-ink);
+    text-decoration:none;font-weight:600;font-size:14.5px;
+    padding:10px 16px;border-radius:4px;transition:background .15s;
+  }
+  .go-link:hover{background:var(--btn-bg-hover);}
+  .go-link code{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:11.5px;opacity:.72;font-weight:400;
+  }
+  .no-link{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:11.5px;color:var(--muted);letter-spacing:.04em;
+  }
+
+  /* ---------- gaps ---------- */
+  .gaps{
+    margin-top:20px;border:1px dashed var(--line);border-radius:6px;
+    background:var(--surface-2);padding:22px 24px;
+  }
+  .gaps h2{
+    font-family:"Archivo",sans-serif;font-weight:800;font-size:17px;
+    letter-spacing:-.01em;margin:0 0 10px;
+  }
+  .gaps p{margin:0 0 12px;color:var(--ink-2);font-size:14.5px;max-width:62ch;}
+  .gaps p:last-child{margin-bottom:0;}
+  .gaps a{color:var(--ink);text-decoration-color:var(--amber);text-underline-offset:3px;}
+
+  footer{
+    margin-top:44px;padding-top:22px;border-top:1px solid var(--line);
+    font-size:13px;color:var(--muted);
+  }
+  footer a{color:var(--ink-2);text-decoration-color:var(--line);text-underline-offset:3px;}
+  footer a:hover{color:var(--ink);}
+  .empty{
+    display:none;padding:36px 0;color:var(--muted);
+    font-family:"IBM Plex Mono", ui-monospace, monospace;font-size:13px;
+  }
+
+  @media (max-width:640px){
+    .ev{grid-template-columns:1fr;gap:3px;}
+    .ev-seats{text-align:left;white-space:normal;color:var(--amber-text);}
+    .entry{grid-template-columns:1fr;gap:10px;}
+    .spine{padding-top:0;padding-left:0;}
+    .spine::before{display:none;}
+    .light{position:static;display:inline-block;vertical-align:middle;margin-right:8px;box-shadow:none;}
+    .when{padding-left:0;display:flex;align-items:baseline;gap:8px;}
+    .when strong{display:inline;}
+    .go-link{width:100%;justify-content:center;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Chapter competition season · 2026–27</p>
+  <h1>Get reps in before the state conference.</h1>
+  <p class="lead">Two things on this page. First, <b>the eleven events we're entering</b> — what each one requires and how many entries the chapter gets. Then <b>free outside contests</b> you can enter between now and spring: real deadlines, real judges, so you walk into your TSA event with something you've already built once. Find your event, check what it needs, then filter the contests below.</p>
+
+  <dl class="tally">
+    <div><dt>Chapter slate</dt><dd>11 <span>events</span></dd></div>
+    <div><dt>Need state approval</dt><dd>5 <span>of the 11</span></dd></div>
+    <div><dt>Capped at 1–2 slots</dt><dd>4 <span>events</span></dd></div>
+    <div><dt>Next deadline</dt><dd id="next-due">Oct 26</dd></div>
+  </dl>
+
+  <section class="slate">
+    <h2>The eleven events we're entering</h2>
+    <p>Find yours and check two things: <b>how many people you need</b>, and <b>how many entries the chapter actually gets</b>. Those aren't the same number, and the second one is where people get surprised in May.</p>
+
+    <p class="sub">Capped for the whole chapter — settle these early</p>
+    <div class="evs">
+      <div class="ev tight">
+        <span class="ev-name">Photographic Technology</span>
+        <span class="ev-seats">1 individual</span>
+        <span class="ev-meta">You enter alone <span class="badge renamed">Not "Digital Photography"</span></span>
+      </div>
+      <div class="ev tight">
+        <span class="ev-name">On Demand Video</span>
+        <span class="ev-seats">1 team</span>
+        <span class="ev-meta">One team represents the chapter</span>
+      </div>
+      <div class="ev tight">
+        <span class="ev-name">Software Development</span>
+        <span class="ev-seats">1 team</span>
+        <span class="ev-meta">Interview limited to 3 members <span class="badge renamed">Not "Coding"</span> <span class="badge approval">Approval — ask first</span></span>
+      </div>
+      <div class="ev tight">
+        <span class="ev-name">Hybrid Racer XL</span>
+        <span class="ev-seats">1 team of 2–4</span>
+        <span class="ev-meta">You need at least one partner</span>
+      </div>
+      <div class="ev tight">
+        <span class="ev-name">Artificial Intelligence</span>
+        <span class="ev-seats">1 team of exactly 2</span>
+        <span class="ev-meta">Not two, not three — exactly two</span>
+      </div>
+      <div class="ev tight">
+        <span class="ev-name">Dragster Design</span>
+        <span class="ev-seats">2 individuals</span>
+        <span class="ev-meta">Two seats, and more than two of you want them</span>
+      </div>
+    </div>
+
+    <p class="sub">Capped at state level — you're up against other chapters, not each other</p>
+    <div class="evs">
+      <div class="ev">
+        <span class="ev-name">Video Game Design</span>
+        <span class="ev-seats">5 teams per state</span>
+        <span class="ev-meta">Enter as a team <span class="badge approval">Approval + pre-submission</span></span>
+      </div>
+      <div class="ev">
+        <span class="ev-name">Fashion Design and Technology</span>
+        <span class="ev-seats">5 teams per state</span>
+        <span class="ev-meta">Teams of 2–4 <span class="badge approval">Approval needed</span></span>
+      </div>
+      <div class="ev">
+        <span class="ev-name">Audio Podcasting</span>
+        <span class="ev-seats">3 teams per state</span>
+        <span class="ev-meta">Solo entries allowed <span class="badge approval">Approval + pre-submission</span></span>
+      </div>
+      <div class="ev">
+        <span class="ev-name">Music Production</span>
+        <span class="ev-seats">3 teams per state</span>
+        <span class="ev-meta">Solo entries allowed <span class="badge approval">Approval + pre-submission</span></span>
+      </div>
+      <div class="ev">
+        <span class="ev-name">Board Game Design</span>
+        <span class="ev-seats">3 teams per state</span>
+        <span class="ev-meta">Teams of 2–4 — you can't enter alone</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="hard">
+    <h2>Three TSA deadlines that don't move</h2>
+    <p>Everything below is optional practice. These three are not — miss one and you're out of the event, whatever you've built.</p>
+    <dl>
+      <div>
+        <dt>May 12, 2027 · 11:59pm ET</dt>
+        <dd>Chapter registration closes. <b>No event changes or substitutions after this.</b> Whatever event you're in on May 12 is the event you compete in.</dd>
+      </div>
+      <div>
+        <dt>May 17, 9:00am – May 19, 11:59pm ET</dt>
+        <dd>The only window to upload preconference components. TSA's words: no late submissions, not by email, <b>no exceptions.</b></dd>
+      </div>
+      <div>
+        <dt>Before any of that</dt>
+        <dd>Five of our eleven events need <b>state adviser approval</b>: Audio Podcasting, Video Game Design, Music Production, Fashion Design and Technology, and Coding. The first three also require a pre-submission. Ask your adviser early.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="filter">
+    <p>Show me contests for</p>
+    <div class="chips" id="chips">
+      <button class="chip" aria-pressed="true" data-tag="all">Everything</button>
+      <button class="chip" aria-pressed="false" data-tag="vgd">Video Game Design</button>
+      <button class="chip" aria-pressed="false" data-tag="drag">Dragster</button>
+      <button class="chip" aria-pressed="false" data-tag="hybrid">Hybrid Racer</button>
+      <button class="chip" aria-pressed="false" data-tag="pod">Audio Podcasting</button>
+      <button class="chip" aria-pressed="false" data-tag="vid">On Demand Video</button>
+      <button class="chip" aria-pressed="false" data-tag="code">Coding / Software Dev</button>
+      <button class="chip" aria-pressed="false" data-tag="ai">Artificial Intelligence</button>
+      <button class="chip" aria-pressed="false" data-tag="photo">Photography</button>
+      <button class="chip" aria-pressed="false" data-tag="fashion">Fashion Design</button>
+      <button class="chip" aria-pressed="false" data-tag="board">Board Game Design</button>
+      <button class="chip" aria-pressed="false" data-tag="music">Music Production</button>
+    </div>
+  </div>
+
+  <div id="list">
+
+    <!-- 1 -->
+    <article class="entry" data-tags="vgd code ai">
+      <div class="spine">
+        <span class="light go" aria-hidden="true"></span>
+        <p class="when"><strong>Oct 26</strong>2026 · confirmed</p>
+      </div>
+      <div class="card">
+        <h2>Congressional App Challenge</h2>
+        <div class="feeds"><span class="feed">Video Game Design</span><span class="feed">Coding</span><span class="feed">Artificial Intelligence</span></div>
+        <p>Build an app, submit a demo video, and you're judged inside your own congressional district — not against the whole country. That makes this the most winnable thing on this page, and a district win is something you can put on a college application in October of your senior year.</p>
+        <ul class="specs">
+          <li><span>Deadline</span>Oct 26, 2026</li>
+          <li><span>Team size</span>Up to 4</li>
+          <li><span>Cost</span>Free</li>
+          <li><span>Judged by</span>Your district</li>
+        </ul>
+        <a class="go-link" href="https://www.congressionalappchallenge.us/students/rules/" target="_blank" rel="noopener">Read the rules &amp; register <code>congressionalappchallenge.us</code></a>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="entry" data-tags="vgd board">
+      <div class="spine">
+        <span class="light" aria-hidden="true"></span>
+        <p class="when"><strong>Year-round</strong>Always open</p>
+      </div>
+      <div class="card">
+        <h2>itch.io game jams</h2>
+        <div class="feeds"><span class="feed">Video Game Design</span><span class="feed">Board Game Design</span></div>
+        <p>Dozens running at any moment, most beginner-friendly, most free. Finish three of these and you show up to Video Game Design with a portfolio instead of a first draft. Nobody's first jam game is good — that's the point of doing several.</p>
+        <p>Board Game Design people: search the jam list for <b>tabletop</b> or <b>physical game</b> jams. They run there too, and a print-and-play prototype judged by strangers is the fastest feedback you'll get all year.</p>
+        <ul class="specs">
+          <li><span>Length</span>48 hrs – 2 wks</li>
+          <li><span>Cost</span>Free</li>
+          <li><span>Skill floor</span>Beginner OK</li>
+          <li><span>Do it</span>Repeatedly</li>
+        </ul>
+        <a class="go-link" href="https://itch.io/jams" target="_blank" rel="noopener">Browse open jams <code>itch.io/jams</code></a>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="entry" data-tags="vgd">
+      <div class="spine">
+        <span class="light staged" aria-hidden="true"></span>
+        <p class="when"><strong>Season open</strong>Dates TBA</p>
+      </div>
+      <div class="card">
+        <h2>Games for Change Student Challenge</h2>
+        <div class="feeds"><span class="feed">Video Game Design</span></div>
+        <p>Design a game around a UN Sustainable Development Goal — climate, hunger, equity, whatever you actually care about. It runs as a full-year program with mentorship from people in the industry, so it's the one that can carry a whole semester rather than one weekend.</p>
+        <ul class="specs">
+          <li><span>Ages</span>10 – 25</li>
+          <li><span>Cost</span>Free</li>
+          <li><span>Prizes</span>Scholarships</li>
+          <li><span>Deadline</span>Check handbook</li>
+        </ul>
+        <a class="go-link" href="https://learn.gamesforchange.org/student-challenge" target="_blank" rel="noopener">Sign up for 26–27 <code>learn.gamesforchange.org</code></a>
+      </div>
+    </article>
+
+    <!-- 4 -->
+    <article class="entry" data-tags="photo">
+      <div class="spine">
+        <span class="light go" aria-hidden="true"></span>
+        <p class="when"><strong>Jan 5</strong>2027 · confirmed</p>
+      </div>
+      <div class="card">
+        <h2>Sony World Photography Awards — Youth</h2>
+        <div class="feeds"><span class="feed">Photographic Technology</span></div>
+        <p>Free, open to anyone 19 and under, and you submit a <b>single photograph</b> taken during 2026 against the posted theme. One frame, judged internationally — that's exactly the discipline TSA's photo event asks for, where you're defending a portfolio rather than hiding behind volume.</p>
+        <p>Start shooting now. The best entry won't be a picture you take in December because the deadline is coming; it'll be one you already had.</p>
+        <ul class="specs">
+          <li><span>Deadline</span>Jan 5, 2027</li>
+          <li><span>Age limit</span>19 and under</li>
+          <li><span>Cost</span>Free</li>
+          <li><span>Submit</span>1 photograph</li>
+        </ul>
+        <a class="go-link" href="https://www.worldphoto.org/sony-world-photography-awards/youth" target="_blank" rel="noopener">See the theme &amp; enter <code>worldphoto.org</code></a>
+      </div>
+    </article>
+
+    <!-- 5 -->
+    <article class="entry" data-tags="vid pod">
+      <div class="spine">
+        <span class="light go" aria-hidden="true"></span>
+        <p class="when"><strong>Jan 20</strong>2027 · confirmed</p>
+      </div>
+      <div class="card">
+        <h2>C-SPAN StudentCam</h2>
+        <div class="feeds"><span class="feed">On Demand Video</span><span class="feed">Audio Podcasting</span><span class="approval">Best pairing on this board</span></div>
+        <p>A 5-to-6 minute documentary: you're a newly elected member of Congress, and this is the issue you'd take on first. There are <b>150 cash prizes</b>, which is a far better shot than the word "national" makes it sound — and your teacher's school gets paid too if you land in the top 50.</p>
+        <div class="pair">
+          <span class="tag">Do this once, enter it twice</span>
+          <p>This year's TSA Audio Podcasting theme is <strong>"The Debate Desk"</strong> — present multiple perspectives on a controversial STEM, society, education, health or environmental topic. StudentCam asks for the same thing: pick an issue, explore the perspectives on it.</p>
+          <p style="margin-top:10px">So pick <strong>one</strong> topic in the fall. Do the research once, run the interviews once, and cut it two ways — the documentary by January, then the Debate Desk podcast for state. You'll have rehearsed the exact skill TSA is judging, on the exact topic you're bringing.</p>
+        </div>
+        <ul class="specs">
+          <li><span>Deadline</span>Jan 20, 2027</li>
+          <li><span>Run time</span>5:00 – 6:00</li>
+          <li><span>Team size</span>Up to 3</li>
+          <li><span>Prizes</span>$250 – $5,000</li>
+        </ul>
+        <a class="go-link" href="https://www.studentcam.org/rules/" target="_blank" rel="noopener">Rules, theme &amp; prizes <code>studentcam.org</code></a>
+      </div>
+    </article>
+
+    <!-- 5 -->
+    <article class="entry" data-tags="vgd">
+      <div class="spine">
+        <span class="light staged" aria-hidden="true"></span>
+        <p class="when"><strong>January</strong>2027 · weekend</p>
+      </div>
+      <div class="card">
+        <h2>Global Game Jam</h2>
+        <div class="feeds"><span class="feed">Video Game Design</span></div>
+        <p>One theme drops, you get 48 hours, everybody on earth builds at the same time. There's an online track if you can't get to a physical site. It's the closest thing to the pressure of an on-site TSA event you can practice before February.</p>
+        <ul class="specs">
+          <li><span>Window</span>48 hours</li>
+          <li><span>Where</span>Online or site</li>
+          <li><span>Cost</span>Free online</li>
+          <li><span>When</span>Late January</li>
+        </ul>
+        <a class="go-link" href="https://globalgamejam.org/" target="_blank" rel="noopener">Find a jam site <code>globalgamejam.org</code></a>
+      </div>
+    </article>
+
+    <article class="entry" data-tags="fashion">
+      <div class="spine">
+        <span class="light staged" aria-hidden="true"></span>
+        <p class="when"><strong>Jan – Feb</strong>2027 · dates TBA</p>
+      </div>
+      <div class="card">
+        <h2>Cooper Hewitt National Design Challenge</h2>
+        <div class="feeds"><span class="feed">Fashion Design &amp; Technology</span></div>
+        <p>Run by the Smithsonian's design museum: find a historic design that shaped your community, then propose your own design for its future. Free, grades 9–12, solo or teams of three. It's judged on innovation, impact and <b>how clearly you communicate through sketches and writing</b> — which is the half of Fashion Design and Technology that costs students the most points.</p>
+        <p>The 2026 round closed in February and the 2027 dates aren't posted yet. Check in early January.</p>
+        <ul class="specs">
+          <li><span>Grades</span>9 – 12</li>
+          <li><span>Team size</span>Up to 3</li>
+          <li><span>Cost</span>Free</li>
+          <li><span>Judged on</span>Sketch + writing</li>
+        </ul>
+        <a class="go-link" href="https://www.cooperhewitt.org/design-competition-design-challenge/" target="_blank" rel="noopener">Watch for 2027 dates <code>cooperhewitt.org</code></a>
+      </div>
+    </article>
+
+    <!-- 6 -->
+    <article class="entry" data-tags="pod">
+      <div class="spine">
+        <span class="light staged" aria-hidden="true"></span>
+        <p class="when"><strong>Late May</strong>2027 · expected</p>
+      </div>
+      <div class="card">
+        <h2>NPR Student Podcast Challenge</h2>
+        <div class="feeds"><span class="feed">Audio Podcasting</span></div>
+        <p>Three to eight minutes, everything original — no copyrighted music, no pre-recorded audio. That restriction is the same one TSA enforces, so treat this as a graded rehearsal. The 2026 round closed May 31; the 2027 dates aren't posted yet, so check the page in winter.</p>
+        <p>Careful on timing: this lands right on top of TSA's May registration and upload deadlines. Build the piece in spring, don't start it in May.</p>
+        <ul class="specs">
+          <li><span>Run time</span>3 – 8 min</li>
+          <li><span>Grades</span>9 – 12 bracket</li>
+          <li><span>Cost</span>Free</li>
+          <li><span>Audio</span>100% original</li>
+        </ul>
+        <a class="go-link" href="https://www.npr.org/series/662609200/npr-student-podcast-challenge" target="_blank" rel="noopener">Watch for 2027 dates <code>npr.org</code></a>
+      </div>
+    </article>
+
+    <!-- 7 -->
+    <article class="entry" data-tags="drag hybrid">
+      <div class="spine">
+        <span class="light" aria-hidden="true"></span>
+        <p class="when"><strong>In-house</strong>Ongoing</p>
+      </div>
+      <div class="card">
+        <h2>Dragster &amp; Hybrid Racer time trials</h2>
+        <div class="feeds"><span class="feed">Dragster Design</span><span class="feed">Hybrid Racer XL</span></div>
+        <p>Straight talk: there's no free online contest for either of these, because you can't race a car over the internet. The practice has to happen in the shop — build to the TSA spec, run heats against each other, log every time, and cut weight between runs.</p>
+        <p>Read this part twice: <b>Dragster is two individuals per chapter, and Hybrid Racer XL is one team of two to four.</b> Both are among the tightest caps on the whole slate. Every logged time trial between now and spring is how those spots get decided, so treat the practice runs as the tryout, because they are.</p>
+        <p>Worth asking your adviser about: <b>SkillsUSA Maryland</b> runs a separate circuit with overlapping events, and nothing stops you from competing in both.</p>
+        <ul class="specs">
+          <li><span>Dragster</span>2 individuals</li>
+          <li><span>Hybrid Racer XL</span>1 team of 2–4</li>
+          <li><span>Format</span>Heats vs. chapter</li>
+          <li><span>Log</span>Every run</li>
+        </ul>
+        <span class="no-link">→ See your adviser to schedule shop time</span>
+      </div>
+    </article>
+
+    <p class="empty" id="empty">No contest on this board feeds that event yet — see the note below.</p>
+  </div>
+
+  <section class="gaps">
+    <h2>Two events on the slate are middle school names</h2>
+    <p>The 2027 &amp; 2028 high school eligibility chart doesn't have an event called <b>Digital Photography</b> — that's the middle school one. The high school event is <b>Photographic Technology</b>, and it's <b>one individual per chapter</b>, not a team. Whoever wants it is competing for a single seat.</p>
+    <p><b>Coding</b> is the same story: it's on the middle school chart, and the high school equivalent is <b>Software Development</b> (one team per chapter). But TSA's own state-approval page still lists Coding under high school, so those two official pages disagree — your adviser needs to settle it with the state before registration, not after.</p>
+
+    <h2 style="margin-top:22px">You can't enter these alone</h2>
+    <p><b>Artificial Intelligence</b> is one team of exactly two per chapter. <b>Board Game Design</b>, <b>Fashion Design and Technology</b> and <b>Hybrid Racer XL</b> all need teams of two to four. If you're planning to solo one of these, you need partners before May 12 — after that the roster is frozen.</p>
+
+    <h2 style="margin-top:22px">The tightest seats on the slate</h2>
+    <p>Four events are capped at one or two entries <b>for the entire chapter</b>: Photographic Technology (1 individual), On Demand Video (1 team), Software Development (1 team), Hybrid Racer XL (1 team), and Dragster (2 individuals). Everything else is capped at the state level, which means you're competing against other chapters rather than each other.</p>
+    <p>Nothing on this board feeds <b>Music Production</b> directly. The <a href="https://namt.org/challenge/" target="_blank" rel="noopener">NAMT Musical Theater Songwriting Challenge</a> is free and open to high schoolers — different genre, same production chain — but read the rules yourself before committing. Find something better and it goes on the board.</p>
+  </section>
+
+  <footer>
+    <p>Eligibility and caps are from TSA's High School Competitive Events Guide for the 2027 and 2028 National Conferences. Contest deadlines were confirmed Sept 4, 2026 from each organization's own rules page — but <b>always verify on the official site before you build anything</b>, because dates move.</p>
+    <p style="margin-top:10px">Sources: <a href="https://www.worldphoto.org/sony-world-photography-awards/youth" target="_blank" rel="noopener">Sony World Photography Awards Youth</a> · <a href="https://www.cooperhewitt.org/design-competition-design-challenge/" target="_blank" rel="noopener">Cooper Hewitt Design Challenge</a> · <a href="https://tsaweb.org/competitions/competition-requirements" target="_blank" rel="noopener">TSA competition requirements</a> · <a href="https://tsaweb.org/competitions/themes-and-problems" target="_blank" rel="noopener">Themes &amp; problems</a> · <a href="https://tsaweb.org/competitions/state-advisor-approval-events" target="_blank" rel="noopener">State adviser approval</a> · <a href="https://www.congressionalappchallenge.us/students/rules/" target="_blank" rel="noopener">Congressional App Challenge</a> · <a href="https://www.studentcam.org/prizes/" target="_blank" rel="noopener">StudentCam</a> · <a href="https://learn.gamesforchange.org/student-challenge" target="_blank" rel="noopener">Games for Change</a> · <a href="https://www.npr.org/series/662609200/npr-student-podcast-challenge" target="_blank" rel="noopener">NPR</a></p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // Live countdown on confirmed deadlines
+  var deadlines = [
+    {sel:'[data-tags~="code"] .specs li:first-child', date:'2026-10-26'},
+    {sel:'[data-tags~="photo"] .specs li:first-child', date:'2027-01-05'},
+    {sel:'[data-tags~="vid"] .specs li:first-child', date:'2027-01-20'}
+  ];
+  var soonest = null;
+  deadlines.forEach(function(d){
+    var el = document.querySelector(d.sel);
+    if(!el) return;
+    var days = Math.ceil((new Date(d.date+'T23:59:59') - new Date()) / 86400000);
+    if(days > 0){
+      var tag = document.createElement('span');
+      tag.style.cssText = 'display:inline;text-transform:none;letter-spacing:0;font-size:11px;color:var(--amber-text);margin-left:6px';
+      tag.textContent = '(' + days + ' days)';
+      el.appendChild(tag);
+      if(soonest === null || days < soonest.days) soonest = {days:days, date:d.date};
+    }
+  });
+  if(soonest){
+    var n = document.getElementById('next-due');
+    if(n) n.innerHTML = n.textContent.trim() + ' <span>· ' + soonest.days + ' days out</span>';
+  }
+
+  // Event filter
+  var chips = document.getElementById('chips');
+  var entries = Array.prototype.slice.call(document.querySelectorAll('#list .entry'));
+  var empty = document.getElementById('empty');
+  chips.addEventListener('click', function(e){
+    var btn = e.target.closest('.chip');
+    if(!btn) return;
+    Array.prototype.forEach.call(chips.children, function(c){
+      c.setAttribute('aria-pressed', String(c === btn));
+    });
+    var tag = btn.dataset.tag;
+    var shown = 0;
+    entries.forEach(function(el){
+      var match = tag === 'all' || el.dataset.tags.split(' ').indexOf(tag) > -1;
+      el.classList.toggle('hidden', !match);
+      if(match) shown++;
+    });
+    empty.style.display = shown ? 'none' : 'block';
+  });
+})();
+</script>
+</body>
+</html>

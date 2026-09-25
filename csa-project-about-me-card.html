@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — About Me: Console Card · Mr. Babb</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:#f7f6fa; color:#1b2a4a; padding:18px; }
+  .wrap { max-width:840px; margin:0 auto; }
+  header { background:linear-gradient(135deg,#1b2a4a,#6b3fa0); border-radius:14px; padding:20px 24px; color:#fff; margin-bottom:14px; }
+  .tag { display:inline-block; background:rgba(255,255,255,.18); border-radius:20px; padding:3px 14px; font-size:.75rem; font-weight:700; letter-spacing:2px; }
+  .timer { float:right; font-weight:700; background:rgba(255,255,255,.18); padding:5px 14px; border-radius:20px; font-size:.85rem; }
+  header h1 { font-size:1.45rem; margin-top:8px; }
+  header p { color:#e9def7; font-size:.92rem; margin-top:6px; line-height:1.5; }
+  .card { background:#fff; border:1px solid #ddd4ec; border-radius:14px; padding:16px 18px; margin-bottom:12px; }
+  .card h2 { color:#6b3fa0; font-size:1.02rem; margin-bottom:8px; }
+  .card p, .card li { font-size:.92rem; line-height:1.55; }
+  .card ul, .card ol { margin:6px 0 6px 22px; }
+  pre { background:#1b2a4a; color:#d7f5e3; border-radius:10px; padding:12px 14px; font-family:Consolas,'Courier New',monospace; font-size:.88rem; overflow-x:auto; margin:8px 0; line-height:1.5; }
+  pre.starter { color:#ffe9a8; }
+  .plan { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .chunk { flex:1 1 150px; background:#f2ecf8; border:1px solid #ddd4ec; border-radius:10px; padding:9px 12px; font-size:.82rem; line-height:1.45; }
+  .chunk b { color:#6b3fa0; display:block; }
+  .req { display:flex; gap:10px; align-items:flex-start; background:#f2ecf8; border:1px solid #ddd4ec; border-radius:10px; padding:10px 12px; margin:7px 0; }
+  .req .n { background:#6b3fa0; color:#fff; font-weight:700; border-radius:8px; padding:1px 10px; font-size:.82rem; flex-shrink:0; margin-top:2px; }
+  .req.stretch .n { background:#b7791f; }
+  .req div { font-size:.9rem; line-height:1.5; }
+  code { font-family:Consolas,'Courier New',monospace; background:#f2ecf8; border-radius:5px; padding:1px 6px; font-size:.86em; color:#6b3fa0; font-weight:600; }
+  pre code { background:none; color:inherit; padding:0; font-weight:400; }
+  .btn { background:#6b3fa0; color:#fff; border:none; border-radius:10px; padding:9px 22px; font-weight:700; font-size:.9rem; cursor:pointer; margin-top:10px; font-family:inherit; }
+  .btn:hover { background:#7d4fbb; }
+  .btn.copy { padding:6px 16px; font-size:.8rem; margin-top:4px; }
+  textarea { width:100%; border:2px solid #c9bce0; border-radius:10px; padding:10px 12px; font-family:Consolas,'Courier New',monospace; font-size:.88rem; background:#f2ecf8; color:#1b2a4a; min-height:150px; resize:vertical; }
+  .check-row { display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border-radius:10px; margin:6px 0; border:1px solid #ddd4ec; background:#fdfcff; }
+  .check-row .mark { font-weight:700; flex-shrink:0; width:22px; text-align:center; }
+  .check-row.pass { border-color:#1a7f4e; background:#e8f5ee; }
+  .check-row.pass .mark { color:#1a7f4e; }
+  .check-row.fail { border-color:#b7791f; }
+  .check-row.fail .mark { color:#b7791f; }
+  .check-row div { font-size:.86rem; line-height:1.45; }
+  .check-row .hint { color:#b7791f; }
+  #flight { display:none; background:linear-gradient(135deg,#1a7f4e,#1b2a4a); color:#fff; border-radius:14px; padding:20px; text-align:center; font-size:1.1rem; font-weight:700; margin-top:6px; line-height:1.6; }
+  .foot { text-align:center; color:#8a7fa8; font-size:.75rem; margin-top:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="timer">&#9200; 20 minutes</span>
+    <span class="tag">MINI PROJECT</span>
+    <h1>&#128100; About Me: Console Card</h1>
+    <p>This week you fixed broken code and escaped two vaults. Today you <b>build something from scratch</b>: a program that prints a trading-card-style profile of YOU. Every line uses a skill from this week &mdash; variables, data types, concatenation, and operators. When it runs, it should look good enough to screenshot.</p>
+  </header>
+
+  <div class="card">
+    <h2>&#9201; Your 20 minutes</h2>
+    <div class="plan">
+      <div class="chunk"><b>0&ndash;3 min</b>Copy the starter shell into Trinket or VS Code. Run it once to make sure it compiles.</div>
+      <div class="chunk"><b>3&ndash;15 min</b>Build your card: declare your variables, then print the card using them.</div>
+      <div class="chunk"><b>15&ndash;20 min</b>Run the Pre-Flight Check below, fix anything amber, then show Mr. Babb your running program.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>&#127919; What it could look like</h2>
+    <p>This is an <i>example</i> &mdash; yours should be about you, styled your way. Change the border characters, the stats, the flex line. Make it yours.</p>
+    <pre>=============================
+   PLAYER CARD: JORDAN M.
+=============================
+ Grade: 11
+ Fav language (so far): Java
+ Hours slept last night: 6
+ Age in months: 192
+ Days until graduation: 634
+=============================
+ "Compiles on the first try."
+=============================</pre>
+  </div>
+
+  <div class="card">
+    <h2>&#128203; Requirements</h2>
+    <div class="req"><span class="n">R1</span><div>Declare <b>at least 2 String variables</b> (name, quote, favorite anything...) and <b>at least 2 number variables</b> (<code>int</code> or <code>double</code>).</div></div>
+    <div class="req"><span class="n">R2</span><div>Print your card with <b>at least 6 println statements</b>, and at least one of them must <b>concatenate</b> a String with a variable using <code>+</code>.</div></div>
+    <div class="req"><span class="n">R3</span><div>At least one printed line must be <b>computed with an operator</b> (<code>*</code>, <code>/</code>, <code>-</code>, or <code>%</code>) &mdash; don't just type your age in months, make Java calculate it: <code>age * 12</code>.</div></div>
+    <div class="req stretch"><span class="n">&#11088;</span><div><b>Stretch goal</b> (if you finish early): add ASCII-art initials, use a compound operator like <code>+=</code>, or compute something with <code>double</code> math (your GPA, your free-throw percentage...).</div></div>
+  </div>
+
+  <div class="card">
+    <h2>&#128230; Starter shell</h2>
+    <p>Copy this in, run it, then build inside <code>main</code>. Declare variables at the top, print the card below.</p>
+    <pre class="starter" id="starter"><code>public class AboutMeCard
+{
+    public static void main(String[] args)
+    {
+        // 1. DECLARE your variables here (String, int, double)
+
+
+        // 2. PRINT your card here using your variables
+        System.out.println("=============================");
+
+
+        System.out.println("=============================");
+    }
+}</code></pre>
+    <button class="btn copy" onclick="copyStarter()">Copy starter code</button>
+    <span id="copied" style="font-size:.8rem;color:#1a7f4e;font-weight:600;margin-left:8px"></span>
+  </div>
+
+  <div class="card">
+    <h2>&#128640; Pre-Flight Check</h2>
+    <p>Before you show Mr. Babb: paste your <b>whole program</b> below and hit the button. It checks your code against the requirements &mdash; green means go.</p>
+    <textarea id="code" spellcheck="false" placeholder="Paste your entire AboutMeCard program here..."></textarea>
+    <button class="btn" onclick="preflight()">Run Pre-Flight Check</button>
+    <div id="results" style="margin-top:10px"></div>
+  </div>
+
+  <div id="flight">&#128640; PRE-FLIGHT PASSED &mdash; all requirements detected.<br>Run it one more time, admire your card, and show Mr. Babb your screen.<br><span style="font-size:.85rem;font-weight:400">Finished early? Grab a stretch goal from the requirements list.</span></div>
+
+  <div class="foot">Mr. Babb &middot; AP Computer Science A &middot; Paul Public Charter School</div>
+</div>
+
+<script>
+function copyStarter() {
+  var txt = document.getElementById('starter').textContent;
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).catch(function(){});
+  }
+  document.getElementById('copied').textContent = 'Copied!';
+  setTimeout(function () { document.getElementById('copied').textContent = ''; }, 2000);
+}
+
+function stripStrings(s) {
+  // Replace string literal CONTENTS so words inside quotes don't fool the checks
+  return s.replace(/"[^"\n]*"/g, '""');
+}
+
+function preflight() {
+  var code = document.getElementById('code').value;
+  var out = document.getElementById('results');
+  var flight = document.getElementById('flight');
+  flight.style.display = 'none';
+  if (code.trim().length < 20) {
+    out.innerHTML = '<div class="check-row fail"><span class="mark">!</span><div class="hint">Paste your whole program first &mdash; everything from <b>public class</b> down to the last <b>}</b>.</div></div>';
+    return;
+  }
+  var stripped = stripStrings(code);
+
+  var strings = (stripped.match(/String\s+\w+\s*=/g) || []).length;
+  var nums = (stripped.match(/\b(int|double)\s+\w+\s*=/g) || []).length;
+  var prints = (code.match(/System\.out\.println/g) || []).length;
+  var concat = /"\s*\+/.test(code) || /\+\s*"/.test(code);
+  var math = /[A-Za-z0-9_)\]]\s*[*\/%]\s*[A-Za-z0-9_(]/.test(stripped) ||
+             /[A-Za-z0-9_)\]]\s+-\s+[A-Za-z0-9_(]/.test(stripped) ||
+             /[A-Za-z_]\w*\s*-\s*[A-Za-z0-9_]/.test(stripped);
+
+  var checks = [
+    { ok: strings >= 2,
+      pass: 'R1a &mdash; found ' + strings + ' String variable' + (strings === 1 ? '' : 's') + '.',
+      fail: 'R1a &mdash; I only found ' + strings + ' String declaration' + (strings === 1 ? '' : 's') + '. A String declaration looks like a type, then a name, then <b>=</b>, then text in quotes. You need at least 2.' },
+    { ok: nums >= 2,
+      pass: 'R1b &mdash; found ' + nums + ' number variable' + (nums === 1 ? '' : 's') + ' (int/double).',
+      fail: 'R1b &mdash; I only found ' + nums + ' int/double declaration' + (nums === 1 ? '' : 's') + '. Numbers get their own types &mdash; and remember, no quotes around number values.' },
+    { ok: prints >= 6,
+      pass: 'R2a &mdash; ' + prints + ' println statements. Solid card.',
+      fail: 'R2a &mdash; only ' + prints + ' println statement' + (prints === 1 ? '' : 's') + ' so far. A card needs at least 6 lines &mdash; borders count!' },
+    { ok: concat,
+      pass: 'R2b &mdash; concatenation detected. Your variables are in the card.',
+      fail: 'R2b &mdash; I don\'t see any concatenation yet. At least one println should join a label String to a variable with <b>+</b>, like the "Grade: " line in the example.' },
+    { ok: math,
+      pass: 'R3 &mdash; computed line detected. Java is doing math for you.',
+      fail: 'R3 &mdash; I don\'t see a calculation outside of quotes. At least one line must make Java compute a value with *, /, -, or % &mdash; typing the answer yourself doesn\'t count.' }
+  ];
+
+  var html = '';
+  var all = true;
+  checks.forEach(function (c) {
+    if (c.ok) {
+      html += '<div class="check-row pass"><span class="mark">&#10003;</span><div>' + c.pass + '</div></div>';
+    } else {
+      all = false;
+      html += '<div class="check-row fail"><span class="mark">&#9679;</span><div class="hint">' + c.fail + '</div></div>';
+    }
+  });
+  out.innerHTML = html;
+  if (all) {
+    flight.style.display = 'block';
+    flight.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Internet and the Web — Interactive Lesson (Explore Task 1)</title>
+<style>
+  :root{
+    --navy:#1b2a4a; --purple:#6b3fa0; --purple-lt:#f2ecf8; --green:#1a7f4e;
+    --red:#c0392b; --amber:#b7791f; --ink:#22262b; --muted:#5f6672;
+    --bg:#f7f6fa; --card:#ffffff; --line:#e3e0ea; --mono:'Consolas','Menlo','Monaco',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55;}
+  header{background:linear-gradient(120deg,var(--navy),#3b2a63 60%,var(--purple)); color:#fff; padding:26px 20px 20px; text-align:center;}
+  header h1{font-size:1.55rem; letter-spacing:.3px;}
+  header p{opacity:.85; font-size:.95rem; margin-top:4px;}
+  nav{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; background:var(--navy); padding:10px 8px; position:sticky; top:0; z-index:50;}
+  nav button{border:none; background:rgba(255,255,255,.12); color:#fff; padding:8px 14px; border-radius:999px; cursor:pointer; font-size:.85rem; font-weight:600; transition:.15s;}
+  nav button:hover{background:rgba(255,255,255,.28);}
+  nav button.active{background:#fff; color:var(--navy);}
+  nav button .check{color:#7be0a8; margin-left:4px; display:none;}
+  nav button.done .check{display:inline;}
+  main{max-width:900px; margin:0 auto; padding:24px 16px 80px;}
+  section{display:none; animation:fade .25s ease;}
+  section.visible{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .shake{animation:shake .3s ease;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 1px 3px rgba(27,42,74,.06);}
+  h2{color:var(--purple); font-size:1.35rem; margin-bottom:10px;}
+  h3{color:var(--navy); font-size:1.05rem; margin:14px 0 8px;}
+  p{margin-bottom:10px;}
+  ul,ol{padding-left:22px; margin-bottom:10px;}
+  li{margin-bottom:4px;}
+  .tag{display:inline-block; background:var(--purple-lt); color:var(--purple); font-weight:700; font-size:.72rem; letter-spacing:.8px; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:8px;}
+  .codebox{background:#0f1626; color:#e8ecf4; font-family:var(--mono); font-size:.92rem; border-radius:10px; padding:14px 16px; overflow-x:auto; margin:10px 0; white-space:pre;}
+  .console{background:#101010; color:#c9f7c9; font-family:var(--mono); font-size:.88rem; border-radius:10px; padding:12px 14px; min-height:48px; white-space:pre-wrap; margin:10px 0; border:1px solid #2c2c2c;}
+  .btn{background:var(--purple); color:#fff; border:none; padding:10px 18px; border-radius:9px; font-size:.92rem; font-weight:600; cursor:pointer; transition:.15s;}
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#e9e5f2; color:var(--purple);}
+  .btn.small{padding:6px 12px; font-size:.82rem;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .feedback{border-radius:9px; padding:10px 14px; margin-top:10px; font-size:.92rem; display:none;}
+  .feedback.ok{display:block; background:#e6f6ed; color:var(--green); border:1px solid #bfe6d0;}
+  .feedback.no{display:block; background:#fdecea; color:var(--red); border:1px solid #f5c6c0;}
+  .feedback.hint{display:block; background:#fdf6e3; color:var(--amber); border:1px solid #f0e0b0;}
+  .pill-score{background:var(--purple-lt); color:var(--purple); font-weight:700; padding:4px 12px; border-radius:999px; font-size:.85rem;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .choices button{text-align:left; background:#fff; border:2px solid var(--line); border-radius:9px; padding:10px 12px; font-size:.9rem; cursor:pointer;}
+  .choices button:hover{border-color:var(--purple);}
+  .choices button.ok{border-color:var(--green); background:#e6f6ed;}
+  .choices button.no{border-color:var(--red); background:#fdecea;}
+  code.inline{font-family:var(--mono); background:var(--purple-lt); padding:1px 6px; border-radius:5px; font-size:.88em;}
+  /* network sim */
+  .netwrap{background:#0f1626; border-radius:12px; padding:8px; margin:10px 0;}
+  svg.net{width:100%; height:auto; display:block; touch-action:none;}
+  svg.net .edge{stroke:#3d4a66; stroke-width:5; cursor:pointer;}
+  svg.net .edge:hover{stroke:#7fb4ff;}
+  svg.net .edge.cut{stroke:#c0392b; stroke-dasharray:7 7;}
+  svg.net .nodec{fill:#243049; stroke:#5a6a8a; stroke-width:2;}
+  svg.net .nodec.end{fill:#6b3fa0; stroke:#c9a7ff;}
+  svg.net text{fill:#cfd6e4; font-size:12px; font-family:'Segoe UI',sans-serif; text-anchor:middle;}
+  svg.net text.big{fill:#fff; font-weight:700; font-size:13px;}
+  .legend{display:flex; flex-wrap:wrap; gap:12px; font-size:.8rem; color:var(--muted); margin-top:6px;}
+  .legend span b{display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-2px; margin-right:4px;}
+  .pchips{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; min-height:46px; padding:8px; background:#faf9fc; border:2px dashed var(--line); border-radius:10px;}
+  .pchip{font-family:var(--mono); font-size:.85rem; border:2px solid var(--purple); color:var(--navy); background:#fff; border-radius:9px; padding:6px 12px; cursor:pointer;}
+  .pchip.placed{border-color:var(--green); background:#e6f6ed; color:var(--green); cursor:default;}
+  .pchip .sq{font-weight:800; color:var(--purple); margin-right:6px;}
+  .pchip.placed .sq{color:var(--green);}
+  /* matching */
+  .match-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:640px){.match-grid{grid-template-columns:1fr;}}
+  .match-item{border:2px solid var(--line); background:#fff; border-radius:10px; padding:10px 12px; cursor:pointer; font-size:.88rem; transition:.15s;}
+  .match-item.term{font-weight:700; color:var(--purple); font-family:var(--mono);}
+  .match-item.selected{border-color:var(--purple); background:var(--purple-lt);}
+  .match-item.matched{border-color:var(--green); background:#e6f6ed; color:var(--green); cursor:default; opacity:.85;}
+  .match-item.wrong{border-color:var(--red); background:#fdecea;}
+  /* dns trace */
+  .dnsrow{display:flex; gap:10px; align-items:flex-start; border-left:4px solid var(--line); padding:8px 12px; margin-bottom:6px; opacity:.35; transition:.3s;}
+  .dnsrow.on{opacity:1; border-left-color:var(--purple); background:var(--purple-lt); border-radius:0 9px 9px 0;}
+  .dnsrow .n{flex:0 0 26px; height:26px; border-radius:50%; background:var(--purple); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.8rem;}
+  .dnsrow.on .n{background:var(--purple);}
+  .dnsrow .t{font-size:.9rem;}
+  /* url anatomy */
+  .urlbar{font-family:var(--mono); font-size:1.05rem; background:#0f1626; border-radius:10px; padding:16px; overflow-x:auto; white-space:nowrap; margin:10px 0;}
+  .upart{padding:4px 3px; border-radius:5px; cursor:pointer; transition:.15s; color:#e8ecf4;}
+  .upart:hover{background:rgba(127,180,255,.25); outline:1px dashed #7fb4ff;}
+  .upart.found{background:rgba(143,214,168,.22); color:#8fd6a8;}
+  .uinfo{border-left:4px solid var(--purple); background:var(--purple-lt); border-radius:0 10px 10px 0; padding:10px 14px; margin-top:10px; display:none; font-size:.93rem;}
+  /* explore builder */
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-weight:700; color:var(--navy); font-size:.93rem; margin-bottom:4px;}
+  .field .hintline{font-size:.83rem; color:var(--muted); margin-bottom:6px;}
+  .field textarea,.field input{width:100%; border:2px solid var(--line); border-radius:9px; padding:9px 11px; font-size:.9rem; font-family:inherit; resize:vertical;}
+  .field textarea:focus,.field input:focus{outline:none; border-color:var(--purple);}
+  .field .wc{font-size:.78rem; color:var(--muted); text-align:right; margin-top:2px;}
+  .field .wc.good{color:var(--green); font-weight:700;}
+  .checklist{list-style:none; padding-left:0;}
+  .checklist li{font-size:.9rem; padding:4px 0; color:var(--muted);}
+  .checklist li.done{color:var(--green); font-weight:600;}
+  .checklist li::before{content:"○ "; font-weight:700;}
+  .checklist li.done::before{content:"✓ ";}
+  /* quiz */
+  .qcard{border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; background:#fff;}
+  .qcard h4{font-size:.98rem; margin-bottom:10px; color:var(--navy);}
+  .qopts label{display:block; border:2px solid var(--line); border-radius:9px; padding:9px 12px; margin-bottom:8px; cursor:pointer; font-size:.9rem;}
+  .qopts label:hover{border-color:var(--purple);}
+  .qopts label.sel{border-color:var(--purple); background:var(--purple-lt);}
+  .qopts label.right{border-color:var(--green); background:#e6f6ed;}
+  .qopts label.wrongpick{border-color:var(--red); background:#fdecea;}
+  .qopts input{margin-right:8px;}
+  .bigscore{font-size:2.2rem; font-weight:800; color:var(--purple); text-align:center; margin:8px 0;}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#127760; The Internet and the Web</h1>
+  <p>Computer Science Principles &bull; Unit 1 &bull; Explore Task 1 &bull; Mr. Babb</p>
+</header>
+
+<nav id="nav">
+  <button data-sec="intro" class="active">1. Internet vs Web<span class="check">&#10003;</span></button>
+  <button data-sec="packets">2. Packet Race<span class="check">&#10003;</span></button>
+  <button data-sec="proto">3. Protocols<span class="check">&#10003;</span></button>
+  <button data-sec="url">4. URL Anatomy<span class="check">&#10003;</span></button>
+  <button data-sec="explore">5. Explore Task<span class="check">&#10003;</span></button>
+  <button data-sec="quiz">6. Exit Ticket<span class="check">&#10003;</span></button>
+</nav>
+
+<main>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" class="visible">
+  <div class="card">
+    <span class="tag">Warm-up</span>
+    <h2>They are not the same thing</h2>
+    <p>People use "the Internet" and "the Web" as if they mean the same thing. They do not.</p>
+    <h3>&#128225; The Internet</h3>
+    <p>The <b>Internet</b> is the physical, global <b>network of networks</b> — billions of computers, phones, servers, routers, cables, and satellites connected together and agreeing to speak the same protocols. It was designed to be <b>open</b>, and it has no single owner and no central controller.</p>
+    <h3>&#128196; The World Wide Web</h3>
+    <p>The <b>Web</b> is <b>one service that runs on top of</b> the Internet: a system of linked pages and documents that you request with a browser using <b>HTTP</b>. Email, video calls, online games, and app updates also run on the Internet — but they are <b>not</b> the Web.</p>
+    <p style="margin-top:12px"><b>The analogy:</b> the Internet is the road system. The Web is one kind of vehicle driving on it. Delivery trucks, buses, and ambulances use the same roads without being cars.</p>
+  </div>
+  <div class="card">
+    <h3>&#129504; Quick check</h3>
+    <p>Your friend says "the Internet went down, so my email won't send, but at least the Web still works." What is wrong with that sentence?</p>
+    <div class="choices">
+      <button onclick="introCheck(this,false)">Nothing — email and the Web are unrelated systems.</button>
+      <button onclick="introCheck(this,true)">If the Internet were really down, the Web could not work either — the Web runs on top of the Internet.</button>
+      <button onclick="introCheck(this,false)">Email is part of the Web, so both would fail.</button>
+      <button onclick="introCheck(this,false)">The Web is a physical network, so it could keep running on its own.</button>
+    </div>
+    <div class="feedback" id="introFb"></div>
+    <div style="margin-top:14px"><button class="btn secondary" onclick="completeAndGo('intro','packets')">Next: Packet Race &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= PACKETS ================= -->
+<section id="packets">
+  <div class="card">
+    <span class="tag">Simulation</span>
+    <div class="topbar">
+      <h2>Packet Race</h2>
+      <span class="pill-score" id="pkScore">0 messages delivered</span>
+    </div>
+    <p>Your message does <b>not</b> travel as one piece. It is chopped into numbered <b>packets</b> that each find their own way across the network and get reassembled at the other end. Click <b>Send</b> and watch.</p>
+    <p style="font-size:.9rem;color:var(--muted)"><b>Click any cable to cut it</b> (and click again to repair it). Then send another message and see what the network does.</p>
+    <div class="netwrap"><svg class="net" id="netSvg" viewBox="0 0 620 320"></svg></div>
+    <div class="legend">
+      <span><b style="background:#6b3fa0"></b>You / Server</span>
+      <span><b style="background:#243049;border:1px solid #5a6a8a"></b>Router</span>
+      <span><b style="background:#c0392b"></b>Cut cable</span>
+      <span><b style="background:#ffd479"></b>Packet in flight</span>
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn" id="pkSend" onclick="pkSend()">&#9654; Send "HELLO FROM MR BABB"</button>
+      <button class="btn small secondary" onclick="pkRepairAll()">&#128736; Repair all cables</button>
+    </div>
+    <div class="console" id="pkLog">(the network log will appear here)</div>
+  </div>
+
+  <div class="card" id="pkAssembleCard" style="display:none">
+    <span class="tag">Your job: be TCP</span>
+    <h2>Reassemble the message</h2>
+    <p>The packets arrived <b>out of order</b> — that is normal, because each one took a different path. Every packet carries a <b>sequence number</b>. Click them in the right order to rebuild the message.</p>
+    <div class="pchips" id="pkChips"></div>
+    <div class="codebox" id="pkRebuilt">_____________________</div>
+    <div class="feedback" id="pkFb"></div>
+  </div>
+
+  <div class="card">
+    <h3>&#128273; What you just saw</h3>
+    <ul>
+      <li><b>Packets:</b> data is split into small numbered pieces, each with the sender's and receiver's addresses.</li>
+      <li><b>Routing:</b> each router decides the next hop on its own. Packets from one message can take different paths.</li>
+      <li><b>Redundancy:</b> there is more than one path between any two points.</li>
+      <li><b>Fault tolerance:</b> because of that redundancy, the message still gets through when a cable is cut. That is the whole design goal of the Internet.</li>
+      <li><b>TCP</b> reassembles packets in sequence order and re-requests any that go missing. <b>IP</b> handles the addressing and routing.</li>
+    </ul>
+    <div style="margin-top:14px"><button class="btn" onclick="completeAndGo('packets','proto')">Next: Protocols &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= PROTOCOLS ================= -->
+<section id="proto">
+  <div class="card">
+    <span class="tag">Match it</span>
+    <div class="topbar">
+      <h2>Who does what?</h2>
+      <span class="pill-score" id="matchScore">0 / 6 matched</span>
+    </div>
+    <p>A <b>protocol</b> is an agreed-on set of rules for how devices talk. No single protocol does everything — each has one job. Click a <b>protocol</b>, then click its <b>job</b>.</p>
+    <div class="match-grid" id="matchGrid"></div>
+    <div class="feedback" id="matchFb"></div>
+    <div style="margin-top:12px"><button class="btn small secondary" onclick="buildMatch()">&#8635; Shuffle / restart</button></div>
+  </div>
+
+  <div class="card">
+    <span class="tag">Trace it</span>
+    <h2>How your browser finds a server</h2>
+    <p>You type <code class="inline">www.pltw.org</code>. But computers route to <b>IP addresses</b>, not names. <b>DNS</b> — the Domain Name System — is the Internet's phone book. Step through the lookup:</p>
+    <div id="dnsSteps"></div>
+    <div style="margin-top:10px">
+      <button class="btn" id="dnsBtn" onclick="dnsStep()">&#9654; Start the lookup</button>
+      <button class="btn small secondary" onclick="dnsReset()">&#8635; Reset</button>
+    </div>
+    <div class="feedback" id="dnsFb"></div>
+    <div style="margin-top:14px"><button class="btn" id="protoNext" disabled onclick="completeAndGo('proto','url')">Next: URL Anatomy &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= URL ================= -->
+<section id="url">
+  <div class="card">
+    <span class="tag">Explore</span>
+    <div class="topbar">
+      <h2>Anatomy of a URL</h2>
+      <span class="pill-score" id="urlScore">0 / 7 found</span>
+    </div>
+    <p>A <b>URL</b> (Uniform Resource Locator) is the address of one specific resource on the Web. Every part has a job. <b>Click each colored piece</b> to find out what it does — find all 7.</p>
+    <div class="urlbar" id="urlBar"></div>
+    <div class="uinfo" id="urlInfo"></div>
+  </div>
+  <div class="card">
+    <h3>&#128161; Why this matters for safety</h3>
+    <p>Attackers rely on people reading URLs carelessly. The <b>domain</b> is the part that actually identifies the owner — and it is the piece immediately before the top-level domain, reading right to left.</p>
+    <div class="codebox">https://www.pltw.org.<span style="color:#ff8f85">secure-login.ru</span>/account
+
+The real domain here is <span style="color:#ff8f85">secure-login.ru</span> — NOT pltw.org.
+"pltw.org" was placed in the subdomain to fool you.</div>
+    <p>Read a URL by finding the <b>last</b> dotted name before the first single slash. That is who you are really talking to.</p>
+    <div style="margin-top:14px"><button class="btn" id="urlNext" disabled onclick="completeAndGo('url','explore')">Next: Explore Task &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= EXPLORE TASK ================= -->
+<section id="explore">
+  <div class="card">
+    <span class="tag">Explore Task 1</span>
+    <h2>Investigate a computing innovation</h2>
+    <p>Choose a <b>computing innovation</b> that depends on the Internet — something that could not work without it. It must include a program as part of its function and it must consume, produce, or transform <b>data</b>.</p>
+    <p style="font-size:.9rem;color:var(--muted)">Ideas: GPS navigation, streaming recommendation systems, contactless payment, ride-sharing dispatch, wearable health trackers, translation apps, cloud photo backup, smart thermostats, online multiplayer matchmaking, package tracking.</p>
+    <div class="feedback hint" style="display:block"><b>Rule:</b> a device is not automatically an innovation. "A phone" is too broad. "The app that matches a rider to a nearby driver" is a computing innovation.</div>
+  </div>
+
+  <div class="card">
+    <h3>Your responses</h3>
+    <p style="font-size:.9rem;color:var(--muted)">Write in complete sentences. The word counter turns green when a response is developed enough. Nothing is stored — copy your work out at the bottom when you finish.</p>
+
+    <div class="field">
+      <label>a. Name the computing innovation and state its purpose.</label>
+      <div class="hintline">What is it, and what problem does it exist to solve?</div>
+      <textarea id="f0" rows="3" oninput="exUpdate()"></textarea>
+      <div class="wc" id="w0">0 words</div>
+    </div>
+
+    <div class="field">
+      <label>b. Describe how it functions.</label>
+      <div class="hintline">Name the <b>input</b> it takes, what the program does with it, and the <b>output</b> it produces.</div>
+      <textarea id="f1" rows="4" oninput="exUpdate()"></textarea>
+      <div class="wc" id="w1">0 words</div>
+    </div>
+
+    <div class="field">
+      <label>c. Describe one <b>beneficial</b> effect on society, economy, or culture.</label>
+      <div class="hintline">Say who benefits and how. Be specific — not "it makes life easier."</div>
+      <textarea id="f2" rows="3" oninput="exUpdate()"></textarea>
+      <div class="wc" id="w2">0 words</div>
+    </div>
+
+    <div class="field">
+      <label>d. Describe one <b>harmful</b> effect on society, economy, or culture.</label>
+      <div class="hintline">Real innovations have both. Who is disadvantaged, and how?</div>
+      <textarea id="f3" rows="3" oninput="exUpdate()"></textarea>
+      <div class="wc" id="w3">0 words</div>
+    </div>
+
+    <div class="field">
+      <label>e. What <b>data</b> does the innovation use, and what is one privacy, security, or storage concern?</label>
+      <div class="hintline">Name the actual data it collects or produces, then the concern that data creates.</div>
+      <textarea id="f4" rows="4" oninput="exUpdate()"></textarea>
+      <div class="wc" id="w4">0 words</div>
+    </div>
+
+    <div class="field">
+      <label>f. Sources (at least two).</label>
+      <div class="hintline">One per line: author or publisher, title, URL, and the date you accessed it. At least one must be published in the last 12 months.</div>
+      <textarea id="f5" rows="4" oninput="exUpdate()"></textarea>
+      <div class="wc" id="w5">0 words</div>
+    </div>
+
+    <h3>&#9989; Completeness check</h3>
+    <ul class="checklist" id="exCheck"></ul>
+    <button class="btn" onclick="exBuild()">&#128203; Assemble my responses</button>
+    <div class="feedback" id="exFb"></div>
+    <textarea id="exOut" rows="10" style="width:100%;margin-top:10px;border:2px solid var(--line);border-radius:9px;padding:10px;font-family:var(--mono);font-size:.85rem;display:none"></textarea>
+    <div style="margin-top:14px"><button class="btn secondary" onclick="completeAndGo('explore','quiz')">Next: Exit Ticket &rarr;</button></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+  <div class="card">
+    <span class="tag">Exit ticket</span>
+    <h2>Show what you know</h2>
+    <p>Answer all 8 questions, then click <b>Grade my exit ticket</b>. One retry allowed.</p>
+    <div id="quizWrap"></div>
+    <button class="btn" onclick="gradeQuiz()">&#10003; Grade my exit ticket</button>
+    <div class="bigscore" id="quizScore"></div>
+    <div class="feedback" id="quizFb"></div>
+  </div>
+  <div class="card">
+    <h3>&#128221; Computer Science Notebook</h3>
+    <ul>
+      <li>The <b>Internet</b> is the global network of networks. The <b>Web</b> is one service that runs on it, using HTTP.</li>
+      <li>Data travels in <b>packets</b>: numbered pieces that each carry addressing information and may take different paths.</li>
+      <li><b>IP</b> addresses and routes packets. <b>TCP</b> numbers them, reassembles them in order, and re-requests what is lost. <b>UDP</b> is faster but does not check.</li>
+      <li><b>DNS</b> translates a domain name into an IP address.</li>
+      <li><b>Redundancy</b> means more than one path exists between two points; it is what makes the Internet <b>fault tolerant</b>.</li>
+      <li><b>HTTPS</b> encrypts data in transit so it cannot be read if intercepted.</li>
+      <li>A <b>computing innovation</b> includes a program and consumes, produces, or transforms data. Every one has both beneficial and harmful effects.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============ navigation ============ */
+const sections=['intro','packets','proto','url','explore','quiz'];
+function show(sec){
+  sections.forEach(s=>document.getElementById(s).classList.toggle('visible', s===sec));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.sec===sec));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sec)));
+function markDone(sec){ const b=document.querySelector('#nav button[data-sec="'+sec+'"]'); if(b)b.classList.add('done'); }
+function completeAndGo(from,to){ markDone(from); show(to); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ============ intro ============ */
+function introCheck(btn,right){
+  document.querySelectorAll('#intro .choices button').forEach(b=>b.classList.remove('ok','no'));
+  const fb=document.getElementById('introFb');
+  if(right){ btn.classList.add('ok'); fb.className='feedback ok';
+    fb.textContent="Right. The Web is built on top of the Internet, so it cannot outlive it. What people usually mean is that one service or one connection failed, not the Internet itself."; markDone('intro'); }
+  else { btn.classList.add('no'); fb.className='feedback no';
+    fb.textContent="Not quite — think about which one is the road and which one is the vehicle."; }
+}
+
+/* ============================================================
+   PACKET RACE
+   ============================================================ */
+const NODES={
+  S:{x:55,y:160,label:'YOU',end:true},
+  R1:{x:185,y:55,label:'R1'},
+  R2:{x:185,y:160,label:'R2'},
+  R3:{x:185,y:265,label:'R3'},
+  R4:{x:380,y:95,label:'R4'},
+  R5:{x:380,y:225,label:'R5'},
+  D:{x:545,y:160,label:'SERVER',end:true}
+};
+const EDGES=[['S','R1'],['S','R2'],['S','R3'],['R1','R2'],['R2','R3'],
+             ['R1','R4'],['R2','R4'],['R2','R5'],['R3','R5'],['R4','R5'],
+             ['R4','D'],['R5','D']];
+const cutSet=new Set();
+const ekey=(a,b)=>[a,b].sort().join('-');
+const MESSAGE='HELLO FROM MR BABB';
+let pkDelivered=0, pkFlying=false, pkOrder=[], pkPlaced=0, pkSeed=7;
+
+function rnd(){ pkSeed=(pkSeed*48271)%2147483647; return pkSeed/2147483647; }
+
+function neighbors(n){
+  const out=[];
+  EDGES.forEach(([a,b])=>{
+    if(cutSet.has(ekey(a,b))) return;
+    if(a===n) out.push(b); else if(b===n) out.push(a);
+  });
+  return out;
+}
+function findPath(start,goal,avoidFirst){
+  // BFS with shuffled neighbor order so packets diverge
+  const q=[[start]], seen=new Set([start]);
+  let best=null;
+  while(q.length){
+    const path=q.shift();
+    const node=path[path.length-1];
+    if(node===goal) return path;
+    const nb=neighbors(node).slice();
+    for(let i=nb.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [nb[i],nb[j]]=[nb[j],nb[i]]; }
+    for(const n of nb){
+      if(seen.has(n)) continue;
+      if(path.length===1 && avoidFirst && n===avoidFirst && nb.length>1) continue;
+      seen.add(n); q.push(path.concat([n]));
+    }
+  }
+  return best;
+}
+function drawNet(){
+  const svg=document.getElementById('netSvg');
+  let h='';
+  EDGES.forEach(([a,b])=>{
+    const A=NODES[a],B=NODES[b], k=ekey(a,b);
+    h+='<line class="edge'+(cutSet.has(k)?' cut':'')+'" data-k="'+k+'" x1="'+A.x+'" y1="'+A.y+'" x2="'+B.x+'" y2="'+B.y+'"><title>cable '+a+'-'+b+' (click to cut or repair)</title></line>';
+  });
+  h+='<g id="pkLayer"></g>';
+  Object.keys(NODES).forEach(n=>{
+    const N=NODES[n];
+    h+='<circle class="nodec'+(N.end?' end':'')+'" cx="'+N.x+'" cy="'+N.y+'" r="'+(N.end?26:19)+'"/>';
+    h+='<text class="'+(N.end?'big':'')+'" x="'+N.x+'" y="'+(N.y+4)+'">'+N.label+'</text>';
+  });
+  svg.innerHTML=h;
+  svg.querySelectorAll('.edge').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(pkFlying) return;
+      const k=el.dataset.k;
+      if(cutSet.has(k)) cutSet.delete(k); else cutSet.add(k);
+      drawNet();
+      log(cutSet.has(k)? '✂ Cable '+k+' CUT. Send again — the routers will look for another way.'
+                       : '🔧 Cable '+k+' repaired.');
+    });
+  });
+}
+function log(msg,append){
+  const el=document.getElementById('pkLog');
+  if(append) el.textContent+='\n'+msg; else el.textContent=msg;
+}
+function pkRepairAll(){ if(pkFlying)return; cutSet.clear(); drawNet(); log('🔧 All cables repaired.'); }
+
+function pkSend(){
+  if(pkFlying) return;
+  const words=MESSAGE.split(' ');
+  const testPath=findPath('S','D');
+  if(!testPath){
+    log('✗ NO ROUTE TO HOST.\nEvery path from YOU to SERVER is cut. Redundancy only helps while at least one path survives — repair a cable and try again.');
+    const fb=document.getElementById('pkFb'); fb.className='feedback no';
+    return;
+  }
+  pkFlying=true;
+  document.getElementById('pkSend').disabled=true;
+  document.getElementById('pkAssembleCard').style.display='none';
+  pkOrder=[]; pkPlaced=0;
+  log('→ Splitting "'+MESSAGE+'" into '+words.length+' packets...');
+
+  const layer=document.getElementById('pkLayer');
+  layer.innerHTML='';
+  const firsts=['R1','R2','R3'];
+  const packets=words.map((w,i)=>{
+    const path=findPath('S','D', firsts[i%3]);
+    return {seq:i+1, word:w, path, t:0, speed:0.0028+rnd()*0.0032, done:false};
+  });
+  packets.forEach(p=>{
+    log('   packet '+p.seq+' ["'+p.word+'"] route: '+p.path.join(' → '), true);
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r','9'); c.setAttribute('fill','#ffd479'); c.setAttribute('stroke','#8a6d1f');
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('font-size','11'); t.setAttribute('fill','#3a2f10'); t.setAttribute('font-weight','700');
+    t.textContent=p.seq;
+    layer.appendChild(c); layer.appendChild(t);
+    p.el=c; p.tx=t;
+  });
+
+  function posAt(p){
+    const segs=p.path.length-1;
+    const total=Math.min(p.t,1)*segs;
+    const i=Math.min(Math.floor(total),segs-1);
+    const f=total-i;
+    const A=NODES[p.path[i]], B=NODES[p.path[i+1]];
+    return {x:A.x+(B.x-A.x)*f, y:A.y+(B.y-A.y)*f};
+  }
+  const timer=setInterval(()=>{
+    let allDone=true;
+    packets.forEach(p=>{
+      if(p.done) return;
+      allDone=false;
+      p.t+=p.speed*(p.path.length-1)*0.9;
+      if(p.t>=1){
+        p.t=1; p.done=true; pkOrder.push(p);
+        log('   ✓ packet '+p.seq+' arrived ('+p.path.length+' hops)', true);
+      }
+      const pos=posAt(p);
+      p.el.setAttribute('cx',pos.x); p.el.setAttribute('cy',pos.y);
+      p.tx.setAttribute('x',pos.x); p.tx.setAttribute('y',pos.y+4);
+      p.tx.setAttribute('text-anchor','middle');
+    });
+    if(allDone){
+      clearInterval(timer);
+      pkFlying=false;
+      document.getElementById('pkSend').disabled=false;
+      layer.innerHTML='';
+      const arrived=pkOrder.map(p=>p.seq).join(', ');
+      log('All '+packets.length+' packets arrived. Arrival order was '+arrived+
+          (arrived==='1, 2, 3, 4'?' — this time they happened to arrive in order. Send again!':' — OUT OF ORDER.')+
+          '\nNow TCP has to put them back together.', true);
+      buildChips();
+      document.getElementById('pkAssembleCard').style.display='block';
+      document.getElementById('pkAssembleCard').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  },16);
+}
+function buildChips(){
+  const box=document.getElementById('pkChips'); box.innerHTML='';
+  document.getElementById('pkRebuilt').textContent='_____________________';
+  const fb=document.getElementById('pkFb'); fb.className='feedback'; fb.textContent='';
+  pkPlaced=0;
+  pkOrder.forEach(p=>{
+    const c=document.createElement('span'); c.className='pchip';
+    c.innerHTML='<span class="sq">#'+p.seq+'</span>'+esc(p.word);
+    c.onclick=()=>{
+      if(c.classList.contains('placed')) return;
+      const fb=document.getElementById('pkFb');
+      if(p.seq===pkPlaced+1){
+        c.classList.add('placed'); pkPlaced++;
+        const sofar=[];
+        for(let i=1;i<=pkPlaced;i++) sofar.push(pkOrder.find(x=>x.seq===i).word);
+        document.getElementById('pkRebuilt').textContent=sofar.join(' ')+(pkPlaced<pkOrder.length?' ...':'');
+        if(pkPlaced===pkOrder.length){
+          pkDelivered++;
+          document.getElementById('pkScore').textContent=pkDelivered+' message'+(pkDelivered===1?'':'s')+' delivered';
+          fb.className='feedback ok';
+          fb.textContent='Message delivered. That is exactly what TCP does: it uses the sequence number in each packet to rebuild the data in the right order, no matter what order the packets showed up in. Try cutting a cable and sending again.';
+          markDone('packets');
+        } else { fb.className='feedback ok'; fb.textContent='Packet '+p.seq+' in place.'; }
+      } else {
+        fb.className='feedback no';
+        fb.textContent='Out of sequence — you need packet #'+(pkPlaced+1)+' next. The sequence number is what tells TCP the correct order.';
+        fb.classList.remove('shake'); void fb.offsetWidth; fb.classList.add('shake');
+      }
+    };
+    box.appendChild(c);
+  });
+}
+drawNet();
+
+/* ============================================================
+   PROTOCOLS
+   ============================================================ */
+const PROTO=[
+ ['IP','Gives every device an address and routes each packet toward its destination.'],
+ ['TCP','Numbers the packets, checks that they all arrive, reassembles them in order, and re-requests anything lost.'],
+ ['UDP','Sends packets quickly without checking that they all arrive — used for live video, voice, and games.'],
+ ['HTTP','Requests and delivers web pages between a browser and a web server.'],
+ ['HTTPS','Does the same job as HTTP but encrypts the data so it cannot be read if it is intercepted.'],
+ ['DNS','Translates a human-readable domain name into the IP address a computer can route to.']
+];
+let mSel=null, mMatched=0, shuffleSeed=3;
+function shuffled(arr){
+  const a=arr.slice(); let s=(++shuffleSeed)*48271%2147483647;
+  for(let i=a.length-1;i>0;i--){ s=(s*48271)%2147483647; const j=s%(i+1); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function buildMatch(){
+  mSel=null; mMatched=0;
+  document.getElementById('matchScore').textContent='0 / 6 matched';
+  const fb=document.getElementById('matchFb'); fb.className='feedback'; fb.textContent='';
+  const grid=document.getElementById('matchGrid'); grid.innerHTML='';
+  const idx=PROTO.map((_,i)=>i);
+  const terms=shuffled(idx), defs=shuffled(idx);
+  for(let i=0;i<terms.length;i++){
+    const t=document.createElement('div');
+    t.className='match-item term'; t.dataset.v=terms[i]; t.textContent=PROTO[terms[i]][0];
+    t.onclick=()=>{ if(t.classList.contains('matched'))return;
+      document.querySelectorAll('.match-item.term').forEach(x=>x.classList.remove('selected'));
+      t.classList.add('selected'); mSel=t; };
+    grid.appendChild(t);
+    const d=document.createElement('div');
+    d.className='match-item def'; d.dataset.v=defs[i]; d.textContent=PROTO[defs[i]][1];
+    d.onclick=()=>pickDef(d);
+    grid.appendChild(d);
+  }
+}
+function pickDef(el){
+  if(el.classList.contains('matched')||!mSel) return;
+  const fb=document.getElementById('matchFb');
+  if(el.dataset.v===mSel.dataset.v){
+    el.classList.add('matched'); mSel.classList.add('matched'); mSel.classList.remove('selected');
+    mSel=null; mMatched++;
+    document.getElementById('matchScore').textContent=mMatched+' / 6 matched';
+    if(mMatched===6){ fb.className='feedback ok';
+      fb.textContent='All six matched. Notice that no single protocol does the whole job — they stack on top of each other.'; }
+    else { fb.className='feedback ok'; fb.textContent='Match!'; }
+  } else {
+    el.classList.add('wrong'); fb.className='feedback no';
+    fb.textContent='Not a match. Ask what one job that protocol has — addressing, ordering, speed, pages, encryption, or names?';
+    setTimeout(()=>el.classList.remove('wrong'),700);
+  }
+}
+buildMatch();
+
+/* ---- DNS trace ---- */
+const DNS=[
+ 'Your browser checks its own cache: "have I looked up www.pltw.org recently?" This time, no.',
+ 'It asks a recursive resolver (usually run by your ISP or a service like 1.1.1.1) to find the address.',
+ 'The resolver asks a root name server. Root answers: "I do not know, but ask the .org servers."',
+ 'The resolver asks the .org TLD server. It answers: "ask pltw.org’s authoritative name server."',
+ 'The authoritative name server returns the IP address — for example 203.0.113.42.',
+ 'Your browser opens a connection to that IP address and sends an HTTP request for the page.'
+];
+let dnsIdx=0;
+function dnsBuild(){
+  const box=document.getElementById('dnsSteps'); box.innerHTML='';
+  DNS.forEach((t,i)=>{
+    const r=document.createElement('div'); r.className='dnsrow'; r.id='dns'+i;
+    r.innerHTML='<div class="n">'+(i+1)+'</div><div class="t">'+t+'</div>';
+    box.appendChild(r);
+  });
+}
+function dnsStep(){
+  if(dnsIdx>=DNS.length) return;
+  document.getElementById('dns'+dnsIdx).classList.add('on');
+  dnsIdx++;
+  document.getElementById('dnsBtn').textContent = dnsIdx<DNS.length? '▶ Next step ('+dnsIdx+' of '+DNS.length+')' : '✓ Lookup complete';
+  if(dnsIdx===DNS.length){
+    const fb=document.getElementById('dnsFb'); fb.className='feedback ok';
+    fb.textContent='That whole round trip usually happens in well under a tenth of a second, and the answer gets cached so the next visit skips most of these steps. Without DNS you would have to memorize an IP address for every site you visit.';
+    document.getElementById('dnsBtn').disabled=true;
+    document.getElementById('protoNext').disabled=false;
+    markDone('proto');
+  }
+}
+function dnsReset(){ dnsIdx=0; dnsBuild(); document.getElementById('dnsBtn').textContent='▶ Start the lookup';
+  document.getElementById('dnsBtn').disabled=false;
+  const fb=document.getElementById('dnsFb'); fb.className='feedback'; fb.textContent=''; }
+dnsBuild();
+
+/* ============================================================
+   URL ANATOMY
+   ============================================================ */
+const URLP=[
+ {t:'https', c:'#7fb4ff', info:'<b>https — the protocol (scheme).</b> It tells the browser which set of rules to use. HTTPS is HTTP plus encryption, so anyone who intercepts the traffic sees scrambled data instead of your information.'},
+ {t:'://', c:'#8a93a6', skip:true},
+ {t:'www', c:'#ffd479', info:'<b>www — the subdomain.</b> A subdivision the site owner controls. It could just as easily be <i>maps</i>, <i>mail</i>, or nothing at all. Because the owner picks it, a subdomain can be made to look convincing — never trust it as identity.'},
+ {t:'.', c:'#8a93a6', skip:true},
+ {t:'pltw', c:'#8fd6a8', info:'<b>pltw — the domain name.</b> This is the registered name that identifies who actually owns the site. Together with the TLD it forms the part you should always check.'},
+ {t:'.org', c:'#c9a7ff', info:'<b>.org — the top-level domain (TLD).</b> The highest level of the naming system: .com, .org, .edu, .gov, .uk. DNS resolves names from right to left, so the TLD servers get asked first.'},
+ {t:'/curriculum/computer-science', c:'#ff9d94', info:'<b>The path.</b> Which specific resource on that server you are asking for — like a folder-and-file address within the site.'},
+ {t:'?grade=10', c:'#f6a6d8', info:'<b>The query string.</b> Extra data sent to the server as name=value pairs, usually to filter or search. Anything here is visible in the address bar and in server logs, which is why passwords never travel this way.'},
+ {t:'#unit1', c:'#a8e6cf', info:'<b>The fragment.</b> A location <i>within</i> the page to scroll to. It never leaves your browser — the server never even sees it.'}
+];
+let urlFound=new Set();
+function buildUrl(){
+  const bar=document.getElementById('urlBar'); bar.innerHTML='';
+  URLP.forEach((p,i)=>{
+    const s=document.createElement('span');
+    s.className='upart'; s.textContent=p.t; s.style.color=p.c;
+    if(!p.skip){
+      s.onclick=()=>{
+        urlFound.add(i); s.classList.add('found');
+        const info=document.getElementById('urlInfo');
+        info.style.display='block'; info.innerHTML=p.info;
+        const n=urlFound.size;
+        document.getElementById('urlScore').textContent=n+' / 7 found';
+        if(n===7){
+          document.getElementById('urlScore').textContent='7 / 7 found — nice work!';
+          document.getElementById('urlNext').disabled=false; markDone('url');
+        }
+      };
+    }
+    bar.appendChild(s);
+  });
+}
+buildUrl();
+
+/* ============================================================
+   EXPLORE TASK BUILDER
+   ============================================================ */
+const EXFIELDS=[
+ {id:'f0', min:12, label:'a. Innovation named with a clear purpose'},
+ {id:'f1', min:25, label:'b. Function described with input, process, and output'},
+ {id:'f2', min:20, label:'c. Beneficial effect, with who benefits'},
+ {id:'f3', min:20, label:'d. Harmful effect, with who is affected'},
+ {id:'f4', min:25, label:'e. Data used, plus a privacy, security, or storage concern'},
+ {id:'f5', min:10, label:'f. At least two sources with URLs'}
+];
+function words(s){ return s.trim().split(/\s+/).filter(Boolean).length; }
+function exUpdate(){
+  const list=document.getElementById('exCheck'); list.innerHTML='';
+  EXFIELDS.forEach((f,i)=>{
+    const v=document.getElementById(f.id).value;
+    const n=words(v);
+    const wc=document.getElementById('w'+i);
+    let ok=n>=f.min;
+    if(f.id==='f5') ok = ok && (v.match(/https?:\/\//g)||[]).length>=2;
+    wc.textContent=n+' words'+(ok?' ✓':' (aim for '+f.min+'+)');
+    wc.className='wc'+(ok?' good':'');
+    const li=document.createElement('li');
+    li.textContent=f.label+(f.id==='f5'&&n>=f.min&&!ok?' — needs 2 URLs':'');
+    if(ok) li.className='done';
+    list.appendChild(li);
+  });
+}
+function exBuild(){
+  const fb=document.getElementById('exFb'), out=document.getElementById('exOut');
+  const missing=[];
+  EXFIELDS.forEach((f,i)=>{
+    const v=document.getElementById(f.id).value;
+    let ok=words(v)>=f.min;
+    if(f.id==='f5') ok = ok && (v.match(/https?:\/\//g)||[]).length>=2;
+    if(!ok) missing.push(f.label.split('.')[0]);
+  });
+  const labels=['a. Innovation and purpose','b. How it functions (input, process, output)',
+    'c. Beneficial effect','d. Harmful effect','e. Data and data concern','f. Sources'];
+  let txt='EXPLORE TASK 1 — THE INTERNET AND THE WEB\nName: ____________________    Period: ______\n\n';
+  EXFIELDS.forEach((f,i)=>{ txt+=labels[i]+'\n'+document.getElementById(f.id).value.trim()+'\n\n'; });
+  const total=EXFIELDS.reduce((a,f)=>a+words(document.getElementById(f.id).value),0);
+  txt+='---\nTotal: '+total+' words';
+  out.style.display='block'; out.value=txt;
+  out.select();
+  if(missing.length){
+    fb.className='feedback hint';
+    fb.textContent='Assembled — but parts '+missing.join(', ')+' still look thin. Your responses are selected above; press Ctrl+C (or Cmd+C) to copy, then paste into your document.';
+  } else {
+    fb.className='feedback ok';
+    fb.textContent='All six parts are developed ('+total+' words total). Your responses are selected above — press Ctrl+C (or Cmd+C) to copy, then paste into your document and submit.';
+    markDone('explore');
+  }
+}
+exUpdate();
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const QUIZ=[
+ {q:'What is the difference between the Internet and the World Wide Web?',
+  o:["They are two names for the same thing",
+     "The Internet is the global network of connected devices; the Web is one service that runs on it",
+     "The Web is the hardware; the Internet is the software",
+     "The Internet is only for email; the Web is for everything else"], a:1},
+ {q:'When you send a message over the Internet, the data is broken into small numbered units called…',
+  o:["packets","protocols","domains","fragments"], a:0},
+ {q:'Packets from the same message can arrive out of order. What puts them back in the right order?',
+  o:["DNS, using the domain name","HTTP, using the URL","TCP, using the sequence number in each packet","The router that sent them"], a:2},
+ {q:'What is the job of <b>DNS</b>?',
+  o:["Encrypting data so it cannot be read","Translating a domain name into an IP address","Splitting a message into packets","Choosing the fastest route for each packet"], a:1},
+ {q:'A cable is cut, but your message still gets through on a different path. This ability is called…',
+  o:["bandwidth","latency","fault tolerance","scalability"], a:2},
+ {q:'Fault tolerance on the Internet is possible because of…',
+  o:["redundancy — more than one path exists between two points",
+     "having a single powerful central server",
+     "the fact that packets never get lost",
+     "encryption"], a:0},
+ {q:'What does the <b>s</b> in HTTPS add?',
+  o:["Speed — pages load faster","Storage — pages are saved offline","Search — the page can be found by search engines","Security — the data is encrypted in transit"], a:3},
+ {q:'Which of these is an <b>IP address</b>?',
+  o:["pltw.org","203.0.113.42","https://","&lt;html&gt;"], a:1}
+];
+let quizAttempts=0;
+function buildQuiz(){
+  const wrap=document.getElementById('quizWrap'); wrap.innerHTML='';
+  QUIZ.forEach((item,qi)=>{
+    const card=document.createElement('div'); card.className='qcard';
+    card.innerHTML='<h4>'+(qi+1)+'. '+item.q+'</h4>';
+    const opts=document.createElement('div'); opts.className='qopts';
+    item.o.forEach((opt,oi)=>{
+      const lab=document.createElement('label');
+      const inp=document.createElement('input'); inp.type='radio'; inp.name='q'+qi; inp.value=oi;
+      inp.onchange=()=>{ opts.querySelectorAll('label').forEach(l=>l.classList.remove('sel')); lab.classList.add('sel'); };
+      lab.appendChild(inp);
+      const span=document.createElement('span'); span.innerHTML=opt; lab.appendChild(span);
+      opts.appendChild(lab);
+    });
+    card.appendChild(opts); wrap.appendChild(card);
+  });
+}
+function gradeQuiz(){
+  let right=0, answered=0;
+  QUIZ.forEach((item,qi)=>{
+    const sel=document.querySelector('input[name="q'+qi+'"]:checked');
+    const labs=document.querySelectorAll('input[name="q'+qi+'"]');
+    labs.forEach((inp,oi)=>{
+      const lab=inp.parentElement; lab.classList.remove('right','wrongpick');
+      if(oi===item.a) lab.classList.add('right');
+    });
+    if(sel){ answered++; if(+sel.value===item.a) right++; else sel.parentElement.classList.add('wrongpick'); }
+  });
+  const fb=document.getElementById('quizFb'), sc=document.getElementById('quizScore');
+  if(answered<QUIZ.length){ fb.className='feedback hint';
+    fb.textContent="You've answered "+answered+' of '+QUIZ.length+' — finish the rest, then grade again.'; return; }
+  quizAttempts++;
+  sc.textContent=right+' / '+QUIZ.length;
+  if(right===QUIZ.length){ fb.className='feedback ok'; fb.textContent='Perfect score! You can explain how the Internet actually moves data.'; markDone('quiz'); }
+  else if(right>=6){ fb.className='feedback ok';
+    fb.textContent='Strong work! Review the green highlights'+(quizAttempts<2?', then you may retry once.':'.'); markDone('quiz'); }
+  else { fb.className='feedback no';
+    fb.textContent='Keep going — revisit Packet Race and Protocols, review the green answers'+(quizAttempts<2?', and retry once.':'.'); }
+}
+buildQuiz();
+</script>
+</body>
+</html>

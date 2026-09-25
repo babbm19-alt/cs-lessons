@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSA 1.1.3 — Expressions & Assignment Statements · Mr. Babb</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:#f7f6fa; color:#1b2a4a; padding:18px; }
+  .wrap { max-width:880px; margin:0 auto; }
+  header { background:linear-gradient(135deg,#1b2a4a,#6b3fa0); border-radius:14px; padding:20px 24px; color:#fff; margin-bottom:12px; }
+  .tag { display:inline-block; background:rgba(255,255,255,.18); border-radius:20px; padding:3px 14px; font-size:.75rem; font-weight:700; letter-spacing:2px; }
+  header h1 { font-size:1.35rem; margin-top:8px; }
+  header p { color:#e9def7; font-size:.9rem; margin-top:6px; line-height:1.5; }
+  nav { position:sticky; top:0; z-index:5; background:#f7f6fa; padding:8px 0; display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .pill { border:2px solid #c9bce0; background:#fff; color:#1b2a4a; border-radius:20px; padding:6px 13px; font-size:.8rem; font-weight:700; cursor:pointer; font-family:inherit; }
+  .pill.active { background:#6b3fa0; color:#fff; border-color:#6b3fa0; }
+  .pill .chk { color:#b7791f; font-weight:700; }
+  .pill.done .chk { color:#1a7f4e; }
+  .pill.active .chk { color:#ffe9a8; }
+  .pill.active.done .chk { color:#9ff0c0; }
+  .panel { display:none; }
+  .panel.show { display:block; }
+  .card { background:#fff; border:1px solid #ddd4ec; border-radius:14px; padding:16px 18px; margin-bottom:12px; }
+  .card h2 { color:#6b3fa0; font-size:1.05rem; margin-bottom:8px; }
+  .card h3 { color:#1b2a4a; font-size:.95rem; margin:12px 0 6px; }
+  .card p, .card li { font-size:.92rem; line-height:1.55; }
+  .card ul { margin:6px 0 6px 22px; }
+  pre { background:#1b2a4a; color:#d7f5e3; border-radius:10px; padding:12px 14px; font-family:Consolas,'Courier New',monospace; font-size:.9rem; overflow-x:auto; margin:8px 0; line-height:1.6; }
+  code { font-family:Consolas,'Courier New',monospace; background:#f2ecf8; border-radius:5px; padding:1px 6px; font-size:.86em; color:#6b3fa0; font-weight:600; }
+  pre code { background:none; color:inherit; padding:0; font-weight:400; }
+  table { border-collapse:collapse; width:100%; margin:8px 0; font-size:.9rem; }
+  th { background:#6b3fa0; color:#fff; text-align:left; padding:7px 10px; }
+  td { border:1px solid #ddd4ec; padding:7px 10px; }
+  td code { font-size:.95em; }
+  .mission { background:#f2ecf8; border:1px dashed #c9bce0; border-radius:10px; padding:10px 14px; margin:8px 0; font-size:.9rem; line-height:1.55; }
+  .mission b { color:#6b3fa0; }
+  .fb { font-size:.86rem; margin-top:8px; min-height:18px; line-height:1.5; }
+  .fb.ok { color:#1a7f4e; font-weight:600; }
+  .fb.no { color:#c0392b; }
+  .fb.warn { color:#b7791f; }
+  .btn { background:#6b3fa0; color:#fff; border:none; border-radius:10px; padding:9px 20px; font-weight:700; font-size:.88rem; cursor:pointer; margin-top:8px; font-family:inherit; }
+  .btn:hover { background:#7d4fbb; }
+  .btn.ghost { background:#fff; color:#6b3fa0; border:2px solid #c9bce0; }
+  input[type=text], input[type=number] { border:2px solid #c9bce0; border-radius:10px; padding:8px 11px; font-family:Consolas,'Courier New',monospace; font-size:.92rem; background:#f2ecf8; color:#1b2a4a; }
+  textarea { width:100%; border:2px solid #c9bce0; border-radius:10px; padding:10px 12px; font-family:inherit; font-size:.9rem; background:#f2ecf8; color:#1b2a4a; min-height:70px; resize:vertical; }
+  select { border:2px solid #c9bce0; border-radius:10px; padding:8px 11px; font-family:inherit; font-size:.9rem; background:#f2ecf8; color:#1b2a4a; }
+  .opt { display:block; width:100%; text-align:left; background:#f2ecf8; border:2px solid #c9bce0; border-radius:10px; padding:9px 13px; margin:6px 0; font-size:.88rem; cursor:pointer; font-family:inherit; color:#1b2a4a; }
+  .opt:hover { border-color:#6b3fa0; }
+  .opt.right { background:#e8f5ee; border-color:#1a7f4e; }
+  .opt.wrong { background:#fdf0ee; border-color:#c0392b; }
+  .opt:disabled { cursor:default; opacity:.75; }
+  .tok { display:inline-block; font-family:Consolas,'Courier New',monospace; font-size:1.1rem; padding:4px 8px; margin:2px; border-radius:8px; }
+  .tok.num { background:#f2ecf8; }
+  .tok.op { background:#1b2a4a; color:#ffe9a8; cursor:pointer; border:2px solid transparent; }
+  .tok.op:hover { border-color:#6b3fa0; }
+  .tok.flash { background:#1a7f4e; color:#fff; }
+  .sortrow { display:flex; align-items:center; gap:8px; background:#fdfcff; border:1px solid #ddd4ec; border-radius:10px; padding:7px 10px; margin:6px 0; flex-wrap:wrap; }
+  .sortrow code { font-size:1rem; flex:1 1 120px; background:none; }
+  .sbtn { border:2px solid #c9bce0; background:#fff; border-radius:8px; padding:5px 13px; font-weight:700; font-size:.8rem; cursor:pointer; font-family:inherit; color:#1b2a4a; }
+  .sbtn:hover { border-color:#6b3fa0; }
+  .sortrow.ok { border-color:#1a7f4e; background:#e8f5ee; }
+  .sortrow.ok .sbtn { visibility:hidden; }
+  .sortrow .verdict { font-weight:700; color:#1a7f4e; font-size:.85rem; }
+  .console { background:#1b2a4a; border-radius:10px; padding:12px 14px; font-family:Consolas,'Courier New',monospace; font-size:.9rem; margin:8px 0; min-height:44px; color:#d7f5e3; }
+  .console .err { color:#ff9d8f; }
+  .console .dim { color:#8fa3c7; }
+  .cline { display:block; padding:1px 4px; border-radius:5px; }
+  .cline.clickable { cursor:pointer; }
+  .cline.clickable:hover { background:#31456e; }
+  .cline.got { background:#1a7f4e; color:#fff; }
+  .ctok { cursor:pointer; padding:1px 4px; border-radius:5px; }
+  .ctok:hover { background:#31456e; }
+  .ctok.got { background:#1a7f4e; color:#fff; }
+  .statgrid { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+  .stat { flex:1 1 140px; background:#f2ecf8; border:1px solid #ddd4ec; border-radius:10px; padding:9px 12px; text-align:center; }
+  .stat b { display:block; font-size:1.2rem; color:#6b3fa0; font-family:Consolas,monospace; }
+  .stat span { font-size:.75rem; color:#6a5f86; }
+  .notebook { background:linear-gradient(135deg,#1a7f4e,#1b2a4a); color:#fff; border-radius:14px; padding:18px 20px; margin-top:10px; display:none; }
+  .notebook h3 { color:#9ff0c0; margin-top:0; }
+  .notebook li, .notebook p { font-size:.9rem; line-height:1.55; }
+  .notebook ul { margin:6px 0 6px 20px; }
+  .lockmsg { background:#fdf6ea; border:1px solid #ecd9b0; color:#b7791f; border-radius:10px; padding:8px 12px; font-size:.85rem; margin-top:6px; }
+  .foot { text-align:center; color:#8a7fa8; font-size:.75rem; margin:16px 0 6px; }
+  .gatehint { font-size:.8rem; color:#b7791f; font-weight:600; margin-top:10px; }
+  .gatehint.done { color:#1a7f4e; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">CSA &middot; ACTIVITY 1.1.3</span>
+    <h1>Expressions &amp; Assignment Statements</h1>
+    <p>Java can do math &mdash; but it follows its own strict rules about types, division, and order of operations. Today you'll learn to predict exactly what Java computes before you ever hit Run. Work through all six sections; each pill earns its checkmark only when the work in it is done.</p>
+  </header>
+
+  <nav id="nav"></nav>
+
+  <!-- ============ SECTION 1: COMMENTS ============ -->
+  <div class="panel" id="p0">
+    <div class="card">
+      <h2>1 &middot; Comments in Code</h2>
+      <p>Comments are notes for <b>humans</b>. The compiler ignores them completely &mdash; they never execute. Java has three types:</p>
+      <table>
+        <tr><th>Type</th><th>Looks like</th><th>Used for</th></tr>
+        <tr><td>Multiline</td><td><code>/* ... */</code></td><td>Block headers, instructions that span lines</td></tr>
+        <tr><td>Single-line</td><td><code>// ...</code></td><td>Explaining one line; can sit at the end of a statement</td></tr>
+        <tr><td>Javadoc</td><td><code>/** ... */</code></td><td>Java documentation &mdash; you'll meet it later this course</td></tr>
+      </table>
+      <div class="mission"><b>Mission 1:</b> The compiler is about to read this program. <b>Click every piece the compiler ignores.</b> Careful &mdash; one line is only <i>partly</i> a comment.</div>
+      <pre id="snippet"></pre>
+      <div class="fb" id="f-snip"></div>
+      <h3>Quick check</h3>
+      <div id="qc-box"></div>
+      <div class="fb" id="f-qc"></div>
+      <div class="gatehint" id="g0">To earn the checkmark: find all 3 ignored pieces + answer the quick check.</div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 2: ARITHMETIC EXPRESSIONS ============ -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <h2>2 &middot; Arithmetic Expressions</h2>
+      <p>An <b>expression</b> is made of values, variables, and operators, and it evaluates to a <b>single value</b> &mdash; and that value has a <b>type</b>. The operators:</p>
+      <table>
+        <tr><th>Symbol</th><th>Name</th><th>Example</th></tr>
+        <tr><td><code>*</code></td><td>Multiplication</td><td><code>4 * 3</code> &rarr; <code>12</code></td></tr>
+        <tr><td><code>/</code></td><td>Division</td><td><code>12 / 4</code> &rarr; <code>3</code></td></tr>
+        <tr><td><code>%</code></td><td>Modulo (remainder)</td><td><code>7 % 3</code> &rarr; <code>1</code></td></tr>
+        <tr><td><code>+</code></td><td>Addition</td><td><code>4 + 3</code> &rarr; <code>7</code></td></tr>
+        <tr><td><code>-</code></td><td>Subtraction</td><td><code>4 - 3</code> &rarr; <code>1</code></td></tr>
+      </table>
+      <p>The type rule: <b>int with int gives int. If even ONE value is a double, the result is a double</b> &mdash; even <code>5.0 * 5</code>.</p>
+      <div class="mission"><b>Mission 2:</b> Type-check all 8 expressions. Watch for the sneaky ones &mdash; a single <code>.</code> changes everything.</div>
+      <div id="sorter"></div>
+      <div class="fb" id="f-sort"></div>
+      <div class="gatehint" id="g1">To earn the checkmark: correctly type-check all 8 expressions.</div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 3: DIVISION & MODULO ============ -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <h2>3 &middot; Division &amp; Modulo Lab</h2>
+      <p>Two facts that break people's programs: <b>int division throws away the decimal part</b> (<code>18 / 5</code> is <code>3</code>, not 3.6), and <b>dividing an int by zero crashes the program</b> with an <code>ArithmeticException</code>.</p>
+      <h3>The Division Lab</h3>
+      <p>Enter two values and an operator. The lab shows what your calculator says next to what <b>Java</b> says. A value with a decimal point (like <code>18.0</code>) is a double; without one it's an int.</p>
+      <div class="statgrid" style="align-items:center">
+        <input type="number" step="any" id="lab-a" value="18" aria-label="left operand" style="flex:1 1 90px; width:90px">
+        <select id="lab-op" aria-label="operator"><option>/</option><option>%</option></select>
+        <input type="number" step="any" id="lab-b" value="5" aria-label="right operand" style="flex:1 1 90px; width:90px">
+        <button type="button" class="btn" onclick="runLab()" style="margin-top:0">Run</button>
+      </div>
+      <div class="console" id="lab-out"><span class="dim">// results appear here</span></div>
+      <div class="mission"><b>Mission 3a:</b> Crash the lab <b>on purpose</b>. Make Java throw an <code>ArithmeticException</code>. (Then try <code>18.0 / 0</code> and see something even stranger.)</div>
+      <div class="fb" id="f-crash"></div>
+      <h3>Modulo predictions</h3>
+      <div class="mission"><b>Mission 3b:</b> <code>a % b</code> is the <b>remainder</b> after dividing a by b. Predict all four &mdash; type each answer, then check.</div>
+      <div id="mods"></div>
+      <div class="gatehint" id="g2">To earn the checkmark: crash the lab on purpose + all 4 modulo predictions correct.</div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 4: COMPOUND EXPRESSIONS ============ -->
+  <div class="panel" id="p3">
+    <div class="card">
+      <h2>4 &middot; Compound Expressions</h2>
+      <p>When several operators share one expression, Java uses operator precedence &mdash; PEMDAS with one addition: <b><code>*</code>, <code>/</code>, and <code>%</code> are all the same level</b>, evaluated left to right. Then <code>+</code> and <code>-</code>, also left to right.</p>
+      <div class="mission"><b>Mission 4a &mdash; The Stepper:</b> Be the compiler. In the expression below, <b>click the operator Java evaluates NEXT</b>, step by step, until one value remains.</div>
+      <div style="text-align:center; padding:8px 0" id="stepper"></div>
+      <div class="fb" id="f-step"></div>
+      <h3>Parentheses</h3>
+      <p>Parentheses override precedence, exactly like in math.</p>
+      <div class="mission"><b>Mission 4b &mdash; Minimize It:</b> Take the expression <code>5 + 12 * 18 - 2 / 2 % 2</code> (worth <b>220</b> as written) and add <b>exactly one pair of parentheses</b> to make it as small as possible. Can you hit <b>0</b>? Type your version and test it &mdash; this is a real evaluator, it computes whatever you give it.</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
+        <input type="text" id="par-in" aria-label="expression with parentheses" placeholder="5 + 12 * 18 - 2 / 2 % 2" style="flex:1 1 260px">
+        <button type="button" class="btn" onclick="tryParens()" style="margin-top:0">Evaluate</button>
+      </div>
+      <div class="console" id="par-out"><span class="dim">// your expression's value appears here</span></div>
+      <div class="fb" id="f-par"></div>
+      <div class="gatehint" id="g3">To earn the checkmark: complete the stepper + reach 0 with one pair of parentheses.</div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 5: WEIGHT ON JUPITER ============ -->
+  <div class="panel" id="p4">
+    <div class="card">
+      <h2>5 &middot; Calculate Your Weight on Jupiter</h2>
+      <p>Your <b>mass</b> is the same everywhere in the universe &mdash; but your <b>weight</b> depends on the planet's gravity. The conversion is one expression:</p>
+      <pre>weightOnPlanet = weightOnEarth * planetGravity / earthGravity;</pre>
+      <p>Earth's gravity is <code>9.81</code> m/s&sup2;. Jupiter's is a monstrous <code>24.79</code>.</p>
+      <div class="mission"><b>Mission 5:</b> Enter a weight on Earth (yours, or the sample 130). <b>Predict</b> the Jupiter weight with a calculator first, type your prediction, then let the simulator check you. After that, explore at least <b>two more planets</b>.</div>
+      <div class="statgrid" style="align-items:center">
+        <span style="font-size:.88rem">Weight on Earth (lbs):</span>
+        <input type="number" step="any" id="wEarth" value="130" aria-label="weight on Earth" style="width:100px">
+        <span style="font-size:.88rem">My Jupiter prediction:</span>
+        <input type="number" step="any" id="wPred" aria-label="predicted Jupiter weight" style="width:110px">
+        <button type="button" class="btn" onclick="checkPred()" style="margin-top:0">Check prediction</button>
+      </div>
+      <div class="fb" id="f-pred"></div>
+      <div id="simbox" style="display:none">
+        <h3>Planet simulator</h3>
+        <div class="statgrid" style="align-items:center">
+          <select id="planet" aria-label="planet">
+            <option data-g="3.59">Mercury</option>
+            <option data-g="8.87">Venus</option>
+            <option data-g="3.711">Mars</option>
+            <option data-g="24.79" selected>Jupiter</option>
+            <option data-g="11.08">Saturn</option>
+            <option data-g="10.67">Uranus</option>
+            <option data-g="11.15">Neptune</option>
+          </select>
+          <button type="button" class="btn" onclick="runPlanet()" style="margin-top:0">Compute</button>
+        </div>
+        <div class="console" id="sim-out"><span class="dim">// pick a planet and compute</span></div>
+        <div class="fb" id="f-sim"></div>
+      </div>
+      <div class="gatehint" id="g4">To earn the checkmark: prediction within 1 lb + explore 2 more planets.</div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 6: EXIT TICKET ============ -->
+  <div class="panel" id="p5">
+    <div class="card">
+      <h2>6 &middot; Exit Ticket</h2>
+      <div class="mission"><b>Coming next class &mdash; GalaxyWeight:</b> you'll write a program that prints your weight on <b>three</b> planets and the <b>average</b> of those weights. Keep today's type rule in mind: what type must that average be?</div>
+      <p>Eight questions. You get <b>one retry</b> per question. After that, the question locks &mdash; bring it to Mr. Babb instead of guessing.</p>
+      <div id="quiz"></div>
+      <h3>Conclusion &mdash; in your own words (2+ sentences each)</h3>
+      <p><b>Q1.</b> Why do you think the order of operations still applies in Java?</p>
+      <textarea id="c1" aria-label="conclusion question 1"></textarea>
+      <div class="fb" id="f-c1"></div>
+      <p style="margin-top:10px"><b>Q2.</b> Why is it important to know the type of a variable?</p>
+      <textarea id="c2" aria-label="conclusion question 2"></textarea>
+      <div class="fb" id="f-c2"></div>
+      <button type="button" class="btn" onclick="checkConclusions()">Submit conclusions</button>
+      <div class="gatehint" id="g5">To earn the checkmark: resolve all 8 questions + both conclusion answers.</div>
+      <div class="notebook" id="notebook">
+        <h3>&#128213; Computer Science Notebook &mdash; copy these into your notes</h3>
+        <ul>
+          <li>Comments (<code style="background:none;color:#9ff0c0">/* */</code>, <code style="background:none;color:#9ff0c0">//</code>, <code style="background:none;color:#9ff0c0">/** */</code>) are for humans; the compiler ignores them.</li>
+          <li>An expression evaluates to a single value, and that value has a type: int&nbsp;op&nbsp;int &rarr; int; anything with a double &rarr; double.</li>
+          <li>int division drops the decimal: 18 / 5 is 3. Dividing an int by 0 throws an ArithmeticException.</li>
+          <li><code style="background:none;color:#9ff0c0">a % b</code> is the remainder of a divided by b: 7 % 3 is 1.</li>
+          <li>Precedence: *, /, % first (left to right), then +, - (left to right). Parentheses override everything.</li>
+        </ul>
+        <p id="scoreline" style="margin-top:8px; font-weight:700"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Mr. Babb &middot; AP Computer Science A &middot; Paul Public Charter School &middot; This page does not save work &mdash; finish in one sitting.</div>
+</div>
+
+<script>
+/* ================= hashing (no readable answer key) ================= */
+var SALT = 'CSA113';
+function h(s){ var x = 5381; for (var i = 0; i < s.length; i++) { x = ((x << 5) + x + s.charCodeAt(i)) >>> 0; } return x.toString(16); }
+function isRight(qid, optText, hash){ return h(SALT + '|' + qid + '|' + optText) === hash; }
+function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+/* ================= gates & nav ================= */
+var SECTIONS = ['Comments','Expressions','Division Lab','Precedence','Jupiter','Exit Ticket'];
+var done = [false,false,false,false,false,false];
+var sub = { snip:false, qc:false, sort:false, crash:false, mods:false, step:false, par:false, pred:false, planets:false, quiz:false, conc:false };
+var cur = 0;
+function buildNav(){
+  var n = document.getElementById('nav'); n.innerHTML = '';
+  SECTIONS.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pill' + (i === cur ? ' active' : '') + (done[i] ? ' done' : '');
+    b.innerHTML = (i + 1) + '. ' + s + ' <span class="chk">' + (done[i] ? '✓' : '○') + '</span>';
+    b.onclick = function(){ show(i); };
+    n.appendChild(b);
+  });
+}
+function show(i){
+  cur = i;
+  for (var k = 0; k < 6; k++) document.getElementById('p' + k).className = 'panel' + (k === i ? ' show' : '');
+  buildNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function gate(i, ok, msg){
+  done[i] = ok;
+  var g = document.getElementById('g' + i);
+  if (ok) { g.className = 'gatehint done'; g.textContent = '✓ Checkmark earned' + (msg ? ' — ' + msg : '.'); }
+  buildNav();
+}
+function refreshGates(){
+  gate(0, sub.snip && sub.qc);
+  gate(1, sub.sort);
+  gate(2, sub.crash && sub.mods);
+  gate(3, sub.step && sub.par);
+  gate(4, sub.pred && sub.planets);
+  gate(5, sub.quiz && sub.conc);
+}
+
+/* ================= S1: comment hunt ================= */
+var snipParts = [
+  { t: '/* GalaxyWeight starter', ignored: true,  d: 'Yes - the /* opened a multiline comment. The compiler skips it.' },
+  { t: '   by Mr. Babb\'s class */', ignored: true, d: 'Yes - still inside the multiline comment, right up to the */.' },
+  { t: 'int mass = 90; ', ignored: false, d: 'Careful - that part EXECUTES. It declares mass and stores 90. Only what comes after the // on that line is ignored.' },
+  { t: '// mass of a baby elephant', ignored: true, d: 'Yes - everything after // to the end of the line is a comment, even sharing a line with real code.' },
+  { t: 'System.out.println(mass);', ignored: false, d: 'That line runs - it prints 90. No comment markers anywhere on it.' }
+];
+var snipFound = 0;
+(function(){
+  var pre = document.getElementById('snippet');
+  snipParts.forEach(function(p, idx){
+    var sp = document.createElement('span');
+    sp.className = (idx === 2 || idx === 3) ? 'ctok' : 'cline clickable';
+    sp.textContent = p.t;
+    sp.onclick = function(){
+      var f = document.getElementById('f-snip');
+      if (sp.classList.contains('got')) return;
+      if (p.ignored) {
+        sp.classList.add('got');
+        snipFound++;
+        f.className = 'fb ok'; f.textContent = p.d + (snipFound < 3 ? ' (' + snipFound + ' of 3 found)' : '');
+        if (snipFound >= 3) { sub.snip = true; f.textContent = 'All 3 found - you can now see code the way the compiler does.'; refreshGates(); }
+      } else {
+        f.className = 'fb no'; f.textContent = p.d;
+      }
+    };
+    pre.appendChild(sp);
+    if (idx === 1 || idx === 3 || idx === 4) { /* line breaks after these */ }
+    if (idx === 1) pre.appendChild(document.createTextNode('\n'));
+    if (idx === 3) pre.appendChild(document.createTextNode('\n'));
+  });
+})();
+
+/* ================= S1: quick check ================= */
+var qc = {
+  qid: 'qc1', hash: '5ce2538f',
+  prompt: 'When the program runs, what does the compiler do with comments?',
+  opts: [
+    { t: 'Runs them after the rest of the program finishes', d: 'Comments never run - at any point. If they executed, your notes would crash the program.' },
+    { t: 'Ignores them completely - they exist for the humans reading the code', d: 'Comments are documentation. The compiler skips them entirely.' },
+    { t: 'Checks them for spelling and grammar', d: 'The compiler checks Java syntax, not English. Comments are skipped without being read at all.' },
+    { t: 'Prints them to the screen as output', d: 'Printing only happens when YOU call System.out.println. Comments produce no output.' }
+  ]
+};
+(function(){
+  var box = document.getElementById('qc-box');
+  box.innerHTML = '<p style="font-size:.9rem"><b>' + qc.prompt + '</b></p>';
+  shuffle(qc.opts).forEach(function(o){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.textContent = o.t;
+    b.onclick = function(){
+      var f = document.getElementById('f-qc');
+      if (isRight(qc.qid, o.t, qc.hash)) {
+        b.className = 'opt right';
+        f.className = 'fb ok'; f.textContent = 'Correct. ' + o.d;
+        sub.qc = true; refreshGates();
+      } else {
+        b.className = 'opt wrong';
+        f.className = 'fb no'; f.textContent = 'Not yet. ' + o.d;
+      }
+    };
+    box.appendChild(b);
+  });
+})();
+
+/* ================= S2: int/double sorter ================= */
+var sortItems = [
+  { e: '-19 - 8',       dbl: false, d: 'Both operands are ints, so the result stays an int (-27).' },
+  { e: '-2 * 11',       dbl: false, d: 'int times int is int (-22).' },
+  { e: '-4. / 10',      dbl: true,  d: 'Sneaky: that lone dot makes -4. a DOUBLE, so the whole result is a double (-0.4).' },
+  { e: '140 % 3',       dbl: false, d: 'Modulo of two ints is an int (remainder 2).' },
+  { e: '10 * 5.5',      dbl: true,  d: '5.5 is a double, so the product is a double (55.0).' },
+  { e: '9.25 + 15.75',  dbl: true,  d: 'Two doubles - the sum is a double (25.0), even though it looks whole.' },
+  { e: '18 / 5',        dbl: false, d: 'int / int is an int - Java DROPS the decimal. This is 3, not 3.6.' },
+  { e: '2.0 - 3.0',     dbl: true,  d: 'Double minus double is a double (-1.0).' }
+];
+var sortDone = 0;
+(function(){
+  var box = document.getElementById('sorter');
+  shuffle(sortItems).forEach(function(it){
+    var row = document.createElement('div'); row.className = 'sortrow';
+    var c = document.createElement('code'); c.textContent = it.e; row.appendChild(c);
+    var v = document.createElement('span'); v.className = 'verdict';
+    ['int','double'].forEach(function(lbl){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'sbtn'; b.textContent = lbl;
+      b.onclick = function(){
+        var f = document.getElementById('f-sort');
+        var pick = (lbl === 'double');
+        if (pick === it.dbl) {
+          row.className = 'sortrow ok'; v.textContent = lbl + ' ✓'; row.appendChild(v);
+          sortDone++;
+          f.className = 'fb ok'; f.textContent = it.d + '  (' + sortDone + '/8)';
+          if (sortDone >= 8) { sub.sort = true; f.textContent = '8 for 8. The rule is yours: one double infects the whole expression.'; refreshGates(); }
+        } else {
+          f.className = 'fb no'; f.textContent = it.d;
+        }
+      };
+      row.appendChild(b);
+    });
+    box.appendChild(row);
+  });
+})();
+
+/* ================= S3: division lab ================= */
+function isIntStr(s){ return /^-?\d+$/.test(String(s).trim()); }
+function runLab(){
+  var aRaw = document.getElementById('lab-a').value, bRaw = document.getElementById('lab-b').value;
+  var op = document.getElementById('lab-op').value;
+  var out = document.getElementById('lab-out');
+  if (aRaw === '' || bRaw === '') { out.innerHTML = '<span class="dim">// enter both values first</span>'; return; }
+  var a = parseFloat(aRaw), b = parseFloat(bRaw);
+  var bothInt = isIntStr(aRaw) && isIntStr(bRaw);
+  var calc = (op === '/') ? (b === 0 ? 'undefined' : a / b) : (b === 0 ? 'undefined' : a - b * Math.floor(a / b));
+  var lines = '<span class="dim">// your calculator: ' + calc + '</span>\n';
+  if (bothInt && b === 0) {
+    lines += '<span class="err">Exception in thread "main" java.lang.ArithmeticException: ' + (op === '/' ? '/ by zero' : '% by zero') + '</span>';
+    out.innerHTML = lines;
+    if (!sub.crash) {
+      sub.crash = true;
+      var f = document.getElementById('f-crash');
+      f.className = 'fb ok'; f.textContent = 'Mission 3a complete - you crashed it on purpose. An int divided (or modulo’d) by zero always throws this exception and the program stops dead.';
+      refreshGates();
+    }
+    return;
+  }
+  var res, type;
+  if (bothInt) {
+    type = 'int';
+    res = (op === '/') ? Math.trunc(a / b) : (a % b);
+  } else {
+    type = 'double';
+    if (b === 0) { res = (op === '/') ? (a === 0 ? 'NaN' : (a > 0 ? 'Infinity' : '-Infinity')) : 'NaN'; }
+    else { res = (op === '/') ? a / b : a % b; }
+    if (typeof res === 'number' && Number.isInteger(res)) res = res.toFixed(1);
+  }
+  lines += 'Java says: <b>' + res + '</b>   <span class="dim">// type: ' + type + '</span>';
+  if (bothInt && op === '/' && a % b !== 0) lines += '\n<span class="dim">// notice: the decimal part was DROPPED, not rounded</span>';
+  if (!bothInt && b === 0) lines += '\n<span class="dim">// double division by zero doesn’t crash - it gives ' + res + '. Strange but true.</span>';
+  out.innerHTML = lines;
+}
+var modItems = [
+  { e: '7 % 3',   a: 1, d: '7 divided by 3 is 2 remainder 1 - modulo keeps the REMAINDER, not the quotient.' },
+  { e: '24 % 6',  a: 0, d: '6 goes into 24 evenly, so the remainder is 0. A % result of 0 means "divides evenly" - that test shows up everywhere.' },
+  { e: '5 % 8',   a: 5, d: '8 doesn’t fit into 5 even once, so the whole 5 is left over. When a < b, a % b is just a.' },
+  { e: '100 % 7', a: 2, d: '7 × 14 = 98, leaving 2. Divide, take what’s left.' }
+];
+var modsRight = 0;
+(function(){
+  var box = document.getElementById('mods');
+  modItems.forEach(function(m, i){
+    var row = document.createElement('div'); row.className = 'sortrow';
+    var c = document.createElement('code'); c.textContent = m.e + ' = '; row.appendChild(c);
+    var inp = document.createElement('input'); inp.type = 'number'; inp.style.width = '80px';
+    inp.setAttribute('aria-label', 'prediction for ' + m.e);
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'sbtn'; b.textContent = 'Check';
+    var v = document.createElement('span'); v.className = 'verdict';
+    b.onclick = function(){
+      var f = document.getElementById('f-' + 'mod' + i) || null;
+      var fb = row.querySelector('.fb') || (function(){ var d = document.createElement('div'); d.className = 'fb'; d.style.flexBasis = '100%'; row.appendChild(d); return d; })();
+      if (parseInt(inp.value, 10) === m.a) {
+        if (!row.classList.contains('ok')) { row.classList.add('ok'); modsRight++; }
+        v.textContent = '✓'; row.insertBefore(v, inp.nextSibling);
+        inp.disabled = true;
+        fb.className = 'fb ok'; fb.textContent = m.d;
+        if (modsRight >= 4) { sub.mods = true; refreshGates(); }
+      } else if (inp.value === '') {
+        fb.className = 'fb warn'; fb.textContent = 'Type your prediction first.';
+      } else {
+        fb.className = 'fb no';
+        fb.textContent = (parseInt(inp.value, 10) === Math.trunc(eval(m.e.split('%')[0]) / eval(m.e.split('%')[1]))) ?
+          'That’s the QUOTIENT - modulo wants what’s LEFT OVER after dividing.' :
+          'Not it. Divide first, then ask: what’s left over?';
+      }
+    };
+    row.appendChild(inp); row.appendChild(b);
+    box.appendChild(row);
+  });
+})();
+
+/* ================= S4: stepper ================= */
+var stages = [
+  { toks: ['5','+','12','*','18','-','10','/','2','%','2'], next: 3 },
+  { toks: ['5','+','216','-','10','/','2','%','2'], next: 5 },
+  { toks: ['5','+','216','-','5','%','2'], next: 5 },
+  { toks: ['5','+','216','-','1'], next: 1 },
+  { toks: ['221','-','1'], next: 1 },
+  { toks: ['220'], next: -1 }
+];
+var stage = 0;
+function drawStage(){
+  var box = document.getElementById('stepper');
+  box.innerHTML = '';
+  var st = stages[stage];
+  st.toks.forEach(function(t, i){
+    var sp = document.createElement('span');
+    var isOp = '+-*/%'.indexOf(t) !== -1 && t.length === 1;
+    sp.className = 'tok ' + (isOp ? 'op' : 'num');
+    sp.textContent = t;
+    if (isOp && st.next !== -1) sp.onclick = function(){ clickOp(i, t); };
+    box.appendChild(sp);
+  });
+  if (st.next === -1) {
+    var doneSp = document.createElement('div');
+    doneSp.innerHTML = '<span class="tok flash" style="font-size:1.3rem">= 220</span>';
+    box.appendChild(doneSp);
+  }
+}
+function clickOp(i, op){
+  var f = document.getElementById('f-step');
+  var st = stages[stage];
+  if (i === st.next) {
+    stage++;
+    f.className = 'fb ok';
+    var msgs = [
+      '12 * 18 = 216. First sweep: *, / and %, left to right - and * came first.',
+      '10 / 2 = 5. Still on the first sweep, moving left to right.',
+      '5 % 2 = 1. Modulo is on the SAME level as * and / - it goes in the first sweep too.',
+      '5 + 216 = 221. Multiplicative sweep done; now +, - left to right.',
+      '221 - 1 = 220. Done - you just executed the expression exactly like the compiler.'
+    ];
+    f.textContent = msgs[stage - 1];
+    drawStage();
+    if (stage === 5) { sub.step = true; refreshGates(); }
+  } else {
+    f.className = 'fb no';
+    var wrongMul = ('*/%'.indexOf(op) !== -1);
+    if (!wrongMul) f.textContent = op + ' has to wait - Java first sweeps left to right for *, / and %. Is one of those still in the expression?';
+    else f.textContent = 'Right level, wrong turn - *, / and % run LEFT to RIGHT. There’s one further left that goes first.';
+  }
+}
+drawStage();
+
+/* ================= S4: evaluator + parens mission ================= */
+function evalJavaInt(src){
+  var s = src.replace(/\s+/g, ''), pos = 0;
+  function peek(){ return s[pos]; }
+  function expr(){
+    var v = term();
+    while (peek() === '+' || peek() === '-') { var op = s[pos++]; var r = term(); v = (op === '+') ? v + r : v - r; }
+    return v;
+  }
+  function term(){
+    var v = factor();
+    while (peek() === '*' || peek() === '/' || peek() === '%') {
+      var op = s[pos++]; var r = factor();
+      if ((op === '/' || op === '%') && r === 0) throw { java: 'ArithmeticException: ' + op + ' by zero' };
+      v = (op === '*') ? v * r : (op === '/') ? Math.trunc(v / r) : v % r;
+    }
+    return v;
+  }
+  function factor(){
+    if (peek() === '(') { pos++; var v = expr(); if (peek() !== ')') throw { syntax: 'missing )' }; pos++; return v; }
+    if (peek() === '-') { pos++; return -factor(); }
+    var m = /^\d+/.exec(s.slice(pos));
+    if (!m) throw { syntax: 'unexpected character "' + (peek() || 'end') + '"' };
+    pos += m[0].length;
+    return parseInt(m[0], 10);
+  }
+  var v = expr();
+  if (pos !== s.length) throw { syntax: 'unexpected character "' + s[pos] + '"' };
+  return v;
+}
+function tryParens(){
+  var raw = document.getElementById('par-in').value;
+  var out = document.getElementById('par-out');
+  var f = document.getElementById('f-par');
+  if (!raw.trim()) { f.className = 'fb warn'; f.textContent = 'Type the expression with your parentheses first.'; return; }
+  var stripped = raw.replace(/[()\s]/g, '');
+  if (stripped !== '5+12*18-2/2%2') {
+    f.className = 'fb no';
+    f.textContent = 'Keep the original numbers and operators exactly as they are - 5 + 12 * 18 - 2 / 2 % 2 - and add only parentheses.';
+    return;
+  }
+  var opens = (raw.match(/\(/g) || []).length, closes = (raw.match(/\)/g) || []).length;
+  if (opens !== closes) { f.className = 'fb no'; f.textContent = 'Unbalanced parentheses - every ( needs its ).'; return; }
+  if (opens === 0) { f.className = 'fb warn'; f.textContent = 'That’s the original expression (220). Add one pair of parentheses to change the grouping.'; return; }
+  if (opens > 1) { f.className = 'fb no'; f.textContent = 'Exactly ONE pair - one ( and one ). Where does a single grouping do the most damage?'; return; }
+  try {
+    var v = evalJavaInt(raw);
+    out.innerHTML = 'Java says: <b>' + v + '</b>';
+    if (v === 0) {
+      f.className = 'fb ok';
+      f.textContent = 'ZERO. You grouped everything before the % so the whole 220 gets divided by 2 for its remainder - and 220 is even. Parentheses don’t just nudge a result; they can flatten it.';
+      sub.par = true; refreshGates();
+    } else if (v < 220) {
+      f.className = 'fb warn';
+      f.textContent = v + ' - smaller than 220, but not the floor. Think about what % 2 does to ANY even number, and how much of the expression you can trap before it.';
+    } else {
+      f.className = 'fb warn';
+      f.textContent = v + ' - that made it bigger or equal. Try grouping so the LAST thing that happens is % 2.';
+    }
+  } catch (e) {
+    if (e.java) { out.innerHTML = '<span class="err">Exception in thread "main" java.lang.' + e.java + '</span>'; f.className = 'fb no'; f.textContent = 'Your grouping caused a divide-by-zero along the way - legal to try, fatal to run.'; }
+    else { out.innerHTML = '<span class="dim">// could not evaluate</span>'; f.className = 'fb no'; f.textContent = 'Syntax problem: ' + e.syntax + '. Check your typing.'; }
+  }
+}
+
+/* ================= S5: Jupiter ================= */
+var EARTH_G = 9.81, planetsTried = {};
+function checkPred(){
+  var w = parseFloat(document.getElementById('wEarth').value);
+  var p = parseFloat(document.getElementById('wPred').value);
+  var f = document.getElementById('f-pred');
+  if (isNaN(w) || w <= 0) { f.className = 'fb warn'; f.textContent = 'Enter a weight on Earth first (the sample 130 is fine).'; return; }
+  if (isNaN(p)) { f.className = 'fb warn'; f.textContent = 'Do the math on a calculator - weight × 24.79 ÷ 9.81 - and type your prediction.'; return; }
+  var actual = w * 24.79 / EARTH_G;
+  if (Math.abs(p - actual) <= 1) {
+    f.className = 'fb ok';
+    f.textContent = 'Confirmed: ' + actual.toFixed(2) + ' lbs on Jupiter. Notice the type - the gravities are doubles, so this result is a double no matter what your Earth weight was.';
+    sub.pred = true;
+    document.getElementById('simbox').style.display = 'block';
+    refreshGates();
+  } else if (Math.abs(p - w * EARTH_G / 24.79) <= 1) {
+    f.className = 'fb no';
+    f.textContent = 'You divided the gravities the wrong way round - that would make Jupiter LIGHTER than Earth. Bigger gravity must mean bigger weight.';
+  } else {
+    f.className = 'fb no';
+    f.textContent = 'Not within a pound. The recipe: your Earth weight, times Jupiter’s 24.79, divided by Earth’s 9.81. Sanity check: Jupiter’s pull is over double Earth’s.';
+  }
+}
+function runPlanet(){
+  var sel = document.getElementById('planet');
+  var opt = sel.options[sel.selectedIndex];
+  var g = parseFloat(opt.getAttribute('data-g'));
+  var w = parseFloat(document.getElementById('wEarth').value) || 130;
+  var res = w * g / EARTH_G;
+  document.getElementById('sim-out').innerHTML =
+    'weightOn' + opt.text + ' = ' + w + ' * ' + g + ' / 9.81;\n' +
+    '<span class="dim">//            = </span><b>' + res.toFixed(2) + '</b> <span class="dim">lbs  (type: double)</span>';
+  planetsTried[opt.text] = true;
+  var n = Object.keys(planetsTried).filter(function(k){ return k !== 'Jupiter'; }).length;
+  var f = document.getElementById('f-sim');
+  if (n >= 2) { sub.planets = true; f.className = 'fb ok'; f.textContent = 'Explorer badge earned - same expression, different data. That’s the whole point of variables.'; refreshGates(); }
+  else { f.className = 'fb warn'; f.textContent = 'Try ' + (2 - n) + ' more planet' + (n === 1 ? '' : 's') + ' besides Jupiter.'; }
+}
+
+/* ================= S6: exit ticket ================= */
+var quiz = [
+  { qid:'e1', hash:'e8089cf1', prompt:'Which comment style can span multiple lines?',
+    opts:[ { t:'/* */', d:'The /* opens the comment and nothing closes it until the */, however many lines later.' },
+           { t:'// //', d:'// only reaches the END of its own line. Two of them are just two one-line comments.' },
+           { t:'\" \"', d:'Quotes make a String - real data the program uses, the opposite of ignored.' },
+           { t:'%% %%', d:'% is the modulo operator - it does math, it doesn’t comment anything.' } ] },
+  { qid:'e2', hash:'2a259494', prompt:'In Java, 9 / 2 evaluates to:',
+    opts:[ { t:'4.5', d:'That’s calculator division. Both 9 and 2 are ints - Java keeps only the whole part.' },
+           { t:'4', d:'int / int drops the decimal entirely: 4.5 becomes 4. Dropped, not rounded.' },
+           { t:'5', d:'Java doesn’t round int division UP or to nearest - it truncates toward zero.' },
+           { t:'a compile error', d:'It compiles and runs fine - the surprise is the VALUE it produces, not an error.' } ] },
+  { qid:'e3', hash:'2a2598d2', prompt:'9 % 2 evaluates to:',
+    opts:[ { t:'1', d:'2 goes into 9 four times (8), leaving a remainder of 1.' },
+           { t:'4', d:'That’s the QUOTIENT of 9 / 2. Modulo answers a different question: what’s left over?' },
+           { t:'4.5', d:'Modulo never produces the decimal quotient - and two ints can’t produce a double anyway.' },
+           { t:'0', d:'A result of 0 would mean 2 divides 9 evenly. Does it?' } ] },
+  { qid:'e4', hash:'bba14698', prompt:'Which expression evaluates to a double?',
+    opts:[ { t:'7 / 2.0', d:'2.0 is a double, and one double is enough: the result is 3.5, a double.' },
+           { t:'7 / 2', d:'Two ints - the result is the int 3.' },
+           { t:'7 % 2', d:'Two ints again - the remainder 1, an int.' },
+           { t:'7 - 2', d:'int minus int is the int 5.' } ] },
+  { qid:'e5', hash:'6ed9cc05', prompt:'5 + 2 * 3 evaluates to:',
+    opts:[ { t:'11', d:'The * runs first: 2 * 3 = 6, then 5 + 6 = 11.' },
+           { t:'21', d:'That’s left-to-right with no precedence: (5+2)*3. Java runs * before +.' },
+           { t:'30', d:'Check the arithmetic path - no grouping of these numbers gives 30.' },
+           { t:'16', d:'Close to a right idea, wrong numbers - multiply FIRST, then add the 5.' } ] },
+  { qid:'e6', hash:'addf3e4a', prompt:'What happens when Java evaluates int x = 4 / 0; ?',
+    opts:[ { t:'The program crashes with an ArithmeticException', d:'Int division by zero always throws ArithmeticException: / by zero and the program stops.' },
+           { t:'x becomes 0', d:'Java refuses to invent a value for it - it throws instead of storing anything.' },
+           { t:'x becomes Infinity', d:'Infinity only appears in DOUBLE division. Int division by zero throws.' },
+           { t:'The line is skipped', d:'Java never silently skips broken math - it stops the program with an exception.' } ] },
+  { qid:'e7', hash:'ff833bbf', prompt:'Which expression evaluates to 0?',
+    opts:[ { t:'(2 + 4) % 3', d:'The parentheses force 2+4=6 first, and 6 % 3 is 0 - it divides evenly.' },
+           { t:'2 + 4 % 3', d:'Without parentheses % wins: 4 % 3 = 1, then 2 + 1 = 3.' },
+           { t:'2 * 4 % 3', d:'* and % same level, left to right: 8 % 3 = 2.' },
+           { t:'5 % 2', d:'5 divided by 2 leaves a remainder of 1, not 0.' } ] },
+  { qid:'e8', hash:'df9aa401', prompt:'weightOnEarth * jupiterGravity / earthGravity, where the gravities are doubles. The result’s type is:',
+    opts:[ { t:'double', d:'The doubles in the expression make the entire result a double - precision survives.' },
+           { t:'int', d:'It could only be an int if EVERY value were an int - the gravities aren’t.' },
+           { t:'String', d:'No quotes anywhere - nothing here is text.' },
+           { t:'boolean', d:'No comparison happens - booleans come from questions like <, >, ==.' } ] }
+];
+var quizState = {};
+(function(){
+  var box = document.getElementById('quiz');
+  quiz.forEach(function(q, qi){
+    quizState[q.qid] = { tries: 0, resolved: false };
+    var card = document.createElement('div'); card.style.marginBottom = '14px';
+    card.innerHTML = '<p style="font-size:.9rem"><b>Q' + (qi + 1) + '.</b> ' + q.prompt + '</p>';
+    var fb = document.createElement('div'); fb.className = 'fb';
+    var btns = [];
+    shuffle(q.opts).forEach(function(o){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.textContent = o.t;
+      b.onclick = function(){
+        var st = quizState[q.qid];
+        if (st.resolved) return;
+        if (isRight(q.qid, o.t, q.hash)) {
+          b.className = 'opt right';
+          fb.className = 'fb ok'; fb.textContent = 'Correct. ' + o.d;
+          st.resolved = true; st.right = true;
+          finishCheck();
+        } else {
+          st.tries++;
+          b.className = 'opt wrong'; b.disabled = true;
+          if (st.tries >= 2) {
+            st.resolved = true; st.right = false;
+            fb.className = 'fb no'; fb.textContent = 'Not yet. ' + o.d;
+            var lm = document.createElement('div'); lm.className = 'lockmsg';
+            lm.textContent = 'This one’s locked - bring it to Mr. Babb and talk it through rather than guessing a third time.';
+            card.appendChild(lm);
+            btns.forEach(function(x){ x.disabled = true; });
+            finishCheck();
+          } else {
+            fb.className = 'fb no'; fb.textContent = 'Not yet. ' + o.d + '  (one retry left)';
+          }
+        }
+      };
+      btns.push(b);
+      card.appendChild(b);
+    });
+    card.appendChild(fb);
+    box.appendChild(card);
+  });
+})();
+function finishCheck(){
+  var all = quiz.every(function(q){ return quizState[q.qid].resolved; });
+  if (all) { sub.quiz = true; refreshGates(); maybeNotebook(); }
+}
+function wordCount(s){ return s.trim().split(/\s+/).filter(Boolean).length; }
+function checkConclusions(){
+  var ok = true;
+  [['c1','f-c1','Think about why a language would COPY math’s rules instead of inventing new ones - what would happen to every formula ever written if it didn’t?'],
+   ['c2','f-c2','Think about 18 / 5 giving 3 - what goes wrong in a program if you didn’t know the type, say when averaging grades or splitting money?']]
+  .forEach(function(pair){
+    var v = document.getElementById(pair[0]).value;
+    var f = document.getElementById(pair[1]);
+    if (wordCount(v) >= 15) { f.className = 'fb ok'; f.textContent = 'Recorded.'; }
+    else { ok = false; f.className = 'fb warn'; f.textContent = 'Give it at least two real sentences (15+ words). ' + pair[2]; }
+  });
+  if (ok) { sub.conc = true; refreshGates(); maybeNotebook(); }
+}
+function maybeNotebook(){
+  if (!(sub.quiz && sub.conc)) return;
+  var right = quiz.filter(function(q){ return quizState[q.qid].right; }).length;
+  var nb = document.getElementById('notebook');
+  nb.style.display = 'block';
+  document.getElementById('scoreline').textContent = 'Exit ticket: ' + right + '/8 on first resolution. ' +
+    (right === 8 ? 'Perfect - you’re ready to build GalaxyWeight.' : 'Review the locked ones with Mr. Babb before GalaxyWeight.');
+  nb.scrollIntoView({ behavior: 'smooth' });
+}
+
+buildNav(); show(0);
+</script>
+</body>
+</html>
