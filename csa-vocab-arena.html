@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSA Vocab Arena · Mr. Babb</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:#f7f6fa; color:#1b2a4a; padding:18px; }
+  .wrap { max-width:820px; margin:0 auto; }
+  header { background:linear-gradient(135deg,#1b2a4a,#6b3fa0); border-radius:14px; padding:20px 24px; color:#fff; margin-bottom:12px; }
+  .tag { display:inline-block; background:rgba(255,255,255,.18); border-radius:20px; padding:3px 14px; font-size:.75rem; font-weight:700; letter-spacing:2px; }
+  header h1 { font-size:1.4rem; margin-top:8px; }
+  header p { color:#e9def7; font-size:.92rem; margin-top:6px; line-height:1.5; }
+  /* HUD */
+  #hud { display:none; background:#1b2a4a; border-radius:14px; padding:10px 16px; color:#fff; margin-bottom:10px; }
+  .hudrow { display:flex; gap:14px; flex-wrap:wrap; align-items:center; font-family:Consolas,'Courier New',monospace; font-size:.9rem; }
+  .hudrow b { color:#ffe9a8; }
+  .hudrow .spacer { flex:1; }
+  #roundbar-wrap { height:8px; background:#31456e; border-radius:6px; margin-top:8px; overflow:hidden; }
+  #roundbar { height:100%; width:100%; background:#1a7f4e; border-radius:6px; transition:width .25s linear, background .25s; }
+  #roundbar.low { background:#b7791f; }
+  /* arena */
+  .card { background:#fff; border:1px solid #ddd4ec; border-radius:14px; padding:16px 18px; margin-bottom:12px; }
+  .card h2 { color:#6b3fa0; font-size:1rem; margin-bottom:8px; }
+  .card p, .card li { font-size:.92rem; line-height:1.55; }
+  .card ul { margin:6px 0 6px 22px; }
+  .mode { display:inline-block; background:#f2ecf8; color:#6b3fa0; border-radius:20px; padding:2px 12px; font-size:.72rem; font-weight:700; letter-spacing:1.5px; margin-bottom:8px; }
+  #prompt { font-size:1.05rem; line-height:1.55; margin-bottom:10px; min-height:52px; }
+  #prompt pre { background:#1b2a4a; color:#ffe9a8; border-radius:10px; padding:11px 14px; font-family:Consolas,'Courier New',monospace; font-size:.98rem; overflow-x:auto; margin-top:8px; }
+  .opt { display:block; width:100%; text-align:left; background:#f2ecf8; border:2px solid #c9bce0; border-radius:10px; padding:10px 13px; margin:7px 0; font-size:.92rem; cursor:pointer; font-family:inherit; color:#1b2a4a; font-weight:600; }
+  .opt:hover { border-color:#6b3fa0; }
+  .opt.right { background:#e8f5ee; border-color:#1a7f4e; }
+  .opt.wrong { background:#fdf0ee; border-color:#c0392b; }
+  .opt:disabled { cursor:default; opacity:.85; }
+  #fb { font-size:.88rem; margin-top:8px; min-height:40px; line-height:1.5; }
+  #fb.ok { color:#1a7f4e; font-weight:600; }
+  #fb.no { color:#c0392b; }
+  #fb.warn { color:#b7791f; font-weight:600; }
+  .btn { background:#6b3fa0; color:#fff; border:none; border-radius:10px; padding:10px 26px; font-weight:700; font-size:.95rem; cursor:pointer; margin-top:10px; font-family:inherit; }
+  .btn:hover { background:#7d4fbb; }
+  /* scorecard */
+  #scorecard { display:none; background:#1b2a4a; border-radius:14px; padding:22px; color:#fff; text-align:center; }
+  #scorecard .rank { font-size:1.5rem; font-weight:800; color:#ffe9a8; letter-spacing:1px; }
+  #scorecard .sub { color:#c9d6ef; font-size:.9rem; margin-top:6px; line-height:1.5; }
+  .statgrid { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 6px; }
+  .stat { background:#31456e; border-radius:10px; padding:10px 18px; min-width:110px; }
+  .stat b { display:block; font-size:1.3rem; color:#ffe9a8; font-family:Consolas,monospace; }
+  .stat span { font-size:.72rem; color:#c9d6ef; letter-spacing:1px; }
+  .foot { text-align:center; color:#8a7fa8; font-size:.75rem; margin-top:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">&#128274; REVIEW GAME &middot; UNIT 1 VOCABULARY</span>
+    <h1>&#9889; CSA Vocab Arena</h1>
+    <p>Every term from Unit 1 &mdash; comments to casting &mdash; in one arena. <b>15 rounds</b>, drawn fresh from the full vocabulary bank each run, so no two runs are the same. 15 seconds a round; speed and streaks multiply your score. Beat your rank, then beat your neighbor's.</p>
+  </header>
+
+  <div id="hud">
+    <div class="hudrow">
+      <span>ROUND <b id="h-round">1</b>/15</span>
+      <span>SCORE <b id="h-score">0</b></span>
+      <span>STREAK <b id="h-streak">0</b><span id="h-mult" style="color:#9ff0c0"></span></span>
+      <span class="spacer"></span>
+      <span id="h-clock"><b>15</b>s</span>
+    </div>
+    <div id="roundbar-wrap"><div id="roundbar"></div></div>
+  </div>
+
+  <div class="card" id="intro">
+    <h2>How the arena works</h2>
+    <ul>
+      <li><b>Three kinds of rounds:</b> match a definition to its term, catch the right definition for a term, or name the concept a piece of real code is showing.</li>
+      <li><b>Scoring:</b> 100 points per correct answer, plus 10 for every second left on the clock.</li>
+      <li><b>Streaks multiply:</b> 3 in a row &times;1.2 &middot; 4 &times;1.5 &middot; 5+ &times;2. One miss resets it.</li>
+      <li>Run out of time and the clock takes the round &mdash; no points lost, streak resets, the answer gets explained.</li>
+    </ul>
+    <button type="button" class="btn" onclick="startGame()">Enter the Arena</button>
+  </div>
+
+  <div class="card" id="arena" style="display:none">
+    <span class="mode" id="mode-label">DEFINITION &rarr; TERM</span>
+    <div id="prompt"></div>
+    <div id="opts"></div>
+    <div id="fb"></div>
+  </div>
+
+  <div id="scorecard">
+    <div class="rank" id="sc-rank"></div>
+    <div class="sub" id="sc-sub"></div>
+    <div class="statgrid">
+      <div class="stat"><b id="sc-score">0</b><span>SCORE</span></div>
+      <div class="stat"><b id="sc-right">0</b><span>CORRECT</span></div>
+      <div class="stat"><b id="sc-best">0</b><span>BEST STREAK</span></div>
+    </div>
+    <button type="button" class="btn" onclick="startGame()">Run it back</button>
+  </div>
+
+  <div class="foot">Mr. Babb &middot; AP Computer Science A &middot; Paul Public Charter School</div>
+</div>
+
+<script>
+/* ============ THE BANK — every Unit 1 term ============ */
+/* modes: D = definition->term, T = term->definition, C = code->term */
+var BANK = [
+  { m:'D', p:'Translates your Java source code so it can run — and refuses if even one character breaks the rules.', a:'compiler',
+    o:['compiler','IDE','main method','interpreter of comments'], c:'The compiler is the gatekeeper: it reads everything (except comments) and builds runnable code only when the syntax is perfect.' },
+  { m:'D', p:'A note written for humans that the compiler completely ignores.', a:'comment',
+    o:['comment','String','statement','variable'], c:'Comments document code for people. They never execute — the compiler skips them entirely.' },
+  { m:'C', p:'What is this an example of?<pre>/* GalaxyWeight\n   by Team 3 */</pre>', a:'multiline comment',
+    o:['multiline comment','single-line comment','Javadoc comment','String literal'], c:'/* opens and */ closes — everything between is ignored, across as many lines as needed.' },
+  { m:'C', p:'What is the part after the semicolon?<pre>int mass = 90; // baby elephant</pre>', a:'single-line comment',
+    o:['single-line comment','multiline comment','a syntax error','a second statement'], c:'// comments run to the end of the line — they can even share a line with real code.' },
+  { m:'D', p:'The container that holds your whole program — its name must match the file name letter for letter.', a:'class',
+    o:['class','main method','package','folder'], c:'public class ConsoleQuest must live in ConsoleQuest.java — the class is the program’s container and its name rules the file.' },
+  { m:'D', p:'The method where every Java program starts running.', a:'main method',
+    o:['main method','println','constructor','starter method'], c:'public static void main(String[] args) — Java looks for exactly this signature and begins there.' },
+  { m:'D', p:'One complete instruction, ended with a semicolon.', a:'statement',
+    o:['statement','expression','comment','operator'], c:'Statements are the sentences of Java — and the semicolon is the period. Forget it and the compiler reads into the next line.' },
+  { m:'C', p:'Name the concept this line shows:<pre>System.out.println("HP: " + hp);</pre>', a:'concatenation',
+    o:['concatenation','casting','declaration','modulo'], c:'The + glues the String label to the variable’s value — that joining is concatenation.' },
+  { m:'D', p:'A named storage location that holds one value your program can use and change.', a:'variable',
+    o:['variable','constant','class','method'], c:'Variables are named boxes: declare the type, pick a name, store a value, swap it later.' },
+  { m:'C', p:'Name what this line DOES:<pre>int level = 3;</pre>', a:'declaration with assignment',
+    o:['declaration with assignment','concatenation','comparison','method call'], c:'It declares a new int named level AND assigns 3 into it — creation and storage in one statement.' },
+  { m:'D', p:'The data type for whole numbers only — no decimal point allowed.', a:'int',
+    o:['int','double','String','number'], c:'int holds whole numbers. Give it 3.5 and the compiler refuses — decimals need a different type.' },
+  { m:'D', p:'The data type for numbers that can carry a decimal.', a:'double',
+    o:['double','int','String','decimal'], c:'double holds decimal values like 12.5 — and one double in an expression makes the whole result a double.' },
+  { m:'D', p:'The type for text — its values always live inside double quotes.', a:'String',
+    o:['String','char list','text','comment'], c:'String is text data in quotes. Capital S — it’s a class, unlike int and double.' },
+  { m:'C', p:'Which term describes the = in this line?<pre>gold = 250;</pre>', a:'assignment operator',
+    o:['assignment operator','equality check','declaration','concatenation'], c:'A single = is a COMMAND: store 250 in gold. It never asks a question — that’s == , a different operator.' },
+  { m:'D', p:'Code made of values, variables, and operators that evaluates down to a single value.', a:'expression',
+    o:['expression','statement','declaration','comment'], c:'5 + level * 2 collapses to one value — that’s an expression, and the value it makes has a type.' },
+  { m:'T', p:'What does the modulo operator % give you?', a:'The remainder after dividing two values',
+    o:['The remainder after dividing two values','The quotient of a division','The percentage of a number','Half of a value'], c:'17 % 5 is 2 — the leftover after all the whole 5s are removed. Division asks "how many fit"; % asks "what’s left".' },
+  { m:'C', p:'What does this print?<pre>System.out.println(18 / 5);</pre>', a:'3 — int division truncates',
+    o:['3 — int division truncates','3.6 — normal division','4 — Java rounds up','An error'], c:'Both operands are ints, so the decimal is DROPPED, not rounded. 3.6 becomes 3.' },
+  { m:'D', p:'The rule that decides which operator runs first in a compound expression.', a:'operator precedence',
+    o:['operator precedence','concatenation','left-alignment','type promotion'], c:'*, / and % sweep first (left to right), then + and −. It’s PEMDAS with modulo invited.' },
+  { m:'C', p:'Why does a evaluate to 16 and not 13?<pre>int a = (3 + 5) * 2;</pre>', a:'Parentheses override precedence',
+    o:['Parentheses override precedence','The compiler reads right to left','* always waits for +','It doesn’t — it’s 13'], c:'Parentheses force 3+5 to happen first. Without them, precedence runs 5*2 before the add.' },
+  { m:'C', p:'What happens when this line RUNS?<pre>int x = 10 / 0;</pre>', a:'ArithmeticException — the program crashes',
+    o:['ArithmeticException — the program crashes','x becomes Infinity','x becomes 0','It won’t compile'], c:'Int division by zero throws an ArithmeticException at RUNTIME. It compiles fine — the disaster waits until the line runs.' },
+  { m:'T', p:'What does .substring(0, 3) give you?', a:'The characters from index 0 up to but NOT including 3',
+    o:['The characters from index 0 up to but NOT including 3','The characters from index 0 through 3, inclusive','The last 3 characters','Three copies of the String'], c:'"Jordan".substring(0, 3) is "Jor" — the end index is the first character NOT taken.' },
+  { m:'C', p:'What value does this produce?<pre>"Mitchell".length()</pre>', a:'8 — the number of characters',
+    o:['8 — the number of characters','7 — the last index','9 — letters plus one','"Mitchell" backwards'], c:'.length() counts characters, all of them. (The last INDEX is 7, because indexes start at 0 — a different question.)' },
+  { m:'D', p:'The naming style Java uses for variables: first word lowercase, each new word capitalized.', a:'camelCase',
+    o:['camelCase','snake_case','PascalCase','kebab-case'], c:'weightOnEarth, lootRoll, critChance — the humps make multi-word names readable.' },
+  { m:'D', p:'A mistake the compiler catches BEFORE the program can run — like a missing semicolon or brace.', a:'syntax error',
+    o:['syntax error','runtime error','logic error','ArithmeticException'], c:'Syntax errors stop compilation cold. "insert } to complete ClassBody" is the compiler literally telling you the fix.' },
+  { m:'C', p:'Name the concept:<pre>int roll = (int)(Math.random() * 20) + 1;</pre>', a:'casting a double to an int',
+    o:['casting a double to an int','concatenating a number','modulo division','declaring a String'], c:'Math.random() makes a double; the (int) CAST chops it to a whole number so it can live in an int.' },
+  { m:'T', p:'What range of values does Math.random() itself produce?', a:'0.0 up to (but not including) 1.0',
+    o:['0.0 up to (but not including) 1.0','0 through 100','1 through 10','Any number, including negatives'], c:'Always a double from 0.0 to 0.999... — you multiply and shift it to build the range you actually want.' },
+  { m:'C', p:'What prints — and why?<pre>System.out.println(1 + 2 + " keys");</pre>', a:'3 keys — left to right, math happens first',
+    o:['3 keys — left to right, math happens first','12 keys — the numbers concatenate','keys 3 — the String moves left','An error — mixed types'], c:'Java works left to right: 1+2 is math (3), THEN it meets the String and concatenates. Order changes everything.' },
+  { m:'T', p:'int with int gives int. What does int with double give?', a:'double — one double infects the whole expression',
+    o:['double — one double infects the whole expression','int — Java rounds it off','An error — types can’t mix','String — it converts to text'], c:'10 * 5.5 is 55.0, a double. Even 5.0 * 5 is a double — one decimal anywhere promotes the result.' },
+  { m:'C', p:'Name the pieces: what are "Door code: " and 4055 in this line?<pre>String s = "Door code: " + 4055;</pre>', a:'A String literal and an int literal',
+    o:['A String literal and an int literal','Two variables','Two Strings','A comment and a number'], c:'Literals are raw values written directly in code — quoted text is a String literal, 4055 an int literal. The + concatenates them into "Door code: 4055".' },
+  { m:'T', p:'What does System.out.println do that System.out.print does not?', a:'Moves to a new line after printing',
+    o:['Moves to a new line after printing','Prints louder','Prints numbers as well as text','Runs faster'], c:'println = print line: output, then drop to the next line. print leaves the cursor where it stopped.' },
+  { m:'D', p:'The punctuation pair that opens and closes a class or method body — every opener needs its closer.', a:'braces { }',
+    o:['braces { }','parentheses ( )','square brackets [ ]','angle brackets < >'], c:'Braces wrap bodies. "insert } to complete MethodBody" means an opened { never got its } — count them in pairs.' },
+  { m:'C', p:'What kind of error is this, and when does it strike?<pre>Exception in thread "main"\njava.lang.ArithmeticException: / by zero</pre>', a:'A runtime error — it strikes while the program runs',
+    o:['A runtime error — it strikes while the program runs','A syntax error — the compiler caught it','A logic error — wrong answer, no crash','A warning — the program continues'], c:'The code compiled fine; the crash came at RUNTIME when the impossible math executed. Compile-time vs runtime is a distinction that matters all year.' }
+];
+
+/* ============ ENGINE ============ */
+var ROUNDS = 15, TIME = 15;
+var qs = [], cur = 0, score = 0, streak = 0, bestStreak = 0, right = 0;
+var secsLeft = TIME, timerId = null, locked = false;
+
+function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function mult(){ return streak >= 5 ? 2 : streak >= 4 ? 1.5 : streak >= 3 ? 1.2 : 1; }
+function maxPossible(){
+  var s = 0, st = 0;
+  for (var i = 0; i < ROUNDS; i++) { st++; var m = st >= 5 ? 2 : st >= 4 ? 1.5 : st >= 3 ? 1.2 : 1; s += Math.round((100 + TIME * 10) * m); }
+  return s;
+}
+
+function startGame(){
+  qs = shuffle(BANK).slice(0, ROUNDS);
+  cur = 0; score = 0; streak = 0; bestStreak = 0; right = 0;
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('scorecard').style.display = 'none';
+  document.getElementById('hud').style.display = 'block';
+  document.getElementById('arena').style.display = 'block';
+  nextRound();
+}
+
+function hud(){
+  document.getElementById('h-round').textContent = cur + 1;
+  document.getElementById('h-score').textContent = score;
+  document.getElementById('h-streak').textContent = streak;
+  document.getElementById('h-mult').textContent = mult() > 1 ? ' ×' + mult() : '';
+}
+
+function nextRound(){
+  if (cur >= ROUNDS) { endGame(); return; }
+  locked = false;
+  var q = qs[cur];
+  hud();
+  var label = q.m === 'D' ? 'DEFINITION → TERM' : q.m === 'T' ? 'TERM → DEFINITION' : 'CODE → CONCEPT';
+  document.getElementById('mode-label').textContent = label;
+  document.getElementById('prompt').innerHTML = q.p;
+  var box = document.getElementById('opts');
+  box.innerHTML = '';
+  shuffle(q.o).forEach(function(opt){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.textContent = opt;
+    b.onclick = function(){ answer(b, opt, q); };
+    box.appendChild(b);
+  });
+  var f = document.getElementById('fb');
+  f.className = ''; f.textContent = '';
+  secsLeft = TIME;
+  paintClock();
+  clearInterval(timerId);
+  timerId = setInterval(tick, 1000);
+}
+
+function paintClock(){
+  document.getElementById('h-clock').innerHTML = '<b>' + secsLeft + '</b>s';
+  var bar = document.getElementById('roundbar');
+  bar.style.width = (secsLeft / TIME * 100) + '%';
+  bar.className = secsLeft <= 5 ? 'low' : '';
+}
+
+function tick(){
+  secsLeft--;
+  paintClock();
+  if (secsLeft <= 0) {
+    clearInterval(timerId);
+    if (locked) return;
+    locked = true;
+    streak = 0;
+    var q = qs[cur];
+    var f = document.getElementById('fb');
+    f.className = 'warn';
+    f.textContent = '⏰ Clock got you — the answer was: ' + q.a + '. ' + q.c;
+    freezeOptions(q);
+    setTimeout(function(){ cur++; nextRound(); }, 3200);
+  }
+}
+
+function freezeOptions(q){
+  var btns = document.getElementById('opts').querySelectorAll('.opt');
+  btns.forEach(function(b){
+    b.disabled = true;
+    if (b.textContent === q.a) b.classList.add('right');
+  });
+}
+
+function answer(btn, opt, q){
+  if (locked) return;
+  locked = true;
+  clearInterval(timerId);
+  var f = document.getElementById('fb');
+  if (opt === q.a) {
+    streak++; right++;
+    if (streak > bestStreak) bestStreak = streak;
+    var pts = Math.round((100 + secsLeft * 10) * mult());
+    score += pts;
+    btn.classList.add('right');
+    f.className = 'ok';
+    f.textContent = '+' + pts + (mult() > 1 ? ' (×' + mult() + ' streak!)' : '') + ' — ' + q.c;
+  } else {
+    streak = 0;
+    btn.classList.add('wrong');
+    f.className = 'no';
+    f.textContent = 'It was: ' + q.a + '. ' + q.c;
+    freezeOptions(q);
+  }
+  hud();
+  var btns = document.getElementById('opts').querySelectorAll('.opt');
+  btns.forEach(function(b){ b.disabled = true; });
+  setTimeout(function(){ cur++; nextRound(); }, opt === q.a ? 2200 : 3200);
+}
+
+function endGame(){
+  clearInterval(timerId);
+  document.getElementById('hud').style.display = 'none';
+  document.getElementById('arena').style.display = 'none';
+  var sc = document.getElementById('scorecard');
+  sc.style.display = 'block';
+  var pct = score / maxPossible();
+  var rank, sub;
+  if (pct >= 0.85) { rank = '⭐ THE COMPILER'; sub = 'You read Java the way Java reads you — instantly and without mercy. Top of the arena.'; }
+  else if (pct >= 0.65) { rank = '⚔️ SYNTAX SLAYER'; sub = 'Fast, sharp, and only a few terms from perfection. One more run gets you to Compiler.'; }
+  else if (pct >= 0.40) { rank = '\u{1F6E1}️ BRACKET APPRENTICE'; sub = 'The core is there — speed and streaks come with reps. The bank redraws every run, so run it back.'; }
+  else { rank = '\u{1F331} SIDE QUESTER'; sub = 'Every round you played installed a definition, and the coaching told you the rest. The arena remembers nothing — it’s a fresh 15 next run.'; }
+  document.getElementById('sc-rank').textContent = rank;
+  document.getElementById('sc-sub').textContent = sub;
+  document.getElementById('sc-score').textContent = score;
+  document.getElementById('sc-right').textContent = right + '/' + ROUNDS;
+  document.getElementById('sc-best').textContent = bestStreak;
+  sc.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
